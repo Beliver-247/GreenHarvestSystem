@@ -7,6 +7,8 @@ const dotenv = require("dotenv");
 // Load environment variables from .env file
 dotenv.config();
 
+require('./schedulers/licenseCheckScheduler.js');  // Load any scheduled tasks
+
 const app = express();
 
 const PORT = process.env.PORT || 8070;
@@ -28,10 +30,22 @@ const newBatchRouter = require("./routes/newBatches.js");
 const qaStandardsRouter = require("./routes/qaStandards.js");  
 const QARecordRouter = require("./routes/QArecord.js")
 
+const driverRouter = require("./routes/drivers.js"); // hiran
+const vehicleRouter = require("./routes/vehicles.js");
+const fuelpurchaseRouter = require("./routes/fuelpurchase.js");
+const maintainRouter = require("./routes/maintain.js");
+const expensesRouter = require('./routes/expenses'); // hiran
+
 // Use routes
 app.use("/newBatch", newBatchRouter);
 app.use("/qaStandards", qaStandardsRouter);  
 app.use("/QArecord",QARecordRouter);
+
+app.use("/vehicle", vehicleRouter);//hiran
+app.use("/driver", driverRouter);
+app.use("/fuelpurchase", fuelpurchaseRouter); 
+app.use("/maintain", maintainRouter);
+app.use('/expenses', expensesRouter);//hiran
 
 app.listen(PORT, () => {
     console.log(`Server is up and running on port: ${PORT}`);
