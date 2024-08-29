@@ -33,11 +33,7 @@ const validateLicenseExpDate = function(licenseExpDate) {
 };
 
 // Custom validation for date of birth (dob)
-const validateDOB = function(dob) {
-    const today = new Date();
-    const age18 = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-    return dob <= age18 && dob <= today;
-};
+
 
 const driverSchema = new Schema({
     name: {
