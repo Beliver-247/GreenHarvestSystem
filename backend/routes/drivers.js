@@ -4,7 +4,7 @@ let Driver = require('../models/Driver');
 router.route('/add').post((req, res) =>{
     const name = req.body.name;
     const nic = req.body.nic;
-    const dob = req.body.dob;
+    const licenseNo = req.body.licenseNo;
     const licenseExpDate = req.body.licenseExpDate;
     const mobileNo = Number(req.body.mobileNo);
     const email = req.body.email;
@@ -14,7 +14,7 @@ router.route('/add').post((req, res) =>{
     const newDriver = new Driver({
         name,
         nic,
-        dob,
+        licenseNo,
         licenseExpDate,
         mobileNo,
         email,
@@ -40,12 +40,12 @@ router.route("/").get((req, res)=> {
 
 router.route("/update/:driverid").put(async(req, res) => {
     let driverid = req.params.driverid;
-    const { name,nic,dob,licenseExpDate,mobileNo,email,password} = req.body;
+    const { name,nic,licenseNo,licenseExpDate,mobileNo,email,password} = req.body;
 
     const updateDriver= {
         name,
         nic,
-        dob,
+        licenseNo,
         licenseExpDate,
         mobileNo,
         email,
