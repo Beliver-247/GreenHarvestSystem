@@ -7,6 +7,10 @@ const validateNIC = function(nic) {
     const newNICRegex = /^[0-9]{12}$/;
     return oldNICRegex.test(nic) || newNICRegex.test(nic);
 };
+const validateLicenseNo = function(licenseNo) {
+    const licenseNoRegex = /^[A-Z][0-9]{7}$/;
+    return licenseNoRegex.test(licenseNo);
+};
 
 // Custom validation for mobile number
 const validateMobileNo = function(mobileNo) {
@@ -46,10 +50,10 @@ const driverSchema = new Schema({
         unique: true,
         validate: [validateNIC, 'Invalid NIC format.']
     },
-    dob: {
-        type: Date,
+    licenseNo: {
+        type: String,
         required: true,
-        validate: [validateDOB, 'Date of birth cannot be in the future and the driver must be at least 18 years old.']
+        validate: [validateLicenseNo, 'Invalid format.']
     },
     licenseExpDate: {
         type: Date,
@@ -59,7 +63,7 @@ const driverSchema = new Schema({
     mobileNo: {
         type: Number,
         required: true,
-        validate: [validateMobileNo, 'Use +94 and instead of 0. Eg:-94xxxxxxxxx']
+        validate: [validateMobileNo, 'Use +94 and instead of 0. Eg:- 94xxxxxxxxx']
     },
     email: {
         type: String,
@@ -77,3 +81,5 @@ const driverSchema = new Schema({
 const Driver = mongoose.model('Driver', driverSchema);
 
 module.exports = Driver;
+
+//updated
