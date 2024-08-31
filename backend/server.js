@@ -34,6 +34,7 @@ const driverRouter = require("./routes/drivers.js"); // hiran
 const vehicleRouter = require("./routes/vehicles.js");
 const fuelpurchaseRouter = require("./routes/fuelpurchase.js");
 const maintainRouter = require("./routes/maintain.js");
+const fuelEfficiencyRouter = require('./routes/fuelEfficiency');
 const expensesRouter = require('./routes/expenses'); // hiran
 
 // Use routes
@@ -45,6 +46,7 @@ app.use("/vehicle", vehicleRouter);//hiran
 app.use("/driver", driverRouter);
 app.use("/fuelpurchase", fuelpurchaseRouter); 
 app.use("/maintain", maintainRouter);
+app.use('/efficiency', fuelEfficiencyRouter);
 app.use('/expenses', expensesRouter);//hiran
 
 app.listen(PORT, () => {
