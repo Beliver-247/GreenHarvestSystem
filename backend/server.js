@@ -30,6 +30,10 @@ const newBatchRouter = require("./routes/newBatches.js");
 const qaStandardsRouter = require("./routes/qaStandards.js");  
 const QARecordRouter = require("./routes/QArecord.js")
 
+//Inventory routes - Senath
+const stockRouter = require("./routes/stocks.js");
+const staffRouter = require("./routes/staffMembers.js");
+
 const driverRouter = require("./routes/drivers.js"); // hiran
 const vehicleRouter = require("./routes/vehicles.js");
 const fuelpurchaseRouter = require("./routes/fuelpurchase.js");
@@ -41,6 +45,10 @@ const expensesRouter = require('./routes/expenses'); // hiran
 app.use("/newBatch", newBatchRouter);
 app.use("/qaStandards", qaStandardsRouter);  
 app.use("/QArecord",QARecordRouter);
+
+// Use routes - inventory
+app.use("/stock", stockRouter);
+app.use("/staff", staffRouter);
 
 app.use("/vehicle", vehicleRouter);//hiran
 app.use("/driver", driverRouter);
