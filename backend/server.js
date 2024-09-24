@@ -66,9 +66,10 @@ app.use('/expenses', expensesRouter);//hiran
 
 //Dilakshan
 const orderRoutes = require("./routes/orderRoutes.js");
+const cartRouter = require("./routes/cartRoutes.js");
 
 app.use("/api/orders", orderRoutes);
-app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRouter);
 
 
 app.listen(PORT, () => {
