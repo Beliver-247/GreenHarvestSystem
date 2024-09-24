@@ -34,15 +34,26 @@ const signup = async (req, res, next) => {
       if (existingUser) {
         return next(errorHandler(400, "User Email Already Exists"));
       }
-      const defaultAvatarURL =
-        "https://tse2.mm.bing.net/th?id=OIP.eCrcK2BiqwBGE1naWwK3UwHaHa&pid=Api&P=0&h=180";
+      
+      const defaultAvatarURL = "https://tse2.mm.bing.net/th?id=OIP.eCrcK2BiqwBGE1naWwK3UwHaHa&pid=Api&P=0&h=180";
+      let avatarBase64;
 
-      // Convert the avatar to a Base64 string
-      let avatarBase64 = req.file
-        ? `data:${req.file.mimetype};base64,${req.file.buffer.toString(
-            "base64"
-          )}`
-        : defaultAvatarURL;
+      // If the user has uploaded an avatar, compress and convert to Base64
+      if (req.file) {
+        try {
+          const compressedImageBuffer = await sharp(req.file.buffer)
+            .resize(300, 300) // Resize to 300x300 pixels
+            .jpeg({ quality: 80 }) // Compress to 80% quality
+            .toBuffer();
+          avatarBase64 = `data:${req.file.mimetype};base64,${compressedImageBuffer.toString("base64")}`;
+        } catch (imageError) {
+          console.error("Error compressing image:", imageError);
+          return next(errorHandler(500, "Image processing error"));
+        }
+      } else {
+        // Use default avatar URL if no file is uploaded
+        avatarBase64 = defaultAvatarURL;
+      }
 
       // Hash the user's password
       const hashedPassword = bcrypt.hashSync(password, 10);

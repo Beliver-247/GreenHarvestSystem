@@ -1,6 +1,7 @@
 const User  = require("../models/Usermodel.js");
 const multer = require("multer");
 const errorHandler  = require("../utils/error.js");
+const sharp = require("sharp");
 
 // Configure multer storage
 const storage = multer.memoryStorage();
@@ -55,12 +56,18 @@ const updateUserProfile = async (req, res, next) => {
         address: req.body.address,
       };
 
-      // If there's an uploaded file (avatar), process it
       if (req.file) {
-        const imageBase64 = req.file.buffer.toString("base64");
+        // Compress the image using sharp
+        const compressedImageBuffer = await sharp(req.file.buffer)
+          .resize(300, 300) // Resize to 300x300 pixels (adjust as needed)
+          .jpeg({ quality: 80 }) // Compress to 80% quality
+          .toBuffer();
+        
+        // Convert the compressed image to base64
+        const imageBase64 = compressedImageBuffer.toString("base64");
         const avatar = `data:${req.file.mimetype};base64,${imageBase64}`;
         updatedFields.avatar = avatar;
-      }
+      } 
 
       // Update the user document
       const updatedUser = await User.findByIdAndUpdate(
