@@ -5,3 +5,7 @@ npm install axios //backend
 npm install node-cron //backend
 npm install dayjs  //backend
 npm i uuidv4 //backend
+
+
+npm install -g nodemon //backend (restart automatically)
+npm install axios // frontend 

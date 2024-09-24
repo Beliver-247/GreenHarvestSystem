@@ -1,13 +1,14 @@
 import './App.css';
 import SideNav from './components/SideNav';
-import {BrowserRouter as Router, Route} from "react-router-dom"
+import {BrowserRouter as Router} from "react-router-dom"
+import OrderForm from './components/order/OrderForm';
 
 function App() {
   return (
     <Router>
     <div className="App">
-      <SideNav/>
-
+      {/* <SideNav/> */}
+      <OrderForm/>
     </div>
     </Router>
   );
