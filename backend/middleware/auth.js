@@ -7,7 +7,7 @@ const authMiddleware = async (req, res, next) => {
 
     if (!token) {
         console.log("No token provided, but allowing access");
-        req.body.userId = "66cb926254a65abfca0af237"; //TODO Assign a default userId or skip this if not needed
+        req.body.userId = "66f298c0d55b83bfb172a269"; //TODO Assign a default userId or skip this if not needed
         return next(); // Allow the request to proceed
     }
 
