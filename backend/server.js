@@ -82,6 +82,17 @@ app.use((err, req, res, next) => {
     });
 });
 
+
+//Dilakshan
+const orderRoutes = require("./routes/orderRoutes.js");
+const cartRouter = require("./routes/cartRoutes.js");
+
+app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRouter);
+
+
+
+
 app.listen(PORT, () => {
     console.log(`Server is up and running on port: ${PORT}`);
 });
