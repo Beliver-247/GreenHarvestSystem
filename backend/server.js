@@ -91,8 +91,15 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/cart", cartRouter);
 
 
+//sujeevan
+const farmerRequestRoutes = require("./routes/farmerRequestRoutes.js");
+const customerRequestRoutes = require("./routes/customerRequestRoutes.js");
 
+app.use("/api", farmerRequestRoutes);
+app.use("/api", customerRequestRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is up and running on port: ${PORT}`);
 });
+
+
