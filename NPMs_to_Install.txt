@@ -6,3 +6,8 @@ npm install node-cron //backend
 npm install dayjs  //backend
 npm i uuidv4 //backend
 npm install react-router-dom  //frontend
+npm install react-icons //frontend
+npm install react-chartjs-2 //frontend
+npm install chart.js //frontend
+
+
