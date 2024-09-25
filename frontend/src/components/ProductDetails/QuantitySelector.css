@@ -1,0 +1,62 @@
+     /* Hide default increment/decrement buttons */
+     input[type='number']::-webkit-outer-spin-button,
+     input[type='number']::-webkit-inner-spin-button {
+         -webkit-appearance: none;
+         margin: 0;
+     }
+
+     /* input[type='number'] {
+         -moz-appearance: textfield;
+     } */
+
+     /* Style for quantity input and surrounding elements */
+     .quantity-input-container {
+         display: flex;
+         align-items: center;
+         background-color: #f3f4f6;
+         border-radius: 1rem; /* Adjusted border-radius */
+         overflow: hidden;
+         border: 1px solid #d1d5db;
+         width: fit-content;
+     }
+
+     .quantity-input {
+         appearance: none;
+         background-color: #f3f4f6;
+         border: none;
+         text-align: center;
+         padding: 0.5rem;
+         width: 4rem; /* Adjusted width */
+         font-size: 1rem;
+         outline: none;
+         font-weight: bold;
+     }
+
+     .quantity-unit {
+         padding: 0.5rem 0.5rem;
+         color: #000;
+         font-size: 1rem;
+         font-weight: bold;
+     }
+
+     .quantity-button {
+         background-color: #ffffff;
+         padding: 0.5rem 1rem; /* Adjusted padding */
+         cursor: pointer;
+         font-size: 1.25rem;
+         font-weight: bold;
+         border: none;
+         transition: background-color 0.2s;
+     }
+
+     .quantity-button:first-child {
+         border-radius: 1rem 1rem 1rem 1rem; /* Round left button */
+     }
+
+     .quantity-button:last-child {
+         border-radius: 1rem 1rem 1rem 1rem; /* Round right button */
+     }
+
+     .quantity-button:hover {
+         background-color: #f9fafb;
+     }

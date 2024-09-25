@@ -1,0 +1,152 @@
+/* Container for the entire cart */
+.cart {
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  /* Title row for cart items */
+  .cart-items-title {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr auto;
+    align-items: center;
+    padding: 10px 0;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  /* Each item row in the cart */
+  .cart-items-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr auto;
+    align-items: center;
+    padding: 15px 0;
+  }
+  
+  /* Image styling for cart items */
+  .cart-items-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  /* Remove item 'x' button */
+  .cart-items-item .remove-item {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+  
+  .cart-items-item .remove-item:hover {
+    color: #e60000;
+  }
+  
+  /* Cart totals container */
+  .cart-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  /* Cart total details box */
+  .cart.total {
+    width: 48%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Cart total section header */
+  .cart.total h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+  
+  /* Cart total details text */
+  .cart-total-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .cart-total-details p {
+    margin: 0;
+  }
+  
+  /* Proceed to checkout button */
+  .cart.total button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cart.total button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Promo code input box */
+  .cart-promocode {
+    width: 48%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Promo code text */
+  .cart-promocode p {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  /* Promo code input container */
+  .cart-promocode-input {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Promo code input field */
+  .cart-promocode-input input[type="text"] {
+    width: 70%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  /* Apply button for promo code */
+  .cart-promocode-input button {
+    width: 25%;
+    padding: 8px;
+    background-color: #28a745;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cart-promocode-input button:hover {
+    background-color: #218838;
+  }
+  
+  /* HR separator styles */
+  hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+  }
+  
