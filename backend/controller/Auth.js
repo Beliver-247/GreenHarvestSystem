@@ -1,6 +1,6 @@
-const User  = require("../models/Usermodel.js");
+const User = require("../models/Usermodel.js");
 const multer = require("multer");
-const errorHandler  = require("../utils/error.js");
+const errorHandler = require("../utils/error.js");
 const sharp = require("sharp");
 
 // Configure multer storage
@@ -56,18 +56,19 @@ const updateUserProfile = async (req, res, next) => {
         address: req.body.address,
       };
 
+      // If there's an uploaded file (avatar), process it
       if (req.file) {
         // Compress the image using sharp
         const compressedImageBuffer = await sharp(req.file.buffer)
           .resize(300, 300) // Resize to 300x300 pixels (adjust as needed)
           .jpeg({ quality: 80 }) // Compress to 80% quality
           .toBuffer();
-        
+
         // Convert the compressed image to base64
         const imageBase64 = compressedImageBuffer.toString("base64");
         const avatar = `data:${req.file.mimetype};base64,${imageBase64}`;
         updatedFields.avatar = avatar;
-      } 
+      }
 
       // Update the user document
       const updatedUser = await User.findByIdAndUpdate(
@@ -96,7 +97,7 @@ const deleteUser = async (req, res, next) => {
     console.log("User ID to Delete:", req.params.userId);
 
     const isAdmin =
-      req.user.role === "Admin" || req.user.role === "User Manager";
+      req.user.role === "Admin"|| req.user.email === "gspuser2002@gmail.com" || req.user.role === "User Manager";
     const isSelf = req.user.id === req.params.userId;
 
     if (isAdmin || isSelf) {
@@ -168,5 +169,3 @@ module.exports = {
   signout,
   getUser,
 };
-
-

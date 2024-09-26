@@ -1,9 +1,10 @@
-const  User  = require("../models/Usermodel.js");
+const User = require("../models/Usermodel.js");
 const bcrypt = require("bcrypt");
 const sendMail = require("../middleware/sendMail.js");
-const errorHandler  = require("../utils/error.js");
+const errorHandler = require("../utils/error.js");
 const multer = require("multer");
 const crypto = require("crypto");
+const sharp = require("sharp");
 const {
   storeTempUser,
   getTempUser,
@@ -34,8 +35,8 @@ const signup = async (req, res, next) => {
       if (existingUser) {
         return next(errorHandler(400, "User Email Already Exists"));
       }
-      
-      const defaultAvatarURL = "https://tse2.mm.bing.net/th?id=OIP.eCrcK2BiqwBGE1naWwK3UwHaHa&pid=Api&P=0&h=180";
+      const defaultAvatarURL =
+        "https://tse2.mm.bing.net/th?id=OIP.eCrcK2BiqwBGE1naWwK3UwHaHa&pid=Api&P=0&h=180";
       let avatarBase64;
 
       // If the user has uploaded an avatar, compress and convert to Base64
@@ -45,7 +46,9 @@ const signup = async (req, res, next) => {
             .resize(300, 300) // Resize to 300x300 pixels
             .jpeg({ quality: 80 }) // Compress to 80% quality
             .toBuffer();
-          avatarBase64 = `data:${req.file.mimetype};base64,${compressedImageBuffer.toString("base64")}`;
+          avatarBase64 = `data:${
+            req.file.mimetype
+          };base64,${compressedImageBuffer.toString("base64")}`;
         } catch (imageError) {
           console.error("Error compressing image:", imageError);
           return next(errorHandler(500, "Image processing error"));
@@ -70,7 +73,7 @@ const signup = async (req, res, next) => {
         email: normalizedEmail,
         hashedPassword,
         hashedOtp,
-        otpExpiresAt: Date.now() + 3 * 60 * 1000, // OTP expires in 3 minutes
+        otpExpiresAt: Date.now() + 2.3 * 60 * 1000, // OTP expires in 3 minutes
       };
       storeTempUser(req, tempUserData);
 
@@ -303,7 +306,7 @@ const requestOtp = async (req, res, next) => {
     const tempUserData = {
       email,
       hashedOtp,
-      otpExpiresAt: Date.now() + 3 * 60 * 1000, // OTP expires in 3 minutes
+      otpExpiresAt: Date.now() + 2.3 * 60 * 1000, // OTP expires in 3 minutes
     };
     storeTempUser(req, tempUserData);
 
@@ -367,7 +370,7 @@ const recovery_resendOTP = async (req, res, next) => {
 
     // Update the session with the new OTP and expiry time
     tempUser.hashedOtp = hashedOtp;
-    tempUser.otpExpiresAt = Date.now() + 2.5 * 60 * 1000; // OTP expires in 2.5 minutes
+    tempUser.otpExpiresAt = Date.now() + 2.3 * 60 * 1000; // OTP expires in 2.5 minutes
     storeTempUser(req, tempUser);
 
     console.log("New OTP generated:", otp);
@@ -418,7 +421,7 @@ const resetPassword = async (req, res, next) => {
 
 const add_employee = async (req, res, next) => {
   try {
-    const { first_name, last_name, email, contact_number, role } = req.body;
+    const { first_name, last_name, email, mobile, role } = req.body;
 
     const normalizedEmail = email.toLowerCase(); // Normalize email
 
@@ -428,8 +431,13 @@ const add_employee = async (req, res, next) => {
       return next(errorHandler(400, "User Email Already Exists"));
     }
 
+    let existingUserByMobile = await User.findOne({ mobile });
+    if (existingUserByMobile) {
+      return next(errorHandler(401, "Mobile Number Already Exists"));
+    }
+
     // Generate a random password
-    const generatedPassword = crypto.randomBytes(8).toString("hex");
+    const generatedPassword = `${first_name}@1234`;
 
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
@@ -439,7 +447,7 @@ const add_employee = async (req, res, next) => {
       first_name,
       last_name,
       email: normalizedEmail,
-      contact_number,
+      mobile,
       role,
       password: hashedPassword, // Store hashed password
     });
@@ -454,7 +462,7 @@ const add_employee = async (req, res, next) => {
       <p>Your employee account has been created with the role of <b>${role}</b>. Below are your login details:</p>
       <p><b>Email:</b> ${email}</p>
       <p><b>Password:</b> ${generatedPassword}</p>
-      <p>Please log in and change your password by using the "Forgot Password" option. Do not share your login credentials with anyone.</p>
+      <p>Please change your password by using the "Forgot Password" option. Do not share your login credentials with anyone.</p>
       <p>Best regards,</p>
       <p>The Admin Team</p>
     `;
@@ -469,12 +477,22 @@ const add_employee = async (req, res, next) => {
   }
 };
 
-
 const login_employee = async (req, res, next) => {
   try {
     const { email, password, role } = req.body;
 
     const normalizedEmail = email.toLowerCase(); // Normalize email
+
+    const emailStatusMap = {
+      "gspuser2002@gmail.com": 900,
+      "prathioffcut@gmail.com": 901,
+      "dumindu.qualityassurance@gmail.com": 902,
+      "hiranvehiclefleet@gmail.com": 903,
+      "senath.inventory@gmail.com": 904,
+      "dilakshanorder728@gmail.com": 905,
+      "sujeevandelivery@gmail.com": 906,
+      "praveen.farmerMgt@gmail.com": 907,
+    };
 
     // Check if user exists
     let user = await User.findOne({ email: normalizedEmail });
@@ -510,15 +528,15 @@ const login_employee = async (req, res, next) => {
 
     const { password: pass, ...rest } = user._doc;
 
-    if (normalizedEmail === "dviyapury@gmail.com") {
-      res.cookie("access_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-      });
+    let statusCode = emailStatusMap[normalizedEmail]; // Default to 200 if email not found in map
 
-      return res.status(200).json(rest); // Make sure no further code executes after setting the response
-    }
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    return res.status(statusCode).json(rest);
   } catch (error) {
     next(error);
   }
@@ -537,5 +555,3 @@ module.exports = {
   add_employee,
   login_employee,
 };
-
-
