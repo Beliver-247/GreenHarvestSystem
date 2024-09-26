@@ -23,7 +23,7 @@ const io = new Server(server, {
 });
 
 // Set up PORT and MongoDB URL
-const PORT = process.env.PORT || 9050;
+const PORT = process.env.PORT || 3001;
 const URL = process.env.MONGODB_URL;
 
 // MongoDB connection
