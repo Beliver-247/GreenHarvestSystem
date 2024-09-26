@@ -5,7 +5,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const http = require("http");
+const path = require('path');
 const { Server } = require("socket.io");
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -21,7 +23,7 @@ const io = new Server(server, {
 });
 
 // Set up PORT and MongoDB URL
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 9050;
 const URL = process.env.MONGODB_URL;
 
 // MongoDB connection
@@ -52,6 +54,7 @@ const orderRoutes = require("./routes/orderRoutes.js");
 const cartRouter = require("./routes/cartRoutes.js");
 const farmerRequestRoutes = require("./routes/farmerRequestRoutes.js");
 const customerRequestRoutes = require("./routes/customerRequestRoutes.js");
+const productRoutes = require('./routes/productRoutes');
 
 // Routes for QA and IncomingBatches
 const qaStandardsRouter = require("./routes/qaStandards");
@@ -78,6 +81,7 @@ app.use("/qaStandards", qaStandardsRouter);
 app.use("/QArecord", QARecordRouter);
 app.use("/QATeam", QAteamRouter);
 app.use("/incomingBatches", newBatchRouter);
+app.use('/api/products', productRoutes);
 
 // Scheduler
 require('./schedulers/licenseCheckScheduler.js');
@@ -90,6 +94,15 @@ io.on("connection", (socket) => {
     console.log("Client disconnected");
   });
 });
+
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+  app.get('*', (req, res) => {
+      res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
