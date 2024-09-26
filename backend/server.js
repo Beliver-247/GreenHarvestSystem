@@ -58,7 +58,7 @@ const productRoutes = require('./routes/productRoutes');
 
 // Routes for QA and IncomingBatches
 const qaStandardsRouter = require("./routes/qaStandards");
-const QARecordRouter = require("./routes/QArecord");
+const QARecordRouter = require("./routes/QArecord")(io);
 const QAteamRouter = require("./routes/QATeam");
 const newBatchRouter = require("./routes/IncomingBatches")(io); // Pass io instance
 
