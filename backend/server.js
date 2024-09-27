@@ -8,7 +8,6 @@ const http = require("http");
 const path = require('path');
 const { Server } = require("socket.io");
 
-
 // Load environment variables from .env file
 dotenv.config();
 
@@ -39,9 +38,30 @@ app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.json());
 
-// Importing routes
+// Importing routes from both server.js files
+// Farmer Routes
+const farmerRouter = require("./routes/farmer_routes.js");
+app.use("/farmer", farmerRouter);
+
+// Crop Readiness Routes
+const cropReadinessRoutes = require('./routes/cropReadinessRoutes');  
+app.use('/cropReadiness', cropReadinessRoutes);  
+
+// Pickup request Routes
+const pickupRequestRoutes = require('./routes/pickupRequestRoutes');
+app.use('/pickup-request', pickupRequestRoutes);
+
+// Land Routes
+const landRoutes = require("./routes/land_routes");
+app.use("/land", landRoutes); 
+
+// User-related Routes (from group project)
 const userRoutes = require("./routes/UserRoute.js");
 const AuthRoute = require("./routes/AuthRoute.js");
+app.use("/api/user", userRoutes);
+app.use("/api/auth", AuthRoute);
+
+// Other Routes (from group project)
 const stockRouter = require("./routes/stocks.js");
 const staffRouter = require("./routes/staffMembers.js");
 const driverRouter = require("./routes/drivers.js");
@@ -56,15 +76,12 @@ const farmerRequestRoutes = require("./routes/farmerRequestRoutes.js");
 const customerRequestRoutes = require("./routes/customerRequestRoutes.js");
 const productRoutes = require('./routes/productRoutes');
 
-// Routes for QA and IncomingBatches
+// Routes for QA and Incoming Batches (with socket.io integration)
 const qaStandardsRouter = require("./routes/qaStandards");
 const QARecordRouter = require("./routes/QArecord");
 const QAteamRouter = require("./routes/QATeam");
-const newBatchRouter = require("./routes/IncomingBatches")(io); // Pass io instance
+const newBatchRouter = require("./routes/IncomingBatches")(io); 
 
-// Use routes
-app.use("/api/user", userRoutes);
-app.use("/api/auth", AuthRoute);
 app.use("/stock", stockRouter);
 app.use("/staff", staffRouter);
 app.use("/vehicle", vehicleRouter);
@@ -95,7 +112,7 @@ io.on("connection", (socket) => {
   });
 });
 
-
+// Production mode setup (serve frontend if in production)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
 
