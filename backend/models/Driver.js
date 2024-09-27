@@ -8,7 +8,7 @@ const validateNIC = function(nic) {
     return oldNICRegex.test(nic) || newNICRegex.test(nic);
 };
 const validateLicenseNo = function(licenseNo) {
-    const licenseNoRegex = /^[A-Z][0-9]{7}$/;
+    const licenseNoRegex = /^[B][0-9]{5,7}$/;
     return licenseNoRegex.test(licenseNo);
 };
 
