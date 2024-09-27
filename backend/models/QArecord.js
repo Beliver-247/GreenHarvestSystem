@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
 
 const qaRecordSchema = new Schema({
@@ -23,10 +22,14 @@ const qaRecordSchema = new Schema({
         required: true,
         min: [0, 'Weight must be a positive number']
     },
-    batchId: { // Add the batchId field
+    batchId: {
         type: Schema.Types.ObjectId,
         ref: 'IncomingBatch',
         required: true
+    },
+    ID: {
+        type: String,
+        unique: true
     },
     dateCreated: {
         type: Date,
@@ -34,6 +37,50 @@ const qaRecordSchema = new Schema({
     }
 });
 
+// Counter schema to store the last number for each vegetable type
+const counterSchema = new Schema({
+    vegetableType: { type: String, required: true, unique: true },
+    seq: { type: Number, default: 0 }
+});
+
+const Counter = mongoose.model("Counter", counterSchema);
+
+// Pre-save hook to generate the custom ID
+qaRecordSchema.pre("save", async function(next) {
+    const doc = this;
+
+    try {
+        // Find the counter for the specific vegetable type
+        const counter = await Counter.findOneAndUpdate(
+            { vegetableType: doc.vegetableType },
+            { $inc: { seq: 1 } },
+            { new: true, upsert: true } // Create if not found
+        );
+
+        let prefix = "";
+        switch (doc.vegetableType) {
+            case "Carrot":
+                prefix = "CRT";
+                break;
+            case "Leek":
+                prefix = "LKS";
+                break;
+            case "Cabbage":
+                prefix = "CBG";
+                break;
+            case "Potato":
+                prefix = "PTO";
+                break;
+        }
+
+        // Generate the ID based on the sequence number
+        doc.ID = `${prefix}${String(counter.seq).padStart(4, '0')}`;
+        
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
 
 const QARecord = mongoose.model("QARecord", qaRecordSchema);
 
