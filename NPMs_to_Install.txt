@@ -9,5 +9,7 @@ npm install react-router-dom  //frontend
 npm install react-icons //frontend
 npm install react-chartjs-2 //frontend
 npm install chart.js //frontend
+npm install jspdf jspdf-autotable
+
 
 
