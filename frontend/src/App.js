@@ -23,7 +23,6 @@ import AdminDashboard from "./pages/Admin_Dashboard.js";
 import AddEmployeeForm from "./pages/Add_employee.js";
 import EmployeeSignin from "./pages/Employee_SignIn.js";
 import Unauthorized from "./pages/Unauthorized.js";
-import Offcut from "./pages/offcut.js";
 
 function App() {
   return (
@@ -49,7 +48,6 @@ function App() {
           //driver paths
           <Route path="driver-page" element={<DriverPage />} />
         </Route>
-        <Route path="/offcut" element={<Offcut />}></Route>
         <Route path="/" element={<Home />}></Route>
         <Route path="/OTP" element={<OTP />}></Route>
         <Route path="/sign-up" element={<Signup />}></Route>
