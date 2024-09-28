@@ -16,7 +16,7 @@ export default function FarmerRequestDB() {
   // Search filter
   const [selectedDateRange, setSelectedDateRange] = useState("");
 
-  const apiUrl = "http://localhost:8000/api";
+  const apiUrl = "http://localhost:3001/api";
 
   useEffect(() => {
     getFarmerRequest();

@@ -37,7 +37,7 @@ const DriverManagement = () => {
   }, []);
 
   const fetchDrivers = () => {
-    axios.get('http://localhost:5000/driver/')
+    axios.get('http://localhost:3001/driver/')
       .then(response => {
         setDrivers(response.data);
       })
@@ -124,7 +124,7 @@ const DriverManagement = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingDriverId) {
-      axios.put(`http://localhost:5000/driver/update/${editingDriverId}`, formData)
+      axios.put(`http://localhost:3001/driver/update/${editingDriverId}`, formData)
         .then(response => {
           fetchDrivers();
           setShowForm(false);
@@ -135,7 +135,7 @@ const DriverManagement = () => {
           console.error('There was an error updating the driver!', error);
         });
     } else {
-      axios.post('http://localhost:5000/driver/add', formData)
+      axios.post('http://localhost:3001/driver/add', formData)
         .then(response => {
           fetchDrivers();
           setShowForm(false);
@@ -168,7 +168,7 @@ const DriverManagement = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this Driver account?')) {
-      axios.delete(`http://localhost:5000/driver/delete/${id}`)
+      axios.delete(`http://localhost:3001/driver/delete/${id}`)
         .then(response => {
           fetchDrivers();
         })

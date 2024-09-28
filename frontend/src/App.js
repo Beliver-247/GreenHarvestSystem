@@ -29,9 +29,7 @@ function App() {
     <Router>
        <Header />
       <Routes>
-        <Route path="vehicle-fleet" element={<LayoutVFManager />}>
-          {" "}
-          //vehicle fleet manager paths
+        <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
           <Route index element={<VFDashboard />} />
           <Route path="vehicle-management" element={<VehicleManagement />} />
           <Route path="driver-management" element={<DriverManagement />} />
@@ -44,8 +42,6 @@ function App() {
         </Route>
 
         <Route path="driver" element={<LayoutDriver />}>
-          {" "}
-          //driver paths
           <Route path="driver-page" element={<DriverPage />} />
         </Route>
         <Route path="/" element={<Home />}></Route>

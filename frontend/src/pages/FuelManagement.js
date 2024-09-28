@@ -16,7 +16,7 @@ const FuelManagement = () => {
   const [registerNo, setRegisterNo] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/fuelpurchase/')
+    axios.get('http://localhost:3001/fuelpurchase/')
       .then(response => {
         setFuelpurchases(response.data);
       })
@@ -24,7 +24,7 @@ const FuelManagement = () => {
         console.error('There was an error fetching the fuel purchases data!', error);
       });
 
-    axios.get('http://localhost:5000/vehicle/')
+    axios.get('http://localhost:3001/vehicle/')
       .then(response => {
         setVehicleRegistrations(response.data);
       })
@@ -36,7 +36,7 @@ const FuelManagement = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios.post('http://localhost:5000/efficiency/', { registerNo, year, month })
+    axios.post('http://localhost:3001/efficiency/', { registerNo, year, month })
       .then(response => {
         setFuelEfficiency(response.data);
       })

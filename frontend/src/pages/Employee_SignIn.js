@@ -20,7 +20,7 @@ import {
 } from "../redux/user/userSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 // Array of roles
 const roles = [

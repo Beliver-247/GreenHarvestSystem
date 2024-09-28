@@ -3,7 +3,7 @@ import { FaEnvelope } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 const RecoveryPage = () => {
   const [email, setEmail] = useState("");

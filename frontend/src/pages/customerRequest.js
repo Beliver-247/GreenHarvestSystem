@@ -11,7 +11,7 @@ export default function CustomerRequest() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8000/api";
+  const apiUrl = "http://localhost:3001/api";
 
   const validateForm = () => {
     // Ensure pickup location is filled and has at least 3 characters

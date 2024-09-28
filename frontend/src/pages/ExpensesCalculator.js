@@ -13,7 +13,7 @@ const ExpensesCalculator = () => {
         // Fetch vehicle registration numbers from the server
         const fetchVehicleRegistrations = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/vehicle'); // Adjust this URL according to your API
+                const response = await axios.get('http://localhost:3001/vehicle'); // Adjust this URL according to your API
                 setVehicleRegistrations(response.data);
             } catch (error) {
                 console.error('Error fetching vehicle registrations:', error);
@@ -26,8 +26,8 @@ const ExpensesCalculator = () => {
 
     const calculateExpenses = async () => {
         try {
-            const fuelResponse = await axios.get(`http://localhost:5000/expenses/fuelpurchase?registerNo=${registerNo}`);
-            const maintainResponse = await axios.get(`http://localhost:5000/expenses/maintain?registerNo=${registerNo}`);
+            const fuelResponse = await axios.get(`http://localhost:3001/expenses/fuelpurchase?registerNo=${registerNo}`);
+            const maintainResponse = await axios.get(`http://localhost:3001/expenses/maintain?registerNo=${registerNo}`);
 
             const totalFuelCost = fuelResponse.data.reduce((sum, record) => sum + record.cost, 0);
             const totalMaintainCost = maintainResponse.data.reduce((sum, record) => sum + record.totalCost, 0);

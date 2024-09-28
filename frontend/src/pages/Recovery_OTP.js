@@ -57,7 +57,7 @@ function RecoverOTP() {
   const [timeLeft, setTimeLeft] = useState(150); // 150 seconds = 2:30
   const [timerColor, setTimerColor] = useState("text-black");
   const [loading, setLoading] = useState(false);
-  const apiURL = "http://localhost:9000";
+  const apiURL = "http://localhost:3001";
   const navigate = useNavigate();
 
   const handleChange = (value) => {

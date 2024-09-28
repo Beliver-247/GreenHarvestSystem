@@ -14,7 +14,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OAuth from "../components/OAuth.js";
 import "../App.css";
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);

@@ -20,18 +20,18 @@ const VFDashboard = () => {
     const fetchData = async () => {
       try {
         // Fetch total vehicles
-        const vehiclesResponse = await axios.get('http://localhost:5000/vehicle');
+        const vehiclesResponse = await axios.get('http://localhost:3001/vehicle');
         const vehicles = vehiclesResponse.data;
         setTotalVehicles(vehicles.length);
 
         // Fetch active drivers
-        const driversResponse = await axios.get('http://localhost:5000/driver/');
+        const driversResponse = await axios.get('http://localhost:3001/driver/');
         const driverData = driversResponse.data;
         setDrivers(driverData);
         setActiveDrivers(driverData.length);
 
         // Fetch fuel purchase data
-        const fuelResponse = await axios.get('http://localhost:5000/fuelpurchase');
+        const fuelResponse = await axios.get('http://localhost:3001/fuelpurchase');
         const fuelRecords = fuelResponse.data;
 
         // Calculate total fuel usage
@@ -45,7 +45,7 @@ const VFDashboard = () => {
         });
 
         // Fetch maintenance data
-        const maintenanceResponse = await axios.get('http://localhost:5000/maintain'); // Make sure this endpoint exists
+        const maintenanceResponse = await axios.get('http://localhost:3001/maintain'); // Make sure this endpoint exists
         const maintenanceRecords = maintenanceResponse.data;
 
         // Aggregate maintenance cost data by vehicle

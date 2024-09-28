@@ -30,7 +30,7 @@ const VehicleManagement = () => {
   const [iframeUrl, setIframeUrl] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/vehicle/')
+    axios.get('http://localhost:3001/vehicle/')
       .then(response => {
         const vehiclesWithYearOnly = response.data.map(vehicle => ({
           ...vehicle,
@@ -102,7 +102,7 @@ const VehicleManagement = () => {
     }
 
     if (editingVehicleId) {
-      axios.put(`http://localhost:5000/vehicle/update/${editingVehicleId}`, formData)
+      axios.put(`http://localhost:3001/vehicle/update/${editingVehicleId}`, formData)
         .then(response => {
           setVehicles(prevVehicles => prevVehicles.map(vehicle =>
             vehicle._id === editingVehicleId ? response.data.vehicle : vehicle
@@ -114,9 +114,9 @@ const VehicleManagement = () => {
           console.error('There was an error updating the vehicle!', error);
         });
     } else {
-      axios.post('http://localhost:5000/vehicle/add', formData)
+      axios.post('http://localhost:3001/vehicle/add', formData)
         .then(response => {
-          axios.get('http://localhost:5000/vehicle/')
+          axios.get('http://localhost:3001/vehicle/')
             .then(response => {
               const vehiclesWithYearOnly = response.data.map(vehicle => ({
                 ...vehicle,
@@ -137,7 +137,7 @@ const VehicleManagement = () => {
 
   const handleDelete = (vehicleId) => {
     if (window.confirm('Are you sure you want to delete this vehicle account?')) {
-      axios.delete(`http://localhost:5000/vehicle/delete/${vehicleId}`)
+      axios.delete(`http://localhost:3001/vehicle/delete/${vehicleId}`)
         .then(response => {
           setVehicles(prevVehicles => prevVehicles.filter(vehicle => vehicle._id !== vehicleId));
         })

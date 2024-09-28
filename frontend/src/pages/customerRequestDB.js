@@ -16,7 +16,7 @@ export default function CustomerRequestDB() {
   const [editPickupTime, setEditPickupTime] = useState("");
   const [editSelectedVehicle, setEditSelectedVehicle] = useState("");
 
-  const apiUrl = "http://localhost:8000/api";
+  const apiUrl = "http://localhost:3001/api";
 
   useEffect(() => {
     getCustomerRequest();

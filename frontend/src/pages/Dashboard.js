@@ -23,7 +23,7 @@ import { validateProfile } from "../Validation/validation_profile.js"; // Import
 import { Modal } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 const Dashboard = () => {
   const dispatch = useDispatch();

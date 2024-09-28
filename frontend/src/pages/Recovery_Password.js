@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 const PasswordReset = () => {
   const [password, setPassword] = useState("");

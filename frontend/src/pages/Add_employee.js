@@ -5,7 +5,7 @@ import { ClipLoader } from "react-spinners";
 import { validateEmployee } from "../Validation/add_employee_validation.js";
 import { useNavigate } from "react-router-dom";
 
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 const AddEmployeeForm = () => {
   const [formData, setFormData] = useState({

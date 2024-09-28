@@ -17,7 +17,7 @@ const MaintenanceManagement = () => {
   const [formError, setFormError] = useState(''); // For real-time validation errors
 
   useEffect(() => {
-    axios.get('http://localhost:5000/maintain/')
+    axios.get('http://localhost:3001/maintain/')
       .then(response => {
         setMaintenanceRecords(response.data);
       })
@@ -27,7 +27,7 @@ const MaintenanceManagement = () => {
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/vehicle/')
+    axios.get('http://localhost:3001/vehicle/')
       .then(response => {
         setVehicles(response.data);
       })
@@ -60,7 +60,7 @@ const MaintenanceManagement = () => {
       return; // Prevent form submission if there's an error
     }
     if (editingRecordId) {
-      axios.put(`http://localhost:5000/maintain/update/${editingRecordId}`, formData)
+      axios.put(`http://localhost:3001/maintain/update/${editingRecordId}`, formData)
         .then(response => {
           setMaintenanceRecords(prevRecords => prevRecords.map(record =>
             record._id === editingRecordId ? response.data.maintain : record
@@ -72,7 +72,7 @@ const MaintenanceManagement = () => {
           console.error('There was an error updating the maintenance record!', error);
         });
     } else {
-      axios.post('http://localhost:5000/maintain/add', formData)
+      axios.post('http://localhost:3001/maintain/add', formData)
         .then(response => {
           setMaintenanceRecords(prevRecords => [...prevRecords, response.data]);
           setShowForm(false);
@@ -85,7 +85,7 @@ const MaintenanceManagement = () => {
 
   const handleDelete = (recordId) => {
     if (window.confirm('Are you sure you want to delete this record?')) {
-      axios.delete(`http://localhost:5000/maintain/delete/${recordId}`)
+      axios.delete(`http://localhost:3001/maintain/delete/${recordId}`)
         .then(response => {
           setMaintenanceRecords(prevRecords => prevRecords.filter(record => record._id !== recordId));
         })

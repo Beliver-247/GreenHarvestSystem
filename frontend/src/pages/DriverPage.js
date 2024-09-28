@@ -26,8 +26,8 @@ const DriverPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const driversResponse = await axios.get('http://localhost:5000/driver');
-        const vehiclesResponse = await axios.get('http://localhost:5000/vehicle');
+        const driversResponse = await axios.get('http://localhost:3001/driver');
+        const vehiclesResponse = await axios.get('http://localhost:3001/vehicle');
         
         setDrivers(driversResponse.data);
         setVehicles(vehiclesResponse.data);
@@ -75,7 +75,7 @@ const DriverPage = () => {
     e.preventDefault();
     if (!errors.driverNicError && !errors.registerNoError) {
       try {
-        const response = await axios.post('http://localhost:5000/fuelpurchase/add', formData);
+        const response = await axios.post('http://localhost:3001/fuelpurchase/add', formData);
         setMessage(response.data);
         setFormData({
           driverNic: '',
