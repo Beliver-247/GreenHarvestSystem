@@ -1,3 +1,6 @@
+/* Merged App.css */
+
+/* App Styles from Remote Repo */
 .App {
   text-align: center;
 }
@@ -35,4 +38,36 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* App Container and Notifications from Local Repo */
+.app-container {
+  display: flex;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.notifications {
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.notification-item {
+  border: 1px solid white;
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.notification-item p {
+  margin: 0;
+}
+
+.notification-item span {
+  font-size: 0.8em;
+  color: white;
 }

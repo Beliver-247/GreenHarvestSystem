@@ -1,0 +1,87 @@
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.side-nav {
+  width: 200px;
+  height: 100vh;
+  background-color: #11532F;
+  padding: 20px;
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  z-index: 100;
+}
+
+.side-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  margin-bottom: 5px;
+  animation: fadeIn 0.5s ease-in forwards;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.main-content {
+  margin-left: 220px; /* Leave space for the side-nav */
+  padding: 20px; /* Adjust padding for spacing */
+  flex-grow: 1;
+  background-color: #ffffff;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.side-nav a:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.side-nav a:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.side-nav a:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.side-nav a:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.side-nav a:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px); /* Slight downward movement */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Back to original position */
+  }
+}
+
+/* Hover effect */
+.side-nav a:hover {
+  background-color: #11532F;
+}
+
+/* Active link background */
+.side-nav a.active {
+  background-color: #11532F;
+}
+
+/* Handle responsiveness for smaller screens if needed */
+@media screen and (max-width: 768px) {
+  .side-nav {
+    width: 100px;
+  }
+
+  .main-content {
+    margin-left: 120px;
+  }
+}

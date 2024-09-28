@@ -25,7 +25,7 @@ const apiURL = "http://localhost:3001";
 // Array of roles
 const roles = [
   { label: "User Manager", icon: <FaUserTie /> },
-  { label: "QA Manager", icon: <FaUserTie /> },
+  { label: "Quality Manager", icon: <FaUserTie /> },
   { label: "Offcut Manager", icon: <FaUserTie /> },
   { label: "Order Manager", icon: <FaUserTie /> },
   { label: "Delivery Manager", icon: <FaUserTie /> },
@@ -107,7 +107,7 @@ const EmployeeSignin = () => {
         navigate("/offcut");
       } else if (res.status === 902) {
         dispatch(signInSuccess(data));
-        // navigate("");
+        navigate("/qa-manager");
       } else if (res.status === 903) {
         dispatch(signInSuccess(data));
         navigate("/vehicle-fleet");
