@@ -23,6 +23,10 @@ import AdminDashboard from "./pages/Admin_Dashboard.js";
 import AddEmployeeForm from "./pages/Add_employee.js";
 import EmployeeSignin from "./pages/Employee_SignIn.js";
 import Unauthorized from "./pages/Unauthorized.js";
+import AddProduct from './pages/AddProduct';
+import ViewProduct from './pages/ViewProduct';
+import AdminView from './pages/AdminView';
+import OffcutDashboard from './pages/Offcut-Dashboard.js';
 
 function App() {
   return (
@@ -62,6 +66,11 @@ function App() {
           <Route path="/dashboard/profile" element={<Dashboard />} />
           <Route path="/admin-user" element={<AdminDashboard />}></Route>
         </Route>
+        <Route path="/" element={<h1>Offcut Specials</h1>} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/view-product" element={<ViewProduct />} />
+        <Route path="/admin-product" element={<AdminView />} />
+        <Route path="/dashboard" element={<OffcutDashboard />} />
       </Routes>
     </Router>
   );
