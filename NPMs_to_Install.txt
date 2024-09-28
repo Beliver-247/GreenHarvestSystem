@@ -10,7 +10,7 @@ npm install react-icons //frontend
 npm install react-chartjs-2 //frontend
 npm install chart.js //frontend
 npm install jspdf jspdf-autotable //front
-npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons  //front
+npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons  //frontend
 
 
 
