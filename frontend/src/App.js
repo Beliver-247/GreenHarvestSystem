@@ -44,6 +44,7 @@ import QADash from './components/QADash.js';
 import QAStandards from "./components/QAStandardComponent.js";
 import QADashboard from "./components/QADash.js";
 
+
 function App() {
   return (
     <Router>
@@ -108,9 +109,9 @@ function App() {
         <Route path="/admin-product" element={<AdminView />} />
         <Route path="/dashboard" element={<OffcutDashboard />} />
 
-
         {/* Offcut Specials Placeholder */}
         <Route path="/" element={<h1>Offcut Specials</h1>} />
+
       </Routes>
     </Router>
   );
