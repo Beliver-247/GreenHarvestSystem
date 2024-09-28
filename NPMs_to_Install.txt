@@ -12,6 +12,7 @@ npm install chart.js //frontend
 npm install jspdf jspdf-autotable //front
 npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons  //frontend
 
+// Dilukshan
 npm install redux-persist // frontend
 npm install react-toastify // frontend
 npm install react-spinners // frontend
@@ -26,6 +27,14 @@ npm install html2canvas // frontend
 npm install flowbite-react
 npm install firebase
 npm install @reduxjs/toolkit
+
+//Prathikesh
+npm install sweetalert2
+npm install react-dnd-html5-backend
+npm install react-dnd
+npm install react-chartjs-2
+npm install qrcode
+npm install jspdf-autotable
 
 
 
