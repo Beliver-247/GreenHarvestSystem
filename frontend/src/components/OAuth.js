@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import BarLoader from "react-spinners/BarLoader";
 import {toast, ToastContainer} from 'react-toastify'
 
-const apiURL = "http://localhost:9000";
+const apiURL = "http://localhost:3001";
 
 export default function OAuth() {
   const dispatch = useDispatch();

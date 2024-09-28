@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const apiURL = "http://localhost:9000";
+  const apiURL = "http://localhost:3001";
   const navigate = useNavigate();
   
 
