@@ -27,6 +27,10 @@ import AddProduct from './pages/AddProduct';
 import ViewProduct from './pages/ViewProduct';
 import AdminView from './pages/AdminView';
 import OffcutDashboard from './pages/Offcut-Dashboard.js';
+import FarmerRequest from './pages/farmerRequest.js';
+import FarmerRequestDB from './pages/farmerRequestDB.js';
+import CustomerRequest from './pages/customerRequest.js';
+import CustomerRequestDB from './pages/customerRequestDB.js'
 
 function App() {
   return (
@@ -67,6 +71,10 @@ function App() {
         <Route path="/view-product" element={<ViewProduct />} />
         <Route path="/admin-product" element={<AdminView />} />
         <Route path="/dashboard" element={<OffcutDashboard />} />
+        <Route path='/farmerRequest' element={<FarmerRequest />} />
+        <Route path='/farmerRequestDB' element={<FarmerRequestDB />} />
+        <Route path='/customerRequest' element={<CustomerRequest />} />
+        <Route path='/customerRequestDB' element={<CustomerRequestDB />} />      
       </Routes>
     </Router>
   );
