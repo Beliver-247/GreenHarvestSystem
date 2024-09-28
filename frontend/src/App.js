@@ -1,8 +1,14 @@
 import './App.css';
-import SideNav from './components/SideNav';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import VFDashboard from './components/VehicleFleetDashboard';
 import LayoutVFManager from './components/LayoutVFManager';
 import LayoutDriver from './components/LayoutDriver';
+import VehicleManagement from './pages/VehicleManagement';
+import DriverManagement from './pages/DriverManagement';
+import FuelManagement from './pages/FuelManagement';
+import MaintenanceManagement from './pages/MaintenanceManagement';
+import ExpensesCalculator from './pages/ExpensesCalculator';
+import DriverPage from './pages/DriverPage';
 
 function App() {
   return (
