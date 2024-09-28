@@ -43,6 +43,10 @@ import OffcutDashboard from './pages/Offcut-Dashboard.js';
 import QADash from './components/QADash.js';
 import QAStandards from "./components/QAStandardComponent.js";
 import QADashboard from "./components/QADash.js";
+import FarmerRequest from './pages/farmerRequest.js';
+import FarmerRequestDB from './pages/farmerRequestDB.js';
+import CustomerRequest from './pages/customerRequest.js';
+import CustomerRequestDB from './pages/customerRequestDB.js'
 
 
 function App() {
@@ -110,6 +114,10 @@ function App() {
         <Route path="/dashboard" element={<OffcutDashboard />} />
 
         {/* Offcut Specials Placeholder */}
+        <Route path='/farmerRequest' element={<FarmerRequest />} />
+        <Route path='/farmerRequestDB' element={<FarmerRequestDB />} />
+        <Route path='/customerRequest' element={<CustomerRequest />} />
+        <Route path='/customerRequestDB' element={<CustomerRequestDB />} />
         <Route path="/" element={<h1>Offcut Specials</h1>} />
 
       </Routes>
