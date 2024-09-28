@@ -1,9 +1,7 @@
 const orderModel = require("../models/OrderModel.js");
-// const userModel = require("../models/userModel.js");
 
 // Place Order
 const placeOrder = async (req, res) => {
-    console.log("Place Order Route Hit");
 
     const frontendUrl = "http://localhost:5173";
 
@@ -13,12 +11,13 @@ const placeOrder = async (req, res) => {
             items: req.body.items,
             amount: req.body.totalAmount,
             address: req.body.address,
+            billingAddress: req.body.billingAddress,
             payment: false
         });
 
         await newOrder.save();
 
-        // await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+        await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
         const success_url = `${frontendUrl}/verify?success=true&orderId=${newOrder._id}`;
 
@@ -47,14 +46,20 @@ const confirmPayment = async (req, res) => {
     }
 };
 
-// User Orders
+
 const userOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({ userId: req.body.userId });
-        res.json({ success: true, data: orders });
+        const { userId } = req.body; // userId is set by authMiddleware
+        const orders = await orderModel.find({ userId: userId });
+        
+        if (orders.length === 0) {
+            return res.json({ success: false, message: "No orders found for this user ID." });
+        }
+
+        res.json({ success: false, data: orders });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: error });
+        res.json({ success: false, message: error.message });
     }
 };
 
@@ -69,6 +74,21 @@ const listOrders = async (req, res) => {
     }
 };
 
+// Fetch order by ID
+const getOrderById = async (req, res) => {
+    const { id } = req.params; // Get the ID from the request parameters
+    try {
+        const order = await orderModel.findById(id);
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+        res.json({ success: true, data: order });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Error fetching order" });
+    }
+};
+
 // Update Order Status
 const updateStatus = async (req, res) => {
     try {
@@ -79,6 +99,24 @@ const updateStatus = async (req, res) => {
         res.json({ success: false, message: "Error updating status" });
     }
 };
+
+// Function to delete an order by ID
+const deleteOrderById = async (req, res) => {
+    const orderId = req.params.id; // Get the order ID from the request parameters
+  
+    try {
+      const order = await orderModel.findByIdAndDelete(orderId); // Delete the order from the database
+  
+      if (!order) {
+        return res.status(404).json({ success: false, message: "Order not found" }); // If not found
+      }
+  
+      res.json({ success: true, message: "Order deleted successfully" }); // Successful deletion
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error deleting order" }); // Error handling
+    }
+  };
 
 // Add a New Order
 const addOrder = async (req, res) => {
@@ -133,5 +171,7 @@ module.exports = {
     updateStatus,
     addOrder,
     fetchAllOrders,
-    updateOrderById
+    updateOrderById,
+    getOrderById,
+    deleteOrderById 
 };

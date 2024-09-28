@@ -49,8 +49,22 @@ import CustomerRequest from './pages/customerRequest.js';
 import CustomerRequestDB from './pages/customerRequestDB.js'
 
 
+//Dilakshan
+import StoreContextProvider from './context/StoreContext.js';
+import UserHome from "./pages/home/Home.js";
+import Product from "./pages/product/Product.js";
+import Cart from "./components/CartItems/CartItem.js";
+import OrderForm from './components/Order/OrderForm';
+import PaymentPage from './components/Payment/PaymentPage.js';
+import OrderConfirmation from './components/OrderConfirmation/OrderConfirmation.js';
+import MyOrders from './components/MyOrders/MyOrders.js';
+import OrderDetails from './components/OrderDetails/OrderDetails.js';
+import EditOrder from './components/EditOrder/EditOrder.js';
+
+
 function App() {
   return (
+    <StoreContextProvider>
     <Router>
       <Header />
       <Routes>
@@ -120,8 +134,20 @@ function App() {
         <Route path='/customerRequestDB' element={<CustomerRequestDB />} />
         <Route path="/" element={<h1>Offcut Specials</h1>} />
 
+
+        <Route path="/home" element={<UserHome />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/product/:id" element={<Product />} />
+        <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/order-details/:orderId" element={<OrderDetails />} />
+        <Route path="/confirmation" element={<OrderConfirmation />} />
+        <Route path="/order/:id" element={<OrderForm />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/edit-order/:orderId" element={<EditOrder />} />
+
       </Routes>
     </Router>
+    </StoreContextProvider>
   );
 }
 
