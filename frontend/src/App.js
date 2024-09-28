@@ -108,8 +108,6 @@ function App() {
         <Route path="/admin-product" element={<AdminView />} />
         <Route path="/dashboard" element={<OffcutDashboard />} />
 
-        {/* Default QA Login Route */}
-        <Route path="/login" element={<Login />} />
 
         {/* Offcut Specials Placeholder */}
         <Route path="/" element={<h1>Offcut Specials</h1>} />
