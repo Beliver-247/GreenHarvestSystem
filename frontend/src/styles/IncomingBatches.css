@@ -1,0 +1,68 @@
+/* General Styles */
+h2 {
+  margin-top: 50px;
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Table Styles */
+table {
+  width: 80%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden; /* Ensures rounded corners are visible */
+  transition: transform 0.2s ease; /* Animation for table hover effect */
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Header Styles */
+th {
+  background-color: #11532F; /* Adjust color as per your theme */
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Cell Styles */
+td {
+  color: #555;
+}
+
+/* Alternate Row Color */
+tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+/* Hover Effect on Rows */
+tbody tr:hover {
+  background-color: #d1f7d1; /* Light green background on hover */
+  cursor: pointer;
+  transform: scale(1.02); /* Slight scale effect on hover */
+  transition: transform 0.2s ease; /* Smooth scaling */
+}
+
+/* Error Message */
+p {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  table {
+      width: 100%;
+  }
+
+  th, td {
+      padding: 10px 5px;
+  }
+}
