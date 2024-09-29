@@ -42,8 +42,7 @@ const ProductDetails = () => {
       newDiscount = 14;
     }
 
-    const newDiscountedPrice =
-      newUnitPrice * newQuantity * (1 - newDiscount / 100);
+    const newDiscountedPrice = newUnitPrice * newQuantity * (1 - newDiscount / 100);
     const newSavePrice = newUnitPrice * newQuantity * (newDiscount / 100);
 
     setUnitPrice(newUnitPrice);
@@ -64,10 +63,6 @@ const ProductDetails = () => {
   }
 
   
-  
-
-  
-
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < minQuantity) {
       setMinQuantityWarning(true);

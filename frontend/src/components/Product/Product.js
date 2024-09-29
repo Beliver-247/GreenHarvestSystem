@@ -18,20 +18,29 @@ const Product = ({ id, name, price, description, image, onClick}) => {
         {!cartItems[id] ? (
           <img
             className="add"
-            onClick={() => addToCart(id, 2)}
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(id, 2);
+            }}
             src={assets.add_icon_white}
             alt=""
           />
         ) : (
           <div className="food-item-counter">
             <img
-              onClick={() => removeFromCart(id, 2)}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeFromCart(id, 2);
+              }}
               src={assets.remove_icon_red}
               alt=""
             />
             <p>{cartItems[id]}</p>
             <img
-              onClick={() => addToCart(id, 2)}
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(id, 2);
+              }}
               src={assets.add_icon_green}
               alt=""
             />
@@ -46,6 +55,7 @@ const Product = ({ id, name, price, description, image, onClick}) => {
         <p className="food-item-price ">LKR {price}.00</p>
       </div>
     </div>
+
   );
 };
 
