@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../styles/QADash.css"; // Assuming you are using a separate CSS file for styling
 
 const QADashboard = () => {
   const [batchCount, setBatchCount] = useState(0);
@@ -8,21 +7,19 @@ const QADashboard = () => {
   const [qaStandardCount, setQaStandardCount] = useState(0);
   const [qaTeamCount, setQaTeamCount] = useState(0);
 
-  // Fetch the count of incoming batches
   const fetchBatchCount = async () => {
     try {
-      const response = await fetch("http://localhost:8070/incomingBatches"); // Updated endpoint
+      const response = await fetch("http://localhost:3001/incomingBatches");
       const data = await response.json();
-      setBatchCount(data.length); // Assuming data is an array of batches
+      setBatchCount(data.length);
     } catch (error) {
       console.error("Error fetching batch data:", error);
     }
   };
 
-  // Fetch the count of QA records
   const fetchQaRecordCount = async () => {
     try {
-      const response = await fetch("http://localhost:8070/QArecord");
+      const response = await fetch("http://localhost:3001/QArecord");
       const data = await response.json();
       setQaRecordCount(data.length);
     } catch (error) {
@@ -30,10 +27,9 @@ const QADashboard = () => {
     }
   };
 
-  // Fetch the count of QA standards
   const fetchQaStandardCount = async () => {
     try {
-      const response = await fetch("http://localhost:8070/qaStandards");
+      const response = await fetch("http://localhost:3001/qaStandards");
       const data = await response.json();
       setQaStandardCount(data.length);
     } catch (error) {
@@ -41,10 +37,9 @@ const QADashboard = () => {
     }
   };
 
-  // Fetch the count of QA team members
   const fetchQaTeamCount = async () => {
     try {
-      const response = await fetch("http://localhost:8070/QATeam");
+      const response = await fetch("http://localhost:3001/QATeam");
       const data = await response.json();
       setQaTeamCount(data.length);
     } catch (error) {
@@ -52,7 +47,6 @@ const QADashboard = () => {
     }
   };
 
-  // Use useEffect to fetch the counts when the component is mounted
   useEffect(() => {
     fetchBatchCount();
     fetchQaRecordCount();
@@ -61,28 +55,45 @@ const QADashboard = () => {
   }, []);
 
   return (
-    <div className="dashboard-container">
-      <h1>Dashboard</h1>
-      <div className="dashboard-summary">
-        <Link to="/incoming-batches" className="dashboard-item">
-          <h2>Incoming Batches</h2>
-          <p>Total: {batchCount}</p>
+    <div className="p-5 text-center h-screen bg-[#58ab3114] rounded-lg">
+      <h1 className="text-7xl font-semibold tracking-wider text-[#11532F] leading-relaxed">Dashboard</h1>
+      <div className="grid grid-cols-2 gap-10 mt-10">
+        <Link 
+          to="/qa-manager/incoming-batches" 
+          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+        >
+          <h2 className="text-5xl text-white leading-relaxed">Incoming Batches</h2>
+          <p className="text-3xl text-black leading-relaxed">Total: {batchCount}</p>
         </Link>
-        <Link to="/qa-records" className="dashboard-item">
-          <h2>QA Records</h2>
-          <p>Total: {qaRecordCount}</p>
+        <Link 
+          to="/qa-manager/qa-records" 
+          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+        >
+          <h2 className="text-5xl text-white leading-relaxed">QA Records</h2>
+          <p className="text-3xl text-black leading-relaxed">Total: {qaRecordCount}</p>
         </Link>
-        <Link to="/qa-standards" className="dashboard-item">
-          <h2>QA Standards</h2>
-          <p>Total: {qaStandardCount}</p>
+        <Link 
+          to="/qa-manager/qa-standards" 
+          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+        >
+          <h2 className="text-5xl text-white leading-relaxed">QA Standards</h2>
+          <p className="text-3xl text-black leading-relaxed">Total: {qaStandardCount}</p>
         </Link>
-        <Link to="/qa-team" className="dashboard-item">
-          <h2>QA Team Members</h2>
-          <p>Total: {qaTeamCount}</p>
+        <Link 
+          to="/qa-manager/qa-team" 
+          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+        >
+          <h2 className="text-5xl text-white leading-relaxed">QA Team Members</h2>
+          <p className="text-3xl text-black leading-relaxed">Total: {qaTeamCount}</p>
         </Link>
       </div>
     </div>
   );
+  
+  
+  
+  
+  
 };
 
 export default QADashboard;

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/AddQAmember.css";
 
 // Helper function for name validation (only letters and exactly two words)
 const validateName = (name) => {
@@ -32,30 +31,26 @@ const AddQAmember = () => {
   const [birthDay, setBirthDay] = useState("");
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
-  const [password, setPassword] = useState(""); // New password state
+  const [password, setPassword] = useState(""); 
   const [performanceRating, setPerformanceRating] = useState(3);
   const [isActive, setIsActive] = useState(true);
-  const [nameError, setNameError] = useState(""); // State for name validation error
-  const [NICError, setNICError] = useState(""); // State for NIC validation error
-  const [phoneError, setPhoneError] = useState(""); // State for phone validation error
-  const [passwordError, setPasswordError] = useState(""); // State for password validation error
+  const [nameError, setNameError] = useState(""); 
+  const [NICError, setNICError] = useState(""); 
+  const [phoneError, setPhoneError] = useState(""); 
+  const [passwordError, setPasswordError] = useState(""); 
 
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate name
     if (!validateName(name)) {
-      setNameError(
-        "Name must contain only letters and exactly two words."
-      );
+      setNameError("Name must contain only letters and exactly two words.");
       return;
     } else {
-      setNameError(""); // Clear the error if validation passes
+      setNameError("");
     }
 
-    // Validate NIC
     if (!validateNIC(NIC)) {
       setNICError("NIC must be either 12 digits or 10 digits followed by 'V'.");
       return;
@@ -63,7 +58,6 @@ const AddQAmember = () => {
       setNICError("");
     }
 
-    // Validate phone number
     if (!validatePhone(phone)) {
       setPhoneError("Phone number must contain exactly 10 digits.");
       return;
@@ -71,14 +65,11 @@ const AddQAmember = () => {
       setPhoneError("");
     }
 
-    // Validate password
     if (!validatePassword(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character."
-      );
+      setPasswordError("Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.");
       return;
     } else {
-      setPasswordError(""); // Clear the error if validation passes
+      setPasswordError("");
     }
 
     const newMember = {
@@ -93,13 +84,13 @@ const AddQAmember = () => {
         street,
         city,
       },
-      password, // Include the password field
+      password, 
       performanceRating,
       isActive,
     };
 
     try {
-      const response = await fetch("http://localhost:3001/QATeam/add", {
+      const response = await fetch("http://localhost:3000/QATeam/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +101,6 @@ const AddQAmember = () => {
       if (response.ok) {
         const message = await response.json();
         alert(message.message || "QA Member added successfully!");
-        // Reset form fields after successful submission
         setName("");
         setNIC("");
         setEmail("");
@@ -118,15 +108,14 @@ const AddQAmember = () => {
         setBirthDay("");
         setStreet("");
         setCity("");
-        setPassword(""); // Reset password field
+        setPassword(""); 
         setPerformanceRating(3);
         setIsActive(true);
-        setNameError(""); // Clear name error
-        setNICError(""); // Clear NIC error
-        setPhoneError(""); // Clear phone error
-        setPasswordError(""); // Clear password error
-        // Optionally navigate to another page
-        navigate("/"); // Adjust the path as needed
+        setNameError(""); 
+        setNICError(""); 
+        setPhoneError(""); 
+        setPasswordError(""); 
+        navigate("/"); 
       } else {
         const errorMessage = await response.text();
         alert("Error: " + errorMessage);
@@ -138,87 +127,95 @@ const AddQAmember = () => {
   };
 
   return (
-    <div className="add-qa-member-container">
-      <h2>Add QA Member</h2>
-      <form onSubmit={onSubmit}>
+    <div className="max-w-xl mx-auto mt-12 p-8 bg-white rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg">
+      <h2 className="text-center text-2xl font-semibold mb-6 text-gray-800">Add QA Member</h2>
+      <form onSubmit={onSubmit} className="flex flex-col space-y-4">
         <div>
-          <label>Name:</label>
+          <label className="block text-sm font-medium text-gray-700">Name:</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          {nameError && <p className="error">{nameError}</p>}
+          {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
         </div>
         <div>
-          <label>NIC:</label>
+          <label className="block text-sm font-medium text-gray-700">NIC:</label>
           <input
             type="text"
             value={NIC}
             onChange={(e) => setNIC(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          {NICError && <p className="error">{NICError}</p>}
+          {NICError && <p className="text-red-500 text-sm mt-1">{NICError}</p>}
         </div>
         <div>
-          <label>Email:</label>
+          <label className="block text-sm font-medium text-gray-700">Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div>
-          <label>Phone:</label>
+          <label className="block text-sm font-medium text-gray-700">Phone:</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          {phoneError && <p className="error">{phoneError}</p>}
+          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
         </div>
         <div>
-          <label>Date of Birth:</label>
+          <label className="block text-sm font-medium text-gray-700">Date of Birth:</label>
           <input
             type="date"
             value={birthDay}
             onChange={(e) => setBirthDay(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div>
-          <label>Address:</label>
+          <label className="block text-sm font-medium text-gray-700">Address:</label>
           <input
             type="text"
             value={street}
             onChange={(e) => setStreet(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div>
-          <label>City:</label>
+          <label className="block text-sm font-medium text-gray-700">City:</label>
           <input
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label className="block text-sm font-medium text-gray-700">Password:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          {passwordError && <p className="error">{passwordError}</p>}
+          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
         </div>
         <div>
-          <label>Performance Rating:</label>
+          <label className="block text-sm font-medium text-gray-700">Performance Rating:</label>
           <input
             type="number"
             value={performanceRating}
@@ -226,17 +223,21 @@ const AddQAmember = () => {
             min="1"
             max="5"
             required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
-        <div>
-          <label>Is Active:</label>
-          <input className="isActive"
+        <div className="flex items-center">
+          <label className="text-sm font-medium text-gray-700">Is Active:</label>
+          <input
+            className="ml-3 w-6 h-6 text-green-500 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
             type="checkbox"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
           />
         </div>
-        <button type="submit">Add QA Member</button>
+        <button type="submit" className="w-full bg-green-500 text-white font-semibold py-3 rounded-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out">
+          Add QA Member
+        </button>
       </form>
     </div>
   );

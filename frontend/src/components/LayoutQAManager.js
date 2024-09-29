@@ -1,36 +1,73 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import '../styles/layout.css';
+import { FaHome, FaBoxes, FaPlus, FaClipboardList, FaUsers, FaUserPlus } from 'react-icons/fa';
 
 const LayoutQAManager = () => {
   return (
-    <div className="layout"> {/* Use the layout class from layout.css */}
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <nav className="side-nav"> {/* Use the side-nav class from layout.css */}
-        <div className="p-6">
-          <h2 className="text-3xl font-semibold mb-8">QA Manager</h2>
-          <ul className="space-y-4">
-            <li>
-              <Link to="/incoming-batches" className="side-nav-link">Incoming Batches</Link> {/* Update to use custom styles */}
-            </li>
-            <li>
-              <Link to="/add-qarecord" className="side-nav-link">Add QA Record</Link> {/* Update to use custom styles */}
-            </li>
-            <li>
-              <Link to="/qa-records" className="side-nav-link">QA Records</Link> {/* Update to use custom styles */}
-            </li>
-            <li>
-              <Link to="/qa-team" className="side-nav-link">QA Team</Link> {/* Update to use custom styles */}
-            </li>
-            <li>
-              <Link to="/add-qaMember" className="side-nav-link">Add QA Member</Link> {/* Update to use custom styles */}
-            </li>
-          </ul>
-        </div>
+      <nav className="w-60 bg-[#11532F] text-white fixed h-full p-5 z-50">
+        <h2 className="text-3xl font-semibold mb-8">QA Manager</h2>
+        <ul className="space-y-4">
+          <li>
+            <Link
+              to="/qa-manager"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaHome className="mr-3" />
+              <span className="font-medium">Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/incoming-batches"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaBoxes className="mr-3" />
+              <span className="font-medium">Incoming Batches</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/add-qarecord"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaPlus className="mr-3" />
+              <span className="font-medium">Add QA Record</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/qa-records"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaClipboardList className="mr-3" />
+              <span className="font-medium">QA Records</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/qa-team"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaUsers className="mr-3" />
+              <span className="font-medium">QA Team</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/add-qaMember"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaUserPlus className="mr-3" />
+              <span className="font-medium">Add QA Member</span>
+            </Link>
+          </li>
+        </ul>
       </nav>
 
       {/* Content Area */}
-      <main className="main-content"> {/* Use the main-content class from layout.css */}
+      <main className="ml-64 p-6 flex-grow bg-white h-full overflow-y-auto">
         <Outlet />
       </main>
     </div>

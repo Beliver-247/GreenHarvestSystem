@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ConfirmModal from "./modals/ConfirmModal";
-import "../styles/qaRecords.css";
 import SuccessModal from "./modals/SuccessModal";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const QARecords = () => {
   const [records, setRecords] = useState([]);
@@ -14,7 +15,7 @@ const QARecords = () => {
     gradeCWeight: "",
   });
   const [vegetableFilter, setVegetableFilter] = useState("All");
-  const [dateFilter, setDateFilter] = useState(""); // New state for date filter
+  const [dateFilter, setDateFilter] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -23,7 +24,7 @@ const QARecords = () => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const response = await fetch("http://localhost:8070/QArecord");
+        const response = await fetch("http://localhost:3001/QArecord");
         if (response.ok) {
           const data = await response.json();
           setRecords(data);
@@ -64,12 +65,33 @@ const QARecords = () => {
     setUpdatedRecord(record);
   };
 
+  const fetchRecords = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/QArecord");
+      if (response.ok) {
+        const data = await response.json();
+        setRecords(data);
+        setFilteredRecords(data);
+      } else {
+        console.error("Failed to fetch records:", response.statusText);
+      }
+    } catch (err) {
+      console.error("Error fetching records:", err);
+    }
+  };
+  
+  // useEffect to initially fetch records when the component mounts
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+  
+
   const handleUpdate = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch(
-        `http://localhost:8070/QArecord/update/${editingRecord._id}`,
+        `http://localhost:3001/QArecord/update/${editingRecord._id}`,
         {
           method: "PUT",
           headers: {
@@ -78,10 +100,10 @@ const QARecords = () => {
           body: JSON.stringify(updatedRecord),
         }
       );
-
+  
       if (response.ok) {
-        const data = await response.json();
-        setRecords(records.map((rec) => (rec._id === data._id ? data : rec)));
+        // Fetch the updated list of records to refresh the page
+        await fetchRecords(); // Re-fetch the records
         setEditingRecord(null);
         setUpdateSuccess(true);
         setShowSuccessModal(true);
@@ -93,6 +115,7 @@ const QARecords = () => {
       alert("Error updating record");
     }
   };
+  
 
   const handleDelete = (id) => {
     setRecordToDelete(id);
@@ -102,7 +125,7 @@ const QARecords = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8070/QArecord/delete/${recordToDelete}`,
+        `http://localhost:3001/QArecord/delete/${recordToDelete}`,
         {
           method: "DELETE",
         }
@@ -123,19 +146,60 @@ const QARecords = () => {
     }
   };
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text("QA Records", 20, 10);
+
+    const headers = [
+      "Vegetable Type",
+      "Grade A Weight",
+      "Grade B Weight",
+      "Grade C Weight",
+      "Date Created",
+      "Time Created",
+    ];
+
+    const rows = filteredRecords.map((record) => {
+      const createdAt = new Date(record.dateCreated);
+      const date = createdAt.toLocaleDateString();
+      const time = createdAt.toLocaleTimeString();
+      return [
+        record.vegetableType,
+        record.gradeAWeight,
+        record.gradeBWeight,
+        record.gradeCWeight,
+        date,
+        time,
+      ];
+    });
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 20,
+    });
+
+    doc.save("QA_Records.pdf");
+  };
+
   const vegetableTypes = [
     ...new Set(records.map((record) => record.vegetableType)),
   ];
 
   return (
-    <div className="qa-records">
-      <h2>QA Records</h2>
-      <div className="filter-container">
-        <label htmlFor="vegetableFilter">Filter by Vegetable:</label>
+    <div className="qa-records w-4/5 mx-auto mt-8 p-6 animate-fadeIn">
+      <h2 className="text-center mb-5 text-2xl font-bold text-gray-800">
+        QA Records
+      </h2>
+      <div className="flex justify-center items-center mb-5 gap-6 flex-wrap">
+        <label htmlFor="vegetableFilter" className="text-lg">
+          Filter by Vegetable:
+        </label>
         <select
           id="vegetableFilter"
           value={vegetableFilter}
           onChange={(e) => setVegetableFilter(e.target.value)}
+          className="p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="All">All</option>
           {vegetableTypes.map((type) => (
@@ -145,129 +209,160 @@ const QARecords = () => {
           ))}
         </select>
 
-        {/* New date filter input */}
-        <label htmlFor="dateFilter">Filter by Date:</label>
-        <input className="date-filter-container"
+        <label htmlFor="dateFilter" className="text-lg">
+          Filter by Date:
+        </label>
+        <input
           type="date"
           id="dateFilter"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
+          className="p-2 text-lg border border-gray-300 rounded-md"
         />
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Vegetable Type</th>
-            <th>Grade A Weight</th>
-            <th>Grade B Weight</th>
-            <th>Grade C Weight</th>
-            <th>Date Created</th>
-            <th>Time Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRecords.map((record) => {
-            const createdAt = new Date(record.dateCreated);
-            const date = createdAt.toLocaleDateString();
-            const time = createdAt.toLocaleTimeString();
+      <button
+        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95 mx-auto block"
+        onClick={generatePDF}
+      >
+        Download Report
+      </button>
 
-            return (
-              <tr key={record._id}>
-                <td>{record.vegetableType}</td>
-                <td>{record.gradeAWeight}</td>
-                <td>{record.gradeBWeight}</td>
-                <td>{record.gradeCWeight}</td>
-                <td>{date}</td>
-                <td>{time}</td>
-                <td>
-                  <button className="upButton" onClick={() => handleEdit(record)}>
-                    Update
-                  </button>
-                  <button
-                    className="delButton"
-                    onClick={() => handleDelete(record._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <table className="w-full max-w-5xl mx-auto mt-5 border-collapse border border-gray-300">
+  <thead>
+    <tr>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Vegetable Type</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Grade A Weight</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Grade B Weight</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Grade C Weight</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Date Created</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Time Created</th>
+      <th className="p-4 bg-gray-100 font-bold text-left border border-gray-300">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredRecords.map((record) => {
+      const createdAt = new Date(record.dateCreated);
+      const date = createdAt.toLocaleDateString();
+      const time = createdAt.toLocaleTimeString();
+
+      return (
+        <tr key={record._id} className="hover:bg-green-100 cursor-pointer transition duration-200 ease-in-out transform hover:scale-105">
+          <td className="p-4 border border-gray-300">{record.vegetableType}</td>
+          <td className="p-4 border border-gray-300">{record.gradeAWeight}</td>
+          <td className="p-4 border border-gray-300">{record.gradeBWeight}</td>
+          <td className="p-4 border border-gray-300">{record.gradeCWeight}</td>
+          <td className="p-4 border border-gray-300">{date}</td>
+          <td className="p-4 border border-gray-300">{time}</td>
+          <td className="p-4 border border-gray-300 flex gap-3">
+            <button
+              className="bg-green-500 text-white py-1 px-3 rounded-md hover:bg-green-600 transition-transform transform hover:scale-105 active:scale-95"
+              onClick={() => handleEdit(record)}
+            >
+              Update
+            </button>
+            <button
+              className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition-transform transform hover:scale-105 active:scale-95"
+              onClick={() => handleDelete(record._id)}
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
+
+
 
       {editingRecord && (
-        <>
-          <div className="modal-overlay" />
-          <div className="edit-modal">
-            <h3>Edit Record</h3>
-            <form onSubmit={handleUpdate}>
-              <div className="form-group">
-                <label>Vegetable Type:</label>
-                <input
-                  type="text"
-                  value={updatedRecord.vegetableType}
-                  onChange={(e) =>
-                    setUpdatedRecord({
-                      ...updatedRecord,
-                      vegetableType: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Grade A Weight:</label>
-                <input
-                  type="number"
-                  value={updatedRecord.gradeAWeight}
-                  onChange={(e) =>
-                    setUpdatedRecord({
-                      ...updatedRecord,
-                      gradeAWeight: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Grade B Weight:</label>
-                <input
-                  type="number"
-                  value={updatedRecord.gradeBWeight}
-                  onChange={(e) =>
-                    setUpdatedRecord({
-                      ...updatedRecord,
-                      gradeBWeight: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Grade C Weight:</label>
-                <input
-                  type="number"
-                  value={updatedRecord.gradeCWeight}
-                  onChange={(e) =>
-                    setUpdatedRecord({
-                      ...updatedRecord,
-                      gradeCWeight: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-              <button type="submit">Update</button>
-              <button type="button" onClick={() => setEditingRecord(null)}>
-                Cancel
-              </button>
-            </form>
+  <>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg">
+        <h3 className="text-xl font-semibold mb-6 text-center">Edit Record</h3>
+        <form onSubmit={handleUpdate} className="space-y-6">
+          <div className="form-group">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Vegetable Type:</label>
+            <input
+              type="text"
+              value={updatedRecord.vegetableType}
+              onChange={(e) =>
+                setUpdatedRecord({
+                  ...updatedRecord,
+                  vegetableType: e.target.value,
+                })
+              }
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-500"
+              required
+            />
           </div>
-        </>
-      )}
+          <div className="form-group">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Grade A Weight:</label>
+            <input
+              type="number"
+              value={updatedRecord.gradeAWeight}
+              onChange={(e) =>
+                setUpdatedRecord({
+                  ...updatedRecord,
+                  gradeAWeight: e.target.value,
+                })
+              }
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-500"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Grade B Weight:</label>
+            <input
+              type="number"
+              value={updatedRecord.gradeBWeight}
+              onChange={(e) =>
+                setUpdatedRecord({
+                  ...updatedRecord,
+                  gradeBWeight: e.target.value,
+                })
+              }
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-500"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Grade C Weight:</label>
+            <input
+              type="number"
+              value={updatedRecord.gradeCWeight}
+              onChange={(e) =>
+                setUpdatedRecord({
+                  ...updatedRecord,
+                  gradeCWeight: e.target.value,
+                })
+              }
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-500"
+              required
+            />
+          </div>
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-transform transform hover:scale-105"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditingRecord(null)}
+              className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-transform transform hover:scale-105"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </>
+)}
+
 
       {showSuccessModal && (
         <SuccessModal
