@@ -1,0 +1,149 @@
+/* Container */
+.add-qa-member-container {
+  max-width: 600px; /* Increased from 400px to 600px */
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right:auto;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top:4px;
+  padding-bottom: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.add-qa-member-container:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Title */
+.add-qa-member-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Form */
+.add-qa-member-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+.add-qa-member-container label {
+  margin-bottom: 6px;
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Inputs */
+.add-qa-member-container input[type="text"],
+.add-qa-member-container input[type="email"],
+.add-qa-member-container input[type="tel"],
+.add-qa-member-container input[type="date"],
+.add-qa-member-container input[type="password"],
+.add-qa-member-container input[type="number"] {
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: #333;
+  background-color: #fafafa;
+  width: 100%; /* Ensures inputs take the full width of the container */
+  box-sizing: border-box; /* Prevents inputs from overflowing the container */
+}
+
+.add-qa-member-container input[type="text"]:focus,
+.add-qa-member-container input[type="email"]:focus,
+.add-qa-member-container input[type="tel"]:focus,
+.add-qa-member-container input[type="date"]:focus,
+.add-qa-member-container input[type="password"]:focus,
+.add-qa-member-container input[type="number"]:focus {
+  border-color: #11532F;
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(88, 171, 49, 0.2);
+}
+
+/* Checkbox */
+.add-qa-member-container input[type="checkbox"] {
+  margin-left: 5px;
+  accent-color: #11532F;
+}
+
+/* Button */
+.add-qa-member-container button {
+  padding: 12px;
+  background-color: #11532F;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-qa-member-container button:hover {
+  background-color: #11532F;
+  transform: translateY(-3px);
+}
+
+.add-qa-member-container button:active {
+  background-color: #11532F;
+  transform: translateY(0);
+}
+
+/* Error messages */
+.add-qa-member-container .error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+/* Adjust spacing for checkbox and label */
+.add-qa-member-container label[for="isActive"] {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Tick mark styles for isActive */
+.isActive {
+  display: inline-block;
+  width: 20px;  /* Adjust the size as needed */
+  height: 20px;
+  border-radius: 50%;
+  background-color: #11532F; /* Use a more visible color like green */
+  position: relative;
+  margin-left: 10px; /* Space between label and tick mark */
+}
+
+/* The check mark inside the circle */
+.isActive::after {
+  content: '\2713';  /* Unicode character for check mark */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;  /* Adjust the size of the check mark */
+  color: white; /* Make the check mark white for better contrast */
+  font-weight: bold; /* Ensure it's bold and visible */
+}
+
+/* Optional: Add some hover effect to make it pop */
+.isActive:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Slight glow effect on hover */
+}

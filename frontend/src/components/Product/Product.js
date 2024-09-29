@@ -55,7 +55,6 @@ const Product = ({ id, name, price, description, image, onClick}) => {
         <p className="food-item-price ">LKR {price}.00</p>
       </div>
     </div>
-
   );
 };
 

@@ -1,0 +1,53 @@
+.dashboard-container {
+  padding: 20px;
+  text-align: center;
+  height:100vh;
+  border-radius: 10px;
+  background-color: #11532f3d; /* Light background color */
+}
+
+.dashboard-container h1 {
+  font-size:3.2em;
+  font-family: 'Poppins';
+  letter-spacing: 1vw;
+}
+
+.dashboard-summary {
+  display: flex;
+  flex-wrap: wrap; /* Allows the items to wrap to the next line */
+  justify-content: space-around;
+  gap: 20px; /* Adds space between items */
+  margin-top: 20px;
+}
+
+.dashboard-item {
+  background-color: #11532f; /* Light green background for items */
+  border: 4px solid #58ab3100; /* Border color matching your theme */
+  border-radius: 8px;
+  padding: 20px; /* Increased padding for a better touch target */
+  width: 45%; /* Ensures two items fit per row */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+  text-decoration: none; /* Ensures no underline for the entire item */
+}
+
+.dashboard-item:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+  cursor: pointer;
+}
+
+.dashboard-item h2 {
+  font-size: 2.0em; /* Slightly larger for emphasis */
+  color: white; /* Heading color matching your theme */
+}
+
+.dashboard-item p {
+  font-size: 1.8em; /* Increased text size for better readability */
+  color: #000000; /* Dark gray for better readability */
+}
+
+/* Remove link styles since the entire item is clickable */
+.dashboard-item a {
+  display: none; /* Hides the link since the entire item is clickable */
+}

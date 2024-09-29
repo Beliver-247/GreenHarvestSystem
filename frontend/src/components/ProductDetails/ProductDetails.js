@@ -52,17 +52,15 @@ const ProductDetails = () => {
   };
 
 
-  useEffect(() => {
-    calculatePrice(quantity);
-  }, [quantity]);
+  // useEffect(() => {
+  //   calculatePrice(quantity);
+  // }, [quantity]);
 
   
   // Early return after hooks are defined
   if (!product) {
     return <p>Product not found</p>;
   }
-
-  
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < minQuantity) {
       setMinQuantityWarning(true);
