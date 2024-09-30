@@ -35,7 +35,7 @@ const MyOrders = () => {
 
     try {
         console.log(`Attempting to delete order with ID: ${orderId}`); // Log the order ID
-        await axios.delete(`http://localhost:8070/api/orders/${orderId}`);
+        await axios.delete(`http://localhost:3001/api/orders/${orderId}`);
         // Remove the deleted order from the orders list
         setOrders(orders.filter((order) => order._id !== orderId));
         // Show toast here for deletion success
@@ -56,57 +56,90 @@ const MyOrders = () => {
     navigate(`/order-details/${orderId}`);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600"></div>
+        <p className="ml-4 text-xl font-semibold text-green-600">Loading...</p>
+      </div>
+    );
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h1>Your Orders</h1>
-      {orders.length > 0 ? (
-        <table border="1" cellPadding="10" cellSpacing="0">
-          <thead>
-            <tr>
-              {/* Order ID is hidden */}
-              {/* <th>Order ID</th> */}
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Items</th>
-              <th>Actions</th>
+    <div className="container mx-auto p-6">
+    <h1 className="text-3xl font-bold mb-6">Your Orders</h1>
+    {orders.length > 0 ? (
+      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="py-2 px-4 font-semibold text-left hidden">Order ID</th>
+            <th className="py-2 px-4 font-semibold text-left hidden">User ID</th>
+            <th className="py-2 px-4 font-semibold text-left">Amount</th>
+            <th className="py-2 px-4 font-semibold text-left">Status</th>
+            <th className="py-2 px-4 font-semibold text-left">Payment</th>
+            <th className="py-2 px-4 font-semibold text-left">Items</th>
+            <th className="py-2 px-4 font-semibold text-left">Shipping Address</th>
+            <th className="py-2 px-4 font-semibold text-left">Billing Address</th>
+            <th className="py-2 px-4 font-semibold text-left">Created At</th>
+            <th className="py-2 px-4 font-semibold text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order._id} className="border-b">
+              <td className="py-2 px-4 hidden">{order._id}</td>
+              <td className="py-2 px-4 hidden">{order.userId}</td>
+              <td className="py-2 px-4">${order.amount}</td>
+              <td className="py-2 px-4">{order.status}</td>
+              <td className="py-2 px-4">{order.payment ? 'Paid' : 'Unpaid'}</td>
+              <td className="py-2 px-4">
+                <ul className="list-disc ml-4">
+                  {order.items.map((item) => (
+                    <li key={item.id}>
+                      {item.name} - {item.qty} x ${item.price} (${item.qty * item.price})
+                    </li>
+                  ))}
+                </ul>
+              </td>
+              <td className="py-2 px-4">
+                {order.address.street}, {order.address.city}, {order.address.country} - {order.address.postalCode}
+                <br />
+                Phone: {order.address.phone}
+              </td>
+              <td className="py-2 px-4">
+                {order.billingAddress.street}, {order.billingAddress.city}, {order.billingAddress.country} - {order.billingAddress.postalCode}
+                <br />
+                Phone: {order.billingAddress.phone}
+              </td>
+              <td className="py-2 px-4">{new Date(order.createdAt).toLocaleString()}</td>
+              <td className="py-2 px-4">
+                <button
+                  onClick={() => editOrder(order._id)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteOrder(order._id)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mr-2"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => viewOrder(order._id)}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  View Order
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
-                {/* Order ID column is hidden */}
-                {/* <td>{order._id}</td> */}
-                <td>${order.amount}</td>
-                <td>{order.status}</td>
-                <td>
-                  <ul>
-                    {order.items.map((item) => (
-                      <li key={item.id}>
-                        {item.name} - {item.qty} x ${item.price}
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-                <td>
-                  <button onClick={() => editOrder(order._id)}>Edit</button>
-                  <button onClick={() => deleteOrder(order._id)} style={{ marginLeft: '10px' }}>
-                    Delete
-                  </button>
-                  <button onClick={() => viewOrder(order._id)} style={{ marginLeft: '10px' }}>
-                    View Order
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No orders found.</p>
-      )}
-    </div>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <p className="text-gray-600 text-lg">No orders found.</p>
+    )}
+  </div>
   );
 };
 

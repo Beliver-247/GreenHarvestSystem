@@ -71,6 +71,9 @@ import OrderConfirmation from "./components/OrderConfirmation/OrderConfirmation.
 import MyOrders from "./components/MyOrders/MyOrders.js";
 import OrderDetails from "./components/OrderDetails/OrderDetails.js";
 import EditOrder from "./components/EditOrder/EditOrder.js";
+import Footer from "./components/Footer.js";
+import OrderAdmin from "./pages/OrderAdmin.js";
+
 //Praveen
 import AddFarmer from "./components/AddFarmer";
 import UpdateFarmer from "./components/updateFarmer";
@@ -210,14 +213,13 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/my-orders" element={<MyOrders />} />
-              <Route
-                path="/order-details/:orderId"
-                element={<OrderDetails />}
-              />
+              <Route path="/order-details/:orderId" element={<OrderDetails />}/>
               <Route path="/confirmation" element={<OrderConfirmation />} />
               <Route path="/order/:id" element={<OrderForm />} />
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/edit-order/:orderId" element={<EditOrder />} />
+              <Route path="/order-admin" element={<OrderAdmin />} />
+
 
               {/*Staff layout*/}
               <Route path="/wh-staff" element={<WarehouseStaffLayout />}>
@@ -345,6 +347,7 @@ function App() {
             onClose={closeModal}
           />
         </div>
+        <Footer />
       </Router>
     </StoreContextProvider>
   );
