@@ -63,7 +63,7 @@ const AddQAmember = () => {
     const birthYear = birthDay ? birthDay.substring(0, 4) : "";
 
     if (!validateName(name)) {
-      setNameError("Name must contain only letters.");
+      setNameError("Name must contain only letters and at least two words");
       return;
     } else {
       setNameError("");
