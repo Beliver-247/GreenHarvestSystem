@@ -13,6 +13,10 @@ import { validateForm } from "../Validation/validation_SignUp.js"; // Assuming o
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OAuth from "../components/OAuth.js";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8cc08c9e8986831b98513bdfae078307d74d02e6
 const apiURL = "http://localhost:3001";
 
 function RegisterForm() {

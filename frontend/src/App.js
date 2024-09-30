@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8cc08c9e8986831b98513bdfae078307d74d02e6
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
@@ -49,6 +52,17 @@ import FarmerRequest from './pages/farmerRequest.js';
 import FarmerRequestDB from './pages/farmerRequestDB.js';
 import CustomerRequest from './pages/customerRequest.js';
 import CustomerRequestDB from './pages/customerRequestDB.js';
+import AddStaff from './components/AddStaff';
+import AddStock from './components/AddStock';
+import AllStaff from './components/AllStaff';
+import AllStock from './components/AllStock';
+import WarehouseStaffLayout from './components/WarehouseStaffLayout';
+import WarehouseManagerLayout from './components/WarehouseManagerLayout';
+import InventoryDashboard from './components/InventoryDashboard';
+import ManagerDashboard from './components/ManagerDashboard';
+import DeliveryHistory from './components/DeliveryHistory';
+import UpdateStaff from './components/UpdateStaff';
+import UpdateStocks from './components/UpdateStocks';
 
 // Dilakshan
 import StoreContextProvider from './context/StoreContext.js';
@@ -126,6 +140,10 @@ function App() {
               </Route>
 
               {/* Authentication and Recovery Routes */}
+<<<<<<< HEAD
+=======
+              <Route path="/" element={<UserHome />} />
+>>>>>>> 8cc08c9e8986831b98513bdfae078307d74d02e6
               <Route path="/OTP" element={<OTP />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/sign-in" element={<SignIn />} />
@@ -165,6 +183,24 @@ function App() {
               <Route path="/order/:id" element={<OrderForm />} />
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/edit-order/:orderId" element={<EditOrder />} />
+
+              {/*Staff layout*/}
+              <Route path="/wh-staff" element={<WarehouseStaffLayout/>}>
+                <Route path="/wh-staff/inventory-dashboard" element={<InventoryDashboard/>} />
+                <Route path="/wh-staff/add-stocks" element={<AddStock/>}/>
+                <Route path="/wh-staff/all-stocks" element={<AllStock/>}/>
+                <Route path="/wh-staff/update-stocks" element={<UpdateStocks/>}/>
+              </Route>
+
+              {/*Manager layout*/}
+              <Route path="/wh-manager" element={<WarehouseManagerLayout/>}>
+                <Route path="/wh-manager/manager-dashboard" element={<ManagerDashboard/>} />
+                <Route path="/wh-manager/add-staff" element={<AddStaff/>}/>
+                <Route path="/wh-manager/all-staff" element={<AllStaff/>}/>
+                <Route path="/wh-manager/all-stocks" element={<AllStock/>}/>
+                <Route path="/wh-manager/delivery-history" element={<DeliveryHistory/>}/>
+                <Route path="/wh-manager/update-staff/:id" element={<UpdateStaff/>}/>
+              </Route>
             </Routes>
           </div>
 
