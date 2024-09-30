@@ -34,7 +34,7 @@ const validatePhone = (phone) => {
 
 // Helper function for password validation (at least 8 characters, one uppercase, one number, one special character)
 const validatePassword = (password) => {
-  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  const passwordRegex = /^(?=.[A-Z])(?=.\d)(?=.[!@#$%^&])[A-Za-z\d!@#$%^&*]{8,}$/;
   return passwordRegex.test(password);
 };
 
@@ -274,4 +274,4 @@ const AddQAmember = () => {
   );
 };
 
-export default AddQAmember;
+export default AddQAmember;

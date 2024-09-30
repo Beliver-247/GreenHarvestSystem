@@ -71,6 +71,33 @@ import OrderConfirmation from './components/OrderConfirmation/OrderConfirmation.
 import MyOrders from './components/MyOrders/MyOrders.js';
 import OrderDetails from './components/OrderDetails/OrderDetails.js';
 import EditOrder from './components/EditOrder/EditOrder.js';
+//Praveen
+import AddFarmer from "./components/AddFarmer";
+import UpdateFarmer from "./components/updateFarmer";
+import AllFarmers from "./components/AllFarmers";
+import FarmerLogin from "./components/FarmerLogin";
+import FarmerLayout from "./components/FarmerLayout";
+import AdminLayout from "./components/AdminLayout";
+import CropReadinessForm from "./components/CropReadinessForm";
+import CropReadinessList from "./components/CropReadinessList";
+import PickupRequestForm from "./components/PickupRequestForm";
+import AddLand from "./components/AddLand";
+import UpdateLand from "./components/UpdateLand";
+import LandList from "./components/LandList";
+import ViewLand from "./components/ViewLand";
+import "leaflet/dist/leaflet.css";
+import LandDetails from "./components/LandDetails";
+import CropReadinessUpdateForm from "./components/CropReadinessUpdateForm";
+import ParentComponents from "./components/ParentComponents";
+import PickupRequestList from "./components/PickupRequestList";
+import UpdatePickupRequestForm from "./components/UpdatePickupRequestForm";
+import AdminPickupRequestList from "./components/AdminPickupRequestList";
+import AdminCropReadinessList from "./components/AdminCropReadinessList";
+import PickupReadinessChart from "./components/PickupRequestChart";
+import AdminDashboardFarmer from "./components/AdminDashboardFarmer";
+import FarmerDashboard from "./components/FarmerDashBoard";
+import MyProfile from "./components/MyProfile";
+
 
 // Socket.io connection
 const socket = io("http://localhost:3001");
@@ -193,6 +220,73 @@ function App() {
                 <Route path="/wh-manager/delivery-history" element={<DeliveryHistory/>}/>
                 <Route path="/wh-manager/update-staff/:id" element={<UpdateStaff/>}/>
               </Route>
+
+                    {/* Farmer Routes */}
+        <Route path="/fm_layout" element={<FarmerLayout />}>
+          <Route path="addFarmer" element={<AddFarmer />} />
+
+          <Route path="login_farmer" element={<FarmerLogin />} />
+
+          <Route path="farmer-dashboard" element={<FarmerDashboard />} />
+          <Route path="farmer-profile" element={<MyProfile />} />
+
+          <Route path="crop-readiness" element={<CropReadinessForm />} />
+
+          <Route path="pickup-request" element={<PickupRequestForm />} />
+          <Route path="pickup_requests-list" element={<PickupRequestList />} />
+          <Route
+            path="update-pickup-request/:pickupRequestId"
+            element={<UpdatePickupRequestForm />}
+          />
+
+          <Route path="land/add" element={<AddLand />} />
+          <Route path="land-details/:id" element={<LandDetails />} />
+
+          <Route path="update-land/:id" element={<UpdateLand />} />
+          <Route path="cropReadiness" exact element={<CropReadinessList />} />
+
+          <Route
+            path="cropReadiness/update/:notificationId"
+            element={<ParentComponents />}
+          />
+
+          <Route
+            path="cropReadiness/update/:notificationId"
+            element={<CropReadinessUpdateForm />}
+          />
+
+          <Route path="chart" element={<PickupReadinessChart />} />
+        </Route>
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Admin dashboard */}
+          <Route path="admin-dashboard" element={<AdminDashboardFarmer />} />
+
+          {/* View all farmers */}
+          <Route path="all-farmers" element={<AllFarmers />} />
+
+          {/* Update farmer details */}
+          <Route path="update/:id" element={<UpdateFarmer />} />
+
+          {/* View crop readiness notifications */}
+          <Route path="crop-readiness-list" element={<CropReadinessList />} />
+
+          {/* Land Management */}
+          <Route path="land/add" element={<AddLand />} />
+          <Route path="land/update/:id" element={<UpdateLand />} />
+          <Route path="land/list" element={<LandList />} />
+          <Route path="land/view/:id" element={<ViewLand />} />
+
+          <Route
+            path="all-pickup-requests"
+            element={<AdminPickupRequestList />}
+          />
+          <Route
+            path="all-crop-readiness"
+            element={<AdminCropReadinessList />}
+          />
+        </Route>
             </Routes>
           </div>
 
