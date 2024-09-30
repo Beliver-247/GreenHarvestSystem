@@ -10,7 +10,7 @@ const updateTotalQuantity = async (vegType, quantityChange) => {
 };
 
 // Add stock
-router.route("/add").post((req, res) => {
+router.route("/add-stocks").post((req, res) => {
     const { vegType, qualityGrade, batchNumber, quantity, expDate } = req.body;
     const dateAdded = new Date(); // Adding the current date
 
@@ -91,6 +91,46 @@ router.delete("/delete/:stockId", async (req, res) => {
         await updateTotalQuantity(stock.vegType, -stock.quantity);
 
         res.status(200).send({ status: "Stock Removed" });
+    } catch (err) {
+        console.error("Error removing stock:", err.message);
+        res.status(500).send({ status: "Error removing stock", error: err.message });
+    }
+});
+
+// Remove specific quantity of a stock based on vegType and qualityGrade
+router.put("/remove-stock", async (req, res) => {
+    const { vegType, qualityGrade, amount } = req.body;
+
+    try {
+        // Find all stocks of the specified vegType and qualityGrade
+        const stocks = await Stock.find({ vegType, qualityGrade });
+        if (!stocks.length) {
+            return res.status(404).send({ status: "No stock found for the specified type and grade" });
+        }
+
+        let remainingAmount = amount;
+
+        // Update stocks and remove the specified amount
+        for (let stock of stocks) {
+            if (remainingAmount <= 0) break;
+
+            if (stock.quantity >= remainingAmount) {
+                stock.quantity -= remainingAmount;
+                remainingAmount = 0;
+            } else {
+                remainingAmount -= stock.quantity;
+                stock.quantity = 0;
+            }
+
+            await stock.save();
+        }
+
+        if (remainingAmount > 0) {
+            return res.status(400).send({ status: "Insufficient stock to remove the requested amount" });
+        }
+
+        await updateTotalQuantity(vegType, -amount); // Update total quantity
+        res.status(200).send({ status: "Stock removed successfully" });
     } catch (err) {
         console.error("Error removing stock:", err.message);
         res.status(500).send({ status: "Error removing stock", error: err.message });

@@ -1,9 +1,20 @@
 const router = require("express").Router();
-let StaffMember = require("../models/StaffMember");
+let StaffMember = require("../models/StaffMember.js")
 
-// Add staff
-router.route("/add-staff").post(async (req, res) => {
-    const {
+//add staff
+router.route("/add-staff").post((req,res) => {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const gender = req.body.gender;
+    const nic = req.body.nic;
+    const email = req.body.email;
+    const address = req.body.address;
+    const district = req.body.district;
+    const contactNumber = req.body.contactNumber;
+    const dob = req.body.dob;
+    const role = req.body.role;
+
+    const newStaffMember = new StaffMember({
         firstName,
         lastName,
         gender,
@@ -13,95 +24,31 @@ router.route("/add-staff").post(async (req, res) => {
         district,
         contactNumber,
         dob,
-        role,
-        password,
-    } = req.body;
+        role
+    })
 
-    try {
-        const newStaffMember = new StaffMember({
-            firstName,
-            lastName,
-            gender,
-            nic,
-            email,
-            address,
-            district,
-            contactNumber,
-            dob,
-            role,
-            password, // Include password
-        });
-
-        await newStaffMember.save();
-        res.status(200).send({ status: "Staff Added" });
-    } catch (err) {
+    newStaffMember.save().then(() => {
+        res.status(200).send({status: "Staff Added"});
+    }).catch((err) => {
         console.log(err);
-        res.status(500).send({ status: "An error occurred while adding the staff", error: err.message });
-    }
-});
+        res.status(500).send({status: "An error occured while adding the staff"})
+    })
+})
 
-// Login staff (for authentication)
-router.route("/login").post(async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const staffMember = await StaffMember.findOne({ email });
-        if (!staffMember) {
-            return res.status(404).send({ status: "User not found" });
-        }
-
-        const isMatch = await staffMember.comparePassword(password);
-        if (!isMatch) {
-            return res.status(400).send({ status: "Incorrect password" });
-        }
-
-        res.status(200).send({ status: "Login successful", staffMember });
-    } catch (err) {
+//Display staff
+router.route("/all-staff").get((req,res) => {
+    StaffMember.find().then((staffMembers) => {
+        res.status(200).send({status: "Staff Displayed", staffMembers});
+    }).catch((err) => {
         console.log(err);
-        res.status(500).send({ status: "An error occurred during login", error: err.message });
-    }
-});
+        res.status(500).send({status: "An error occured while displaying the staff"});
+    })
+})
 
-// Get only QA-Team members
-router.route("/qa-team").get((req, res) => {
-    StaffMember.find({ role: "QA-Team" }, { password: 0 }) // Exclude password
-        .then((qaTeamMembers) => {
-            res.status(200).send({ status: "QA-Team Members Displayed", qaTeamMembers });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).send({ status: "An error occurred while displaying the QA-Team members" });
-        });
-});
-
-// Get only QA-Manager members
-router.route("/qa-manager").get((req, res) => {
-    StaffMember.find({ role: "QA-Manager" }, { password: 0 }) // Exclude password
-        .then((qaManagerMembers) => {
-            res.status(200).send({ status: "QA-Manager Members Displayed", qaManagerMembers });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).send({ status: "An error occurred while displaying the QA-Manager members" });
-        });
-});
-
-// Display all staff (exclude password)
-router.route("/all-staff").get((req, res) => {
-    StaffMember.find({}, { password: 0 }) // Exclude password
-        .then((staffMembers) => {
-            res.status(200).send({ status: "Staff Displayed", staffMembers });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).send({ status: "An error occurred while displaying the staff" });
-        });
-});
-
-// Update staff
-router.route("/update/:id").put(async (req, res) => {
+//Update staff
+router.route("/update-staff/:id").put(async (req,res) => {
     let staffId = req.params.id;
-    const { firstName, lastName, gender, nic, email, address, district, contactNumber, dob, role } = req.body;
+    const {firstName, lastName, gender, nic, email, address, district, contactNumber, dob, role} = req.body;
 
     const updateStaff = {
         firstName,
@@ -113,45 +60,39 @@ router.route("/update/:id").put(async (req, res) => {
         district,
         contactNumber,
         dob,
-        role,
-    };
-
-    try {
-        await StaffMember.findByIdAndUpdate(staffId, updateStaff);
-        res.status(200).send({ status: "Staff Updated" });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ status: "An error occurred while updating the staff" });
+        role
     }
-});
 
-// Remove staff
-router.route("/delete/:id").delete(async (req, res) => {
+    const update = await StaffMember.findByIdAndUpdate(staffId, updateStaff).then(() => {
+        res.status(200).send({status: "Staff Updated"});
+    }).catch((err) => {
+        console.log(err);
+        res.status(500).send({status: "An error occured while updating the staff"});
+    })
+})
+
+//Remove staff
+router.route("/delete/:id").delete(async (req,res) => {
     let staffId = req.params.id;
 
-    try {
-        await StaffMember.findByIdAndDelete(staffId);
-        res.status(200).send({ status: "Staff Removed" });
-    } catch (err) {
+    await StaffMember.findByIdAndDelete(staffId).then(() => {
+        res.status(200).send({status: "Staff Removed"});
+    }).catch((err) => {
         console.log(err);
-        res.status(500).send({ status: "An error occurred while removing the staff" });
-    }
-});
+        res.status(500).send({status: "An error occured while removing the staff"});
+    })
+})
 
-// Fetch a single staff member (exclude password)
-router.route("/get/:id").get(async (req, res) => {
+//Fetch a staff member
+router.route("/get-staff/:id").get(async (req,res) => {
     let staffId = req.params.id;
 
-    try {
-        const staff = await StaffMember.findById(staffId, { password: 0 }); // Exclude password
-        if (!staff) {
-            return res.status(404).send({ status: "Staff member not found" });
-        }
-        res.status(200).send({ status: "Staff Fetched", staff });
-    } catch (err) {
+    const staff = await StaffMember.findById(staffId).then((staff) => {
+        res.status(200).send({status: "Staff Fetched", staff});
+    }).catch((err) => {
         console.log(err);
-        res.status(500).send({ status: "An error occurred while fetching the staff" });
-    }
-});
+        res.status(500).send({status: "An error occured while fetching the staff"});
+    })
+})
 
 module.exports = router;
