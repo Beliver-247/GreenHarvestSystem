@@ -122,11 +122,15 @@ const EmployeeSignin = () => {
         navigate("/farmerRequest");
       } else if (res.status === 907) {
         dispatch(signInSuccess(data));
-        // navigate("");
+        navigate("/fm_layout/farmer-dashboard"); 
       } else if (res.status === 908) {
         dispatch(signInSuccess(data));
         navigate("/wh-manager/manager-dashboard");
-      }else {
+      }else if (res.status === 909) {
+        dispatch(signInSuccess(data));
+        navigate("/admin/admin-dashboard");
+      }
+      else {
         toast.error("Invalid credentials. Please try again.");
         dispatch(resetLoadingState());
       }
