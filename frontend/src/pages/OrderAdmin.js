@@ -206,7 +206,7 @@ const exportExcel = () => {
                 <td className="border border-gray-300 px-4 py-2">{order._id}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   {order.items.map((item) => (
-                    <div key={item.id}>{item.name} (x{item.qty})</div>
+                    <div key={item.id}>{item.name} (x{item.qty} Kg)</div>
                   ))}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">${order.amount}</td>
