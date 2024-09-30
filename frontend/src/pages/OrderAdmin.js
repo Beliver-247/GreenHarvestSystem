@@ -85,6 +85,35 @@ const OrderAdmin = () => {
     }
   };
 
+  // Handle order status update
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/orders/status", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          status: newStatus,
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        // Update the order status locally
+        setData((prevData) =>
+          prevData.map((order) =>
+            order._id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+      } else {
+        console.error("Failed to update order status");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
+
   // Export table as PDF
   const exportPDF = () => {
     const input = document.getElementById("table-to-pdf");
@@ -168,7 +197,20 @@ const OrderAdmin = () => {
                       ))}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">${order.amount}</td>
-                    <td className="border border-gray-300 px-4 py-2">{order.status}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {/* Status Selection */}
+                      <select
+                        className="border border-gray-300 rounded"
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                      >
+                        {statuses.slice(1).map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="border border-gray-300 px-4 py-2">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
@@ -229,3 +271,4 @@ const OrderAdmin = () => {
 };
 
 export default OrderAdmin;
+
