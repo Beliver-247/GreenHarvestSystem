@@ -51,7 +51,7 @@ const staffSchema = new mongoose.Schema({
 
     role: {
       type: String,
-      enum: ["Warehouse Storage Staff", "Warehouse Maintenance Staff"],
+      enum: ["WSS", "WMS"],
       required: true
     },
 
@@ -69,14 +69,14 @@ staffSchema.pre('save', function(next) {
     let roleCode = '';
 
     switch (doc.role) {
-      case 'Warehouse Storage Staff':
+      case 'WSS':
         roleCode = 'WS';
         break;
-      case 'Warehouse Maintenance Staff':
+      case 'WMS':
         roleCode = 'WM';
         break;
       default:
-        roleCode = 'XX';
+        roleCode = 'XX'; // Fallback code
     }
 
     // Extract the last two digits of the birth year
