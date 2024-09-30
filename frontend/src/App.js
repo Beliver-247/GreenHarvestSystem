@@ -1,4 +1,4 @@
-import "./App.css";
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
@@ -26,19 +26,21 @@ import FuelManagement from "./pages/FuelManagement";
 import MaintenanceManagement from "./pages/MaintenanceManagement";
 import ExpensesCalculator from "./pages/ExpensesCalculator";
 import DriverPage from "./pages/DriverPage";
+
 import Signup from "./pages/Signup.js";
 import OTP from "./pages/OTP.js";
 import SignIn from "./pages/SignIn.js";
-import Home from "./pages/Home.js";
 import Header from "./components/Header.js";
 import PrivateRoute from "./components/PrivateRoute.js";
 import RecoveryPage from "./pages/Recovery_email.js";
+import UserDashboard from "./pages/Dashboard.js"
 import RecoveryOTP from "./pages/Recovery_OTP.js";
 import RecoveryPassword from "./pages/Recovery_Password.js";
 import AdminDashboard from "./pages/Admin_Dashboard.js";
 import AddEmployeeForm from "./pages/Add_employee.js";
 import EmployeeSignin from "./pages/Employee_SignIn.js";
 import Unauthorized from "./pages/Unauthorized.js";
+
 import AddProduct from './pages/AddProduct';
 import ViewProduct from './pages/ViewProduct';
 import AdminView from './pages/AdminView';
@@ -61,7 +63,7 @@ import OrderDetails from './components/OrderDetails/OrderDetails.js';
 import EditOrder from './components/EditOrder/EditOrder.js';
 
 // Socket.io connection
-const socket = io("http://localhost:8070");
+const socket = io("http://localhost:3001");
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -124,7 +126,6 @@ function App() {
               </Route>
 
               {/* Authentication and Recovery Routes */}
-              <Route path="/" element={<Home />} />
               <Route path="/OTP" element={<OTP />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/sign-in" element={<SignIn />} />
@@ -137,15 +138,16 @@ function App() {
               {/* Admin Routes */}
               <Route path="/add-employee" element={<AddEmployeeForm />} />
               <Route element={<PrivateRoute />}>
-                <Route path="/dashboard/profile" element={<QADashboard />} />
+                <Route path="/dashboard/profile" element={<UserDashboard />} />
                 <Route path="/admin-user" element={<AdminDashboard />} />
+              
               </Route>
 
               {/* Product Management Routes */}
               <Route path="/add-product" element={<AddProduct />} />
               <Route path="/view-product" element={<ViewProduct />} />
               <Route path="/admin-product" element={<AdminView />} />
-              <Route path="/dashboard" element={<OffcutDashboard />} />
+              <Route path="/offcut-dashboard" element={<OffcutDashboard />} />
 
               {/* Other Routes */}
               <Route path="/farmerRequest" element={<FarmerRequest />} />
@@ -154,7 +156,7 @@ function App() {
               <Route path="/customerRequestDB" element={<CustomerRequestDB />} />
 
               {/* User and Order Routes */}
-              <Route path="/home" element={<UserHome />} />
+              <Route path="/" element={<UserHome />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/my-orders" element={<MyOrders />} />

@@ -104,7 +104,7 @@ const EmployeeSignin = () => {
         navigate("/admin-user"); // User-specific redirection
       } else if (res.status === 901) {
         dispatch(signInSuccess(data));
-        navigate("/offcut");
+        navigate("/admin-product");
       } else if (res.status === 902) {
         dispatch(signInSuccess(data));
         navigate("/qa-manager");
@@ -119,7 +119,7 @@ const EmployeeSignin = () => {
         // navigate("");
       } else if (res.status === 906) {
         dispatch(signInSuccess(data));
-        // navigate("/");
+        navigate("/farmerRequest");
       } else if (res.status === 907) {
         dispatch(signInSuccess(data));
         // navigate("");

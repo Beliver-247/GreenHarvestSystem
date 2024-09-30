@@ -3,7 +3,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import "../App.css";
 
 // OTPInput Component
 function OTPInput({ otp, handleChange }) {

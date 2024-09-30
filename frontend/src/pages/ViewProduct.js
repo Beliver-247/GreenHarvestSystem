@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaSearch, FaHome, FaPlus, FaCog, FaTachometerAlt, FaStar, FaQrcode, FaTimes } from "react-icons/fa"; 
-import { Link } from "react-router-dom";
+import { FaSearch, FaQrcode, FaTimes } from "react-icons/fa"; 
 
 const ViewProduct = () => {
     const [products, setProducts] = useState([]);
@@ -53,46 +52,9 @@ const ViewProduct = () => {
     };
 
     // Sidebar Component
-    const Sidebar = () => {
-        return (
-            <div className="w-64 h-screen bg-green-800 text-white p-4 fixed flex flex-col justify-between">
-                <div className="space-y-6">
-                    <br></br>
-                    <br></br>
-                    <Link to='/view-product' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                        <FaHome className="text-3xl" /> 
-                        <span className="text-xl">Home</span> 
-                    </Link>
-                    <Link to='/add-product' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                        <FaPlus className="text-3xl" /> 
-                        <span className="text-xl">Add Product</span> 
-                    </Link>
-                    <Link to='/admin-product' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                        <FaCog className="text-3xl" /> 
-                        <span className="text-xl">Manage Product</span> 
-                    </Link>
-                    <Link to='/dashboard' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                        <FaTachometerAlt className="text-3xl" /> 
-                        <span className="text-xl">Dashboard</span> 
-                    </Link>
-                    {/* C Grades */}
-                    <Link to='/c-grades' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                        <FaStar className="text-3xl" /> 
-                        <span className="text-xl">C Grades</span> 
-                    </Link>
-                </div>
-
-                {/* Logout Button in Pink */}
-                <button className="w-full bg-pink-500 text-white text-xl px-4 py-2 rounded-md hover:bg-pink-600">
-                    Logout
-                </button>
-            </div>
-        );
-    };
 
     return (
         <div className="flex">
-            <Sidebar />
             <div className="ml-64 p-10 w-full">
                 <div className="flex flex-col md:flex-row justify-between mb-6">
                     {/* Category Filter */}
