@@ -141,7 +141,7 @@ const AddQAmember = () => {
         setEmailError("");
         setPhoneError(""); 
         setPasswordError(""); 
-        navigate("/"); 
+        nnavigate("/qa-manager/qa-team");
       } else {
         const errorMessage = await response.text();
         alert("Error: " + errorMessage);
