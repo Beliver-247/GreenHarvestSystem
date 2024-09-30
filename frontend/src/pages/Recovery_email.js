@@ -124,7 +124,7 @@ const RecoveryPage = () => {
                 hover:border-green-500 text-gray-700`}
             />
             {emailError && (
-              <p className="text-red-500 text-xs mt-1">{emailError}</p> // Display the error in red
+              <p className="text-red-500 text-sm mt-1">{emailError}</p> // Display the error in red
             )}
           </div>
           <button

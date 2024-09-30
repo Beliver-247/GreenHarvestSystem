@@ -123,7 +123,7 @@ const AdminView = () => {
                     <FaCog className="text-3xl" />
                     <span className="text-xl">Manage Product</span>
                 </Link>
-                <Link to='/dashboard' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
+                <Link to='/offcut-dashboard' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
                     <FaTachometerAlt className="text-3xl" />
                     <span className="text-xl">Dashboard</span>
                 </Link>
