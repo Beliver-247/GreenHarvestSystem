@@ -134,7 +134,7 @@ function App() {
               </Route>
 
               {/* Authentication and Recovery Routes */}
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<UserHome />} />
               <Route path="/OTP" element={<OTP />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/sign-in" element={<SignIn />} />
