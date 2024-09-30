@@ -18,8 +18,7 @@ const ProductDisplay = () => {
     };
     
     return (
-        <div className='food-display' id= 'food-display' style={{ width: '1200px' }}>
-            <h2>Fresh Vegitables</h2>
+        <div className='food-display' id= 'food-display' style={{ width: '1200px', margin: '0 auto', textAlign: 'center' }}>
             <div className="food-display-list">
                 {food_list.map((item, index) => {
                   

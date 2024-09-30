@@ -52,7 +52,7 @@ const Product = ({ id, name, price, description, image, onClick}) => {
           <p>{name}</p>
         </div>
         <p className="food-item-desc">{description}</p>
-        <p className="food-item-price ">LKR {price}.00</p>
+        <p className="food-item-price ">LKR   <span style={{ fontSize: '30px' }}> {price}.00</span> </p>
       </div>
     </div>
   );
