@@ -113,7 +113,7 @@ const EmployeeSignin = () => {
         navigate("/vehicle-fleet");
       } else if (res.status === 904) {
         dispatch(signInSuccess(data));
-        // navigate("");
+        navigate("/wh-staff/inventory-dashboard");
       } else if (res.status === 905) {
         dispatch(signInSuccess(data));
         // navigate("");
@@ -123,7 +123,10 @@ const EmployeeSignin = () => {
       } else if (res.status === 907) {
         dispatch(signInSuccess(data));
         // navigate("");
-      } else {
+      } else if (res.status === 908) {
+        dispatch(signInSuccess(data));
+        navigate("/wh-manager/manager-dashboard");
+      }else {
         toast.error("Invalid credentials. Please try again.");
         dispatch(resetLoadingState());
       }
