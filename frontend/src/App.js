@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 8cc08c9e8986831b98513bdfae078307d74d02e6
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
@@ -140,10 +136,7 @@ function App() {
               </Route>
 
               {/* Authentication and Recovery Routes */}
-<<<<<<< HEAD
-=======
               <Route path="/" element={<UserHome />} />
->>>>>>> 8cc08c9e8986831b98513bdfae078307d74d02e6
               <Route path="/OTP" element={<OTP />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/sign-in" element={<SignIn />} />
