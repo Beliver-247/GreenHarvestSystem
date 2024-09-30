@@ -76,15 +76,14 @@ const OrderForm = () => {
           image: product.image
         }
       ],
-      amount: product.price,
+      amount: product.price * cartItems[id] + 250,
       address: formData.address,
       billingAddress: formData.billingAddress,
-      payment: true
+      payment: false
     };
 
     try {
-      await axios.post("http://localhost:3001/api/orders/add-order", orderData);
-      navigate('/payment');
+      navigate('/payment', { state: orderData });
     } catch (error) {
       console.error('Error placing order:', error);
     }
@@ -216,7 +215,7 @@ const OrderForm = () => {
               </div>
             </section>
             <button
-              type="submit" className="w-full p-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+              type="submit" className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-purple-700">
               Next
             </button>
           </div>

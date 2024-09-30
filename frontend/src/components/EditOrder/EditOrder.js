@@ -13,7 +13,7 @@ const EditOrder = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8070/api/orders/${orderId}`);
+        const response = await axios.get(`http://localhost:3001/api/orders/${orderId}`);
         if (response.data.success) {
           setOrder(response.data.data);
         } else {

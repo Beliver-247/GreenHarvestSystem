@@ -28,33 +28,38 @@ const ProductDetails = () => {
   const [maxQuantityWarning, setMaxQuantityWarning] = useState(false);
 
   const calculatePrice = (newQuantity) => {
-    let newUnitPrice = 350;
-    let newDiscount = 5;
-
+    let newDiscount = 5; // Default discount
+  
+    // Set discount based on the quantity ranges
     if (newQuantity >= 26 && newQuantity <= 50) {
-      newUnitPrice = 340;
       newDiscount = 7;
     } else if (newQuantity >= 51 && newQuantity <= 100) {
-      newUnitPrice = 310;
       newDiscount = 11;
     } else if (newQuantity >= 101) {
-      newUnitPrice = 300;
       newDiscount = 14;
     }
-
-    const newDiscountedPrice = newUnitPrice * newQuantity * (1 - newDiscount / 100);
-    const newSavePrice = newUnitPrice * newQuantity * (newDiscount / 100);
-
+  
+    // Calculate the discount percentage and discounted unit price
+    const discountMultiplier = 1 - newDiscount / 100;
+    const newUnitPrice = price * discountMultiplier;
+  
+    // Calculate the final discounted price for the quantity
+    const newDiscountedPrice = newUnitPrice * newQuantity;
+  
+    // Calculate total savings
+    const totalSavings = price * newQuantity - newDiscountedPrice;
+  
+    // Set state values
     setUnitPrice(newUnitPrice);
     setDiscount(newDiscount);
     setDiscountedPrice(newDiscountedPrice);
-    setSavePrice(newSavePrice);
+    setSavePrice(totalSavings);
   };
 
 
-  // useEffect(() => {
-  //   calculatePrice(quantity);
-  // }, [quantity]);
+  useEffect(() => {
+    calculatePrice(quantity);
+  }, [quantity]);
 
   
   // Early return after hooks are defined
@@ -112,7 +117,7 @@ const ProductDetails = () => {
             <p>{product.category}</p>
             <h2 className="text-2xl font-semibold">{product.name}</h2>
             <p>{product.description}</p>
-            <p className="text-gray-500">Rs {unitPrice}.00 Per Kg</p>
+            <p className="text-gray-500">Rs {unitPrice.toFixed(0)}.00 Per Kg</p>
           </div>
         </div>
 
@@ -135,7 +140,7 @@ const ProductDetails = () => {
                 {discountedPrice.toFixed(2)}
               </span>
               <span className="pl-1 font-bold"> LKR </span>
-              <p className="text-gray-500">Rs {unitPrice}.00 Per Kg</p>
+              <p className="text-gray-500">Rs {unitPrice.toFixed(0)}.00 Per Kg</p>
             </div>
             <div className="text-red-600 mt-1">
               <span className="pr-1">Save</span>
@@ -146,7 +151,7 @@ const ProductDetails = () => {
           {/* Price Chart */}
           <div className="mt-6">
             <div className="text-sm font-medium text-gray-700">Price Chart</div>
-            <PriceChart />
+            <PriceChart basePrice={price} />
           </div>
 
           {/* Quantity Selector */}

@@ -35,7 +35,7 @@ const MyOrders = () => {
 
     try {
         console.log(`Attempting to delete order with ID: ${orderId}`); // Log the order ID
-        await axios.delete(`http://localhost:8070/api/orders/${orderId}`);
+        await axios.delete(`http://localhost:3001/api/orders/${orderId}`);
         // Remove the deleted order from the orders list
         setOrders(orders.filter((order) => order._id !== orderId));
         // Show toast here for deletion success

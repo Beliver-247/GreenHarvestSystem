@@ -69,9 +69,10 @@ import OrderConfirmation from './components/OrderConfirmation/OrderConfirmation.
 import MyOrders from './components/MyOrders/MyOrders.js';
 import OrderDetails from './components/OrderDetails/OrderDetails.js';
 import EditOrder from './components/EditOrder/EditOrder.js';
+import Footer from "./components/Footer.js";
 
 // Socket.io connection
-const socket = io("http://localhost:8070");
+const socket = io("http://localhost:3001");
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -134,7 +135,7 @@ function App() {
               </Route>
 
               {/* Authentication and Recovery Routes */}
-              <Route path="/" element={<Home />} />
+              {/* <Route path="/" element={<Home />} /> */}
               <Route path="/OTP" element={<OTP />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/sign-in" element={<SignIn />} />
@@ -164,7 +165,7 @@ function App() {
               <Route path="/customerRequestDB" element={<CustomerRequestDB />} />
 
               {/* User and Order Routes */}
-              <Route path="/home" element={<UserHome />} />
+              <Route path="/" element={<UserHome />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/my-orders" element={<MyOrders />} />
@@ -202,6 +203,7 @@ function App() {
             onClose={closeModal}
           />
         </div>
+        <Footer />
       </Router>
     </StoreContextProvider>
   );
