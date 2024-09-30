@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
+import validateForm from '../../Validation/orderForm_validate';// Adjust the path as necessary
 
 const OrderForm = () => {
   const { id } = useParams();
@@ -24,9 +25,11 @@ const OrderForm = () => {
       postalCode: '',
       phone: ''
     },
+    billingAddressOption: 'same'
   });
 
   const [isSameAsShipping, setIsSameAsShipping] = useState(true);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +66,13 @@ const OrderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    const validationErrors = validateForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
     const orderData = {
       userId: formData.userId,
       items: [
@@ -106,6 +115,8 @@ const OrderForm = () => {
                   className="w-full p-2 border rounded-md bg-gray-100"
                   required
                 />
+                {errors.addressStreet && <p className="text-red-500">{errors.addressStreet}</p>}
+
                 <input
                   name="address.city"
                   placeholder="City"
@@ -114,6 +125,8 @@ const OrderForm = () => {
                   className="w-full p-2 border rounded-md bg-gray-100"
                   required
                 />
+                {errors.addressCity && <p className="text-red-500">{errors.addressCity}</p>}
+
                 <input
                   name="address.country"
                   placeholder="Country"
@@ -122,6 +135,8 @@ const OrderForm = () => {
                   className="w-full p-2 border rounded-md bg-gray-100"
                   required
                 />
+                {errors.addressCountry && <p className="text-red-500">{errors.addressCountry}</p>}
+
                 <input
                   name="address.postalCode"
                   placeholder="Postal Code"
@@ -130,6 +145,8 @@ const OrderForm = () => {
                   className="w-full p-2 border rounded-md bg-gray-100"
                   required
                 />
+                {errors.addressPostalCode && <p className="text-red-500">{errors.addressPostalCode}</p>}
+
                 <input
                   name="address.phone"
                   placeholder="Phone"
@@ -138,6 +155,7 @@ const OrderForm = () => {
                   className="w-full p-2 border rounded-md bg-gray-100"
                   required
                 />
+                {errors.addressPhone && <p className="text-red-500">{errors.addressPhone}</p>}
               </div>
             </section>
 
@@ -177,6 +195,8 @@ const OrderForm = () => {
                       className="w-full p-2 border rounded-md bg-gray-100"
                       required
                     />
+                    {errors.billingAddressStreet && <p className="text-red-500">{errors.billingAddressStreet}</p>}
+
                     <input
                       name="billingAddress.city"
                       placeholder="City"
@@ -185,6 +205,8 @@ const OrderForm = () => {
                       className="w-full p-2 border rounded-md bg-gray-100"
                       required
                     />
+                    {errors.billingAddressCity && <p className="text-red-500">{errors.billingAddressCity}</p>}
+
                     <input
                       name="billingAddress.country"
                       placeholder="Country"
@@ -193,6 +215,8 @@ const OrderForm = () => {
                       className="w-full p-2 border rounded-md bg-gray-100"
                       required
                     />
+                    {errors.billingAddressCountry && <p className="text-red-500">{errors.billingAddressCountry}</p>}
+
                     <input
                       name="billingAddress.postalCode"
                       placeholder="Postal Code"
@@ -201,6 +225,8 @@ const OrderForm = () => {
                       className="w-full p-2 border rounded-md bg-gray-100"
                       required
                     />
+                    {errors.billingAddressPostalCode && <p className="text-red-500">{errors.billingAddressPostalCode}</p>}
+
                     <input
                       name="billingAddress.phone"
                       placeholder="Phone"
@@ -209,12 +235,15 @@ const OrderForm = () => {
                       className="w-full p-2 border rounded-md bg-gray-100"
                       required
                     />
+                    {errors.billingAddressPhone && <p className="text-red-500">{errors.billingAddressPhone}</p>}
                   </>
                 )}
               </div>
             </section>
             <button
-              type="submit" className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+              type="submit"
+              className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
               Next
             </button>
           </div>

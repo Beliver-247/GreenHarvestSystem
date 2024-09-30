@@ -127,7 +127,7 @@ const ProductDetails = () => {
             <div className="text-gray-500">
               <span className="text-gray-500 pr-1 line-through">
                 {" "}
-                Rs {unitPrice * quantity}.00{" "}
+                Rs {unitPrice * quantity.toFixed(0)}.00{" "}
               </span>
               <span className="text-red-600 pr-1 font-bold">
                 {" "}
