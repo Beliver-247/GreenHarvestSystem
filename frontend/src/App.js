@@ -53,7 +53,7 @@ import AllStaff from './components/AllStaff';
 import AllStock from './components/AllStock';
 import WarehouseStaffLayout from './components/WarehouseStaffLayout';
 import WarehouseManagerLayout from './components/WarehouseManagerLayout';
-import InventoryDashboard from './components/InventoryDashboad';
+import InventoryDashboard from './components/InventoryDashboard';
 import ManagerDashboard from './components/ManagerDashboard';
 import DeliveryHistory from './components/DeliveryHistory';
 import UpdateStaff from './components/UpdateStaff';

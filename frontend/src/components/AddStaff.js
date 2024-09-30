@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import '../AddStaff.css';
 
 export default function AddStaff() {
   const [formValues, setFormValues] = useState({
