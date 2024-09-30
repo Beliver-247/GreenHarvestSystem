@@ -43,6 +43,22 @@ import AddProduct from './pages/AddProduct';
 import ViewProduct from './pages/ViewProduct';
 import AdminView from './pages/AdminView';
 import OffcutDashboard from './pages/Offcut-Dashboard.js';
+import FarmerRequest from './pages/farmerRequest.js';
+import FarmerRequestDB from './pages/farmerRequestDB.js';
+import CustomerRequest from './pages/customerRequest.js';
+import CustomerRequestDB from './pages/customerRequestDB.js';
+
+// Dilakshan
+import StoreContextProvider from './context/StoreContext.js';
+import UserHome from "./pages/home/Home.js";
+import Product from "./pages/product/Product.js";
+import Cart from "./components/CartItems/CartItem.js";
+import OrderForm from './components/Order/OrderForm';
+import PaymentPage from './components/Payment/PaymentPage.js';
+import OrderConfirmation from './components/OrderConfirmation/OrderConfirmation.js';
+import MyOrders from './components/MyOrders/MyOrders.js';
+import OrderDetails from './components/OrderDetails/OrderDetails.js';
+import EditOrder from './components/EditOrder/EditOrder.js';
 
 // Socket.io connection
 const socket = io("http://localhost:8070");
@@ -67,83 +83,99 @@ function App() {
   };
 
   return (
-    <Router>
-      <Header /> {/* Assuming the Header should be present for both sections */}
-      <div className="app-container">
-        <div className="content">
-          <Routes>
-            {/* QA Manager Routes */}
-            <Route path="/qa-manager" element={<LayoutQAManager />}>
-              <Route index element={<QADashboard />} />
-              <Route path="incoming-batches" element={<IncomingBatches />} />
-              <Route path="add-qarecord" element={<AddQArecord />} />
-              <Route path="qa-records" element={<QARecords />} />
-              <Route path="qa-team" element={<QATeam />} />
-              <Route path="add-qaMember" element={<AddQAmember />} />
-              <Route path="qa-standards" element={<QAStandards />} />
-            </Route>
+    <StoreContextProvider>
+      <Router>
+        <Header />
+        <div className="app-container">
+          <div className="content">
+            <Routes>
+              {/* QA Manager Routes */}
+              <Route path="/qa-manager" element={<LayoutQAManager />}>
+                <Route index element={<QADashboard />} />
+                <Route path="incoming-batches" element={<IncomingBatches />} />
+                <Route path="add-qarecord" element={<AddQArecord />} />
+                <Route path="qa-records" element={<QARecords />} />
+                <Route path="qa-team" element={<QATeam />} />
+                <Route path="add-qaMember" element={<AddQAmember />} />
+                <Route path="qa-standards" element={<QAStandards />} />
+              </Route>
 
-            {/* QA Team Routes */}
-            <Route path="/qa-team" element={<LayoutQATeam />}>
-              <Route index element={<QADashboard />} />
-              <Route path="add-qarecord" element={<AddQArecord />} />
-              <Route path="qa-records" element={<QARecords />} />
-              <Route path="incoming-batches" element={<IncomingBatches />} />
-            </Route>
+              {/* QA Team Routes */}
+              <Route path="/qa-team" element={<LayoutQATeam />}>
+                <Route index element={<QADashboard />} />
+                <Route path="add-qarecord" element={<AddQArecord />} />
+                <Route path="qa-records" element={<QARecords />} />
+                <Route path="incoming-batches" element={<IncomingBatches />} />
+              </Route>
 
-            {/* Vehicle Fleet Management Routes */}
-            <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
-              <Route index element={<VFDashboard />} />
-              <Route path="vehicle-management" element={<VehicleManagement />} />
-              <Route path="driver-management" element={<DriverManagement />} />
-              <Route path="fuel-management" element={<FuelManagement />} />
-              <Route path="maintenance-management" element={<MaintenanceManagement />} />
-              <Route path="cost-management" element={<ExpensesCalculator />} />
-            </Route>
+              {/* Vehicle Fleet Management Routes */}
+              <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
+                <Route index element={<VFDashboard />} />
+                <Route path="vehicle-management" element={<VehicleManagement />} />
+                <Route path="driver-management" element={<DriverManagement />} />
+                <Route path="fuel-management" element={<FuelManagement />} />
+                <Route path="maintenance-management" element={<MaintenanceManagement />} />
+                <Route path="cost-management" element={<ExpensesCalculator />} />
+              </Route>
 
-            {/* Driver Routes */}
-            <Route path="/driver" element={<LayoutDriver />}>
-              <Route path="driver-page" element={<DriverPage />} />
-            </Route>
+              {/* Driver Routes */}
+              <Route path="/driver" element={<LayoutDriver />}>
+                <Route path="driver-page" element={<DriverPage />} />
+              </Route>
 
-            {/* Authentication and Recovery Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/OTP" element={<OTP />} />
-            <Route path="/sign-up" element={<Signup />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/recovery-email" element={<RecoveryPage />} />
-            <Route path="/recovery-OTP" element={<RecoveryOTP />} />
-            <Route path="/recovery-password" element={<RecoveryPassword />} />
-            <Route path="/employee-signin" element={<EmployeeSignin />} />
-            <Route path="/Unauthorized" element={<Unauthorized />} />
+              {/* Authentication and Recovery Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/OTP" element={<OTP />} />
+              <Route path="/sign-up" element={<Signup />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/recovery-email" element={<RecoveryPage />} />
+              <Route path="/recovery-OTP" element={<RecoveryOTP />} />
+              <Route path="/recovery-password" element={<RecoveryPassword />} />
+              <Route path="/employee-signin" element={<EmployeeSignin />} />
+              <Route path="/Unauthorized" element={<Unauthorized />} />
 
-            {/* Admin Routes */}
-            <Route path="/add-employee" element={<AddEmployeeForm />} />
-            <Route element={<PrivateRoute />}>
-              <Route path="/dashboard/profile" element={<QADashboard />} />
-              <Route path="/admin-user" element={<AdminDashboard />} />
-            </Route>
+              {/* Admin Routes */}
+              <Route path="/add-employee" element={<AddEmployeeForm />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/dashboard/profile" element={<QADashboard />} />
+                <Route path="/admin-user" element={<AdminDashboard />} />
+              </Route>
 
-            {/* Product Management Routes */}
-            <Route path="/add-product" element={<AddProduct />} />
-            <Route path="/view-product" element={<ViewProduct />} />
-            <Route path="/admin-product" element={<AdminView />} />
-            <Route path="/dashboard" element={<OffcutDashboard />} />
+              {/* Product Management Routes */}
+              <Route path="/add-product" element={<AddProduct />} />
+              <Route path="/view-product" element={<ViewProduct />} />
+              <Route path="/admin-product" element={<AdminView />} />
+              <Route path="/dashboard" element={<OffcutDashboard />} />
 
-            {/* Offcut Specials Placeholder */}
-            <Route path="/" element={<h1>Offcut Specials</h1>} />
-          </Routes>
+              {/* Other Routes */}
+              <Route path="/farmerRequest" element={<FarmerRequest />} />
+              <Route path="/farmerRequestDB" element={<FarmerRequestDB />} />
+              <Route path="/customerRequest" element={<CustomerRequest />} />
+              <Route path="/customerRequestDB" element={<CustomerRequestDB />} />
+
+              {/* User and Order Routes */}
+              <Route path="/home" element={<UserHome />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/product/:id" element={<Product />} />
+              <Route path="/my-orders" element={<MyOrders />} />
+              <Route path="/order-details/:orderId" element={<OrderDetails />} />
+              <Route path="/confirmation" element={<OrderConfirmation />} />
+              <Route path="/order/:id" element={<OrderForm />} />
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/edit-order/:orderId" element={<EditOrder />} />
+            </Routes>
+          </div>
+
+          {/* Global notification modal for new batch */}
+          <NotificationModal
+            title="New Batch Arrived"
+            message={`Vegetable: ${batchDetails.vegetableType}\nWeight: ${batchDetails.totalWeight} kg\nArrival Date: ${batchDetails.arrivalDate}`}
+            show={showModal}
+            onClose={closeModal}
+          />
         </div>
-
-        {/* Global notification modal for new batch */}
-        <NotificationModal
-          title="New Batch Arrived"
-          message={`Vegetable: ${batchDetails.vegetableType}\nWeight: ${batchDetails.totalWeight} kg\nArrival Date: ${batchDetails.arrivalDate}`}
-          show={showModal}
-          onClose={closeModal}
-        />
-      </div>
-    </Router>
+      </Router>
+    </StoreContextProvider>
   );
 }
 
