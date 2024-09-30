@@ -22,7 +22,7 @@ export default function InventoryDashboard() {
     }, []);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 ">
             <div className="bg-white p-4 rounded shadow">
                 <h2 className="text-xl font-bold mb-4">Registered Staff Members</h2>
                 <p className="text-2xl">{staffCount}</p>
