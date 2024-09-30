@@ -115,18 +115,29 @@ const OrderAdmin = () => {
   };
 
   // Export table as PDF
-  const exportPDF = () => {
+const exportPDF = () => {
     const input = document.getElementById("table-to-pdf");
-    html2canvas(input).then((canvas) => {
+    
+    // Set table width for better capture
+    html2canvas(input, {
+      scale: 2, // Increases resolution of canvas
+      scrollX: 0,
+      scrollY: -window.scrollY,
+    }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF();
-      pdf.addImage(imgData, "PNG", 10, 10);
+      const pdf = new jsPDF({
+        orientation: 'landscape', // Ensure landscape mode for wide tables
+        unit: 'px',
+        format: [canvas.width, canvas.height] // Set size to canvas
+      });
+  
+      pdf.addImage(imgData, "PNG", 10, 10, canvas.width, canvas.height);
       pdf.save("table.pdf");
     });
   };
-
-  // Export table as Excel
-  const exportExcel = () => {
+  
+// Export table as Excel
+const exportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "TableData");
@@ -135,140 +146,147 @@ const OrderAdmin = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Loading state */}
-      {isLoading ? (
-        <div>Loading orders...</div>
-      ) : (
-        <>
-          {/* Search and Filter Inputs */}
-          <div className="mb-4 flex flex-col md:flex-row gap-4">
-            {/* Search Input */}
-            <input
-              type="text"
-              className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/2"
-              placeholder="Search by item name..."
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+  {/* Loading state */}
+  {isLoading ? (
+    <div>Loading orders...</div>
+  ) : (
+    <>
+      {/* Search and Filter Inputs */}
+      <div className="mb-4 flex flex-col md:flex-row gap-4">
+        {/* Search Input */}
+        <input
+          type="text"
+          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/2"
+          placeholder="Search by item name..."
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-            {/* Status Dropdown */}
-            <select
-              className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              {statuses.map((status, index) => (
-                <option key={index} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+        {/* Status Dropdown */}
+        <select
+          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          {statuses.map((status, index) => (
+            <option key={index} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
 
-            {/* Sort By Dropdown */}
-            <select
-              className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  Sort by {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Sort By Dropdown */}
+        <select
+          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              Sort by {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-          {/* Table */}
-          <div id="table-to-pdf" className="overflow-x-auto">
-            <table className="table-auto w-full bg-white border-collapse border border-gray-200">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2">Order ID</th>
-                  <th className="border border-gray-300 px-4 py-2">Items</th>
-                  <th className="border border-gray-300 px-4 py-2">Amount</th>
-                  <th className="border border-gray-300 px-4 py-2">Status</th>
-                  <th className="border border-gray-300 px-4 py-2">Order Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedData.map((order) => (
-                  <tr key={order._id}>
-                    <td className="border border-gray-300 px-4 py-2">{order._id}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {order.items.map((item) => (
-                        <div key={item.id}>{item.name} (x{item.qty})</div>
-                      ))}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">${order.amount}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {/* Status Selection */}
-                      <select
-                        className="border border-gray-300 rounded"
-                        value={order.status}
-                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                      >
-                        {statuses.slice(1).map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {/* Table */}
+      <div id="table-to-pdf" className="overflow-x-auto">
+        <table className="table-auto w-full bg-white border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">Order ID</th>
+              <th className="border border-gray-300 px-4 py-2">Items</th>
+              <th className="border border-gray-300 px-4 py-2">Amount</th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Order Date</th>
+              <th className="border border-gray-300 px-4 py-2">Address</th>
+              <th className="border border-gray-300 px-4 py-2">Billing Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.map((order) => (
+              <tr key={order._id}>
+                <td className="border border-gray-300 px-4 py-2">{order._id}</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {order.items.map((item) => (
+                    <div key={item.id}>{item.name} (x{item.qty})</div>
+                  ))}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">${order.amount}</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {/* Status Selection */}
+                  <select
+                    className="border border-gray-300 rounded"
+                    value={order.status}
+                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                  >
+                    {statuses.slice(1).map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {order.address.street}, {order.address.city}, {order.address.country}, {order.address.postalCode}, {order.address.phone}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {order.billingAddress.street}, {order.billingAddress.city}, {order.billingAddress.country}, {order.billingAddress.postalCode}, {order.billingAddress.phone}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Pagination Controls */}
-          <div className="mt-4 flex justify-between">
-            <button
-              onClick={goToPreviousPage}
-              className={`${
-                currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
-              } text-white px-4 py-2 rounded`}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
+      {/* Pagination Controls */}
+      <div className="mt-4 flex justify-between">
+        <button
+          onClick={goToPreviousPage}
+          className={`${
+            currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
+          } text-white px-4 py-2 rounded`}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
 
-            <span className="text-gray-700">
-              Page {currentPage} of {totalPages}
-            </span>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
 
-            <button
-              onClick={goToNextPage}
-              className={`${
-                currentPage === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-blue-500"
-              } text-white px-4 py-2 rounded`}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+        <button
+          onClick={goToNextPage}
+          className={`${
+            currentPage === totalPages
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-500"
+          } text-white px-4 py-2 rounded`}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
 
-          {/* Export Buttons */}
-          <div className="mt-4">
-            <button
-              onClick={exportPDF}
-              className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-            >
-              Export to PDF
-            </button>
-            <button
-              onClick={exportExcel}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export to Excel
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+      {/* Export Buttons */}
+      <div className="mt-4">
+        <button
+          onClick={exportPDF}
+          className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+        >
+          Export to PDF
+        </button>
+        <button
+          onClick={exportExcel}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Export to Excel
+        </button>
+      </div>
+    </>
+  )}
+</div>
   );
 };
 
 export default OrderAdmin;
-
