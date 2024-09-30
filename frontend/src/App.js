@@ -167,7 +167,6 @@ function App() {
               <Route path="/customerRequestDB" element={<CustomerRequestDB />} />
 
               {/* User and Order Routes */}
-              <Route path="/" element={<UserHome />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/my-orders" element={<MyOrders />} />

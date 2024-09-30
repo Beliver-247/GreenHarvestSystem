@@ -140,7 +140,7 @@ const PasswordReset = () => {
             </div>
             {/* Show password error */}
             {passwordError && (
-              <div className="text-red-500 text-xs mt-2">{passwordError}</div>
+              <div className="text-red-500 text-sm mt-2">{passwordError}</div>
             )}
           </div>
 
@@ -169,7 +169,7 @@ const PasswordReset = () => {
             </div>
             {/* Show confirm password error */}
             {confirmPasswordError && (
-              <div className="text-red-500 text-xs mt-2">
+              <div className="text-red-500 text-sm mt-2">
                 {confirmPasswordError}
               </div>
             )}
