@@ -74,6 +74,14 @@ module.exports = (io) => {
       .catch(err => res.status(400).json("Error: " + err));
   });
 
+  // Route to get only grade C records
+router.route("/gradeC").get((req, res) => {
+  QARecord.find({ gradeCWeight: { $gt: 0 } })
+    .then(records => res.json(records))
+    .catch(err => res.status(400).json("Error: " + err));
+});
+
+
   // Route to delete a specific QA record by ID
   router.route("/delete/:id").delete((req, res) => {
     const { id } = req.params;
