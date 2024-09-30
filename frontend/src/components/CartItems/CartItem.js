@@ -89,7 +89,10 @@ const Cart = () => {
         <h1 className="text-4xl font-bold mb-10 text-gray-900 text-left">Your Cart</h1>
 
         {Object.keys(cartItems).length === 0 ? (
-          <p>Loading...</p>
+            <div className="flex items-center justify-center h-screen">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600"></div>
+              <p className="ml-4 text-xl font-semibold text-green-600">Loading...</p>
+            </div>
         ) : (
           <>
             <div className="overflow-x-auto">

@@ -91,12 +91,31 @@ const getOrderById = async (req, res) => {
 
 // Update Order Status
 const updateStatus = async (req, res) => {
+    const { orderId, status } = req.body;
+  
+    // Check if orderId and status are provided
+    if (!orderId || !status) {
+      return res.status(400).json({ success: false, message: "Order ID and status are required" });
+    }
+  
     try {
-        await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
-        res.json({ success: true, message: "Status updated" });
+      // Find and update the order status
+      const updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true } // Return the updated document
+      );
+  
+      // If order is not found, return an error
+      if (!updatedOrder) {
+        return res.status(404).json({ success: false, message: "Order not found" });
+      }
+  
+      // Successfully updated the status
+      res.status(200).json({ success: true, message: "Status updated", order: updatedOrder });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error updating status" });
+      console.error("Error updating status:", error);
+      res.status(500).json({ success: false, message: "Error updating status" });
     }
 };
 

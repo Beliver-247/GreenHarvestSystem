@@ -1,7 +1,6 @@
-// src/components/EditOrder.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useParams and useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 
 const EditOrder = () => {
   const { orderId } = useParams(); // Get orderId from URL
@@ -38,8 +37,7 @@ const EditOrder = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8070/api/orders/list-all-orders/${orderId}`, order);
-      // Show toast here (you can implement a toast library)
+      await axios.put(`http://localhost:3001/api/orders/list-all-orders/${orderId}`, order);
       alert("Order edited successfully!");
       navigate('/my-orders'); // Redirect to My Orders page
     } catch (error) {
@@ -48,68 +46,154 @@ const EditOrder = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className="text-center mt-48">Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h1>Edit Order</h1>
-      <form onSubmit={handleSave}>
-        <div>
-          <label>Amount</label>
-          <input
-            type="number"
-            name="amount"
-            value={order.amount}
-            onChange={handleChange}
-            placeholder="Amount"
-            required
-          />
+    <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold mb-6 text-center text-green-600">Edit Order</h1>
+      <form onSubmit={handleSave} className="space-y-6">
+        {/* Items */}
+        <h3 className="text-xl font-bold text-gray-700 mt-6">Items</h3>
+        {order.items.map((item, index) => (
+          <div key={index} className="p-4 mb-4 border border-gray-300 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block mb-1 text-gray-700 font-medium">Item Name</label>
+                <input
+                  type="text"
+                  name={`item-name-${index}`}
+                  value={item.name}
+                  readOnly
+                  className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-gray-700 font-medium">Quantity</label>
+                <input
+                  type="number"
+                  name="qty"
+                  value={item.qty}
+                  onChange={(e) => {
+                    const newItems = [...order.items];
+                    newItems[index].qty = e.target.value;
+                    setOrder({ ...order, items: newItems });
+                  }}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-gray-700 font-medium cursor-not-allowed">Price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={item.price}
+                  onChange={(e) => {
+                    const newItems = [...order.items];
+                    newItems[index].price = e.target.value;
+                    setOrder({ ...order, items: newItems });
+                  }}
+                  className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+        {/* Amount and Status */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label className="block mb-1 text-gray-700 font-medium">Amount</label>
+            <input
+              type="number"
+              name="amount"
+              value={order.amount}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-gray-700 font-medium">Status</label>
+            <input
+              type="text"
+              name="status"
+              value={order.status}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
         </div>
+
+        {/* Payment */}
         <div>
-          <label>Status</label>
-          <input
-            type="text"
-            name="status"
-            value={order.status}
-            onChange={handleChange}
-            placeholder="Status"
-            required
-          />
+          <label className="block mb-1 text-gray-700 font-medium">Payment Status</label>
+          <select
+            name="payment"
+            value={order.payment}
+            onChange={(e) => setOrder({ ...order, payment: e.target.value === "true" })}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            <option value="false">Pending</option>
+            <option value="true">Paid</option>
+          </select>
         </div>
-        <div>
-          <h3>Items</h3>
-          {order.items.map((item, index) => (
-            <div key={index}>
-              <label>{item.name}</label>
+
+        {/* Shipping Address */}
+        <h3 className="text-xl font-bold text-gray-700 mt-6">Shipping Address</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {['country', 'street', 'city', 'postalCode', 'phone'].map((field) => (
+            <div key={field}>
+              <label className="block mb-1 text-gray-700 font-medium">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
               <input
-                type="number"
-                name="qty"
-                value={item.qty}
-                onChange={(e) => {
-                  const newItems = [...order.items];
-                  newItems[index].qty = e.target.value;
-                  setOrder({ ...order, items: newItems });
-                }}
-                placeholder="Quantity"
-                required
-              />
-              <input
-                type="number"
-                name="price"
-                value={item.price}
-                onChange={(e) => {
-                  const newItems = [...order.items];
-                  newItems[index].price = e.target.value;
-                  setOrder({ ...order, items: newItems });
-                }}
-                placeholder="Price"
+                type="text"
+                name={field}
+                value={order.address[field]}
+                onChange={(e) =>
+                  setOrder({
+                    ...order,
+                    address: { ...order.address, [field]: e.target.value },
+                  })
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg"
                 required
               />
             </div>
           ))}
         </div>
-        <button type="submit">Save Changes</button>
+
+        {/* Billing Address */}
+        <h3 className="text-xl font-bold text-gray-700 mt-6">Billing Address</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {['country', 'street', 'city', 'postalCode', 'phone'].map((field) => (
+            <div key={field}>
+              <label className="block mb-1 text-gray-700 font-medium">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+              <input
+                type="text"
+                name={field}
+                value={order.billingAddress[field]}
+                onChange={(e) =>
+                  setOrder({
+                    ...order,
+                    billingAddress: { ...order.billingAddress, [field]: e.target.value },
+                  })
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                required
+              />
+            </div>
+          ))}
+        </div>
+
+       
+
+        {/* Save Button */}
+        <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold mt-4 hover:bg-green-700">
+          Save Changes
+        </button>
       </form>
     </div>
   );

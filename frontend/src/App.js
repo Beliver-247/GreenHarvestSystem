@@ -70,6 +70,7 @@ import MyOrders from './components/MyOrders/MyOrders.js';
 import OrderDetails from './components/OrderDetails/OrderDetails.js';
 import EditOrder from './components/EditOrder/EditOrder.js';
 import Footer from "./components/Footer.js";
+import OrderAdmin from "./pages/OrderAdmin.js";
 
 // Socket.io connection
 const socket = io("http://localhost:3001");
@@ -174,6 +175,7 @@ function App() {
               <Route path="/order/:id" element={<OrderForm />} />
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/edit-order/:orderId" element={<EditOrder />} />
+              <Route path="/order-admin" element={<OrderAdmin />} />
 
               {/*Staff layout*/}
               <Route path="/wh-staff" element={<WarehouseStaffLayout/>}>
