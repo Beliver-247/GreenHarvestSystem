@@ -202,9 +202,9 @@ const FuelManagement = () => {
           <tr>
             <th className="px-4 py-2 border">Driver NIC</th>
             <th className="px-4 py-2 border">Vehicle Registration No</th>
-            <th className="px-4 py-2 border">Mileage</th>
+            <th className="px-4 py-2 border">Mileage(Km)</th>
             <th className="px-4 py-2 border">Liters</th>
-            <th className="px-4 py-2 border">Cost</th>
+            <th className="px-4 py-2 border">Cost(LKR)</th>
           </tr>
         </thead>
         <tbody>
