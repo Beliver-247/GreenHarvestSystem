@@ -147,7 +147,7 @@ const AddEmployeeForm = () => {
               placeholder="First Name"
             />
             {errors.first_name && (
-              <p className="text-red-500 text-sm mt-1">{errors.first_name}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>
             )}
           </div>
 
@@ -166,7 +166,7 @@ const AddEmployeeForm = () => {
               placeholder="Last Name"
             />
             {errors.last_name && (
-              <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>
             )}
           </div>
 
@@ -185,7 +185,7 @@ const AddEmployeeForm = () => {
               placeholder="Email Address"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
             )}
           </div>
 
@@ -210,7 +210,7 @@ const AddEmployeeForm = () => {
             />
 
             {errors.mobile && (
-              <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
             )}
           </div>
 
@@ -239,7 +239,7 @@ const AddEmployeeForm = () => {
               <option value="Farmer Manager">Farmer Manager</option>
             </select>
             {errors.role && (
-              <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.role}</p>
             )}
           </div>
 
