@@ -72,37 +72,27 @@ const EditOrder = () => {
                 <label className="block mb-1 text-gray-700 font-medium">Quantity</label>
                 <input
                   type="number"
-                  name="qty"
+                  name={`qty-${index}`}
                   value={item.qty}
-                  onChange={(e) => {
-                    const newItems = [...order.items];
-                    newItems[index].qty = e.target.value;
-                    setOrder({ ...order, items: newItems });
-                  }}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  required
+                  readOnly // Make read-only to restrict editing
+                  className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block mb-1 text-gray-700 font-medium cursor-not-allowed">Price</label>
+                <label className="block mb-1 text-gray-700 font-medium">Price</label>
                 <input
                   type="number"
-                  name="price"
+                  name={`price-${index}`}
                   value={item.price}
-                  onChange={(e) => {
-                    const newItems = [...order.items];
-                    newItems[index].price = e.target.value;
-                    setOrder({ ...order, items: newItems });
-                  }}
+                  readOnly // Make read-only to restrict editing
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
-                  required
                 />
               </div>
             </div>
           </div>
         ))}
         {/* Amount and Status */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label className="block mb-1 text-gray-700 font-medium">Amount</label>
             <input
@@ -126,10 +116,10 @@ const EditOrder = () => {
               required
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Payment */}
-        <div>
+        {/* <div>
           <label className="block mb-1 text-gray-700 font-medium">Payment Status</label>
           <select
             name="payment"
@@ -140,7 +130,7 @@ const EditOrder = () => {
             <option value="false">Pending</option>
             <option value="true">Paid</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Shipping Address */}
         <h3 className="text-xl font-bold text-gray-700 mt-6">Shipping Address</h3>

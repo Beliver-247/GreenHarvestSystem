@@ -49,6 +49,13 @@ const OrderForm = () => {
         [name]: value
       }));
     }
+    // Run validation on the current field
+    const updatedFormData = {
+      ...formData,
+      [field]: subfield ? { ...formData[field], [subfield]: value } : value,
+    };
+    const validationErrors = validateForm(updatedFormData);  // Validate the form with the updated data
+    setErrors(validationErrors);
   };
 
   const handleBillingAddressToggle = (e) => {
@@ -112,7 +119,7 @@ const OrderForm = () => {
                   placeholder="Street"
                   onChange={handleChange}
                   value={formData.address.street}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressStreet ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
                 {errors.addressStreet && <p className="text-red-500">{errors.addressStreet}</p>}
@@ -122,7 +129,7 @@ const OrderForm = () => {
                   placeholder="City"
                   onChange={handleChange}
                   value={formData.address.city}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressCity ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
                 {errors.addressCity && <p className="text-red-500">{errors.addressCity}</p>}
@@ -132,7 +139,7 @@ const OrderForm = () => {
                   placeholder="Country"
                   onChange={handleChange}
                   value={formData.address.country}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressCountry ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
                 {errors.addressCountry && <p className="text-red-500">{errors.addressCountry}</p>}
@@ -142,7 +149,7 @@ const OrderForm = () => {
                   placeholder="Postal Code"
                   onChange={handleChange}
                   value={formData.address.postalCode}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
                 {errors.addressPostalCode && <p className="text-red-500">{errors.addressPostalCode}</p>}
@@ -152,7 +159,7 @@ const OrderForm = () => {
                   placeholder="Phone"
                   onChange={handleChange}
                   value={formData.address.phone}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressPhone ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
                 {errors.addressPhone && <p className="text-red-500">{errors.addressPhone}</p>}
@@ -192,7 +199,7 @@ const OrderForm = () => {
                       placeholder="Street"
                       onChange={handleChange}
                       value={formData.billingAddress.street}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressStreet ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
                     {errors.billingAddressStreet && <p className="text-red-500">{errors.billingAddressStreet}</p>}
@@ -202,7 +209,7 @@ const OrderForm = () => {
                       placeholder="City"
                       onChange={handleChange}
                       value={formData.billingAddress.city}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressCity ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
                     {errors.billingAddressCity && <p className="text-red-500">{errors.billingAddressCity}</p>}
@@ -212,8 +219,7 @@ const OrderForm = () => {
                       placeholder="Country"
                       onChange={handleChange}
                       value={formData.billingAddress.country}
-                      className="w-full p-2 border rounded-md bg-gray-100"
-                      required
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressCountry ? 'border-red-500' : 'border-gray-300'}`}
                     />
                     {errors.billingAddressCountry && <p className="text-red-500">{errors.billingAddressCountry}</p>}
 
@@ -222,7 +228,7 @@ const OrderForm = () => {
                       placeholder="Postal Code"
                       onChange={handleChange}
                       value={formData.billingAddress.postalCode}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
                     {errors.billingAddressPostalCode && <p className="text-red-500">{errors.billingAddressPostalCode}</p>}
@@ -232,7 +238,7 @@ const OrderForm = () => {
                       placeholder="Phone"
                       onChange={handleChange}
                       value={formData.billingAddress.phone}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressPhone ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
                     {errors.billingAddressPhone && <p className="text-red-500">{errors.billingAddressPhone}</p>}
