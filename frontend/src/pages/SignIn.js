@@ -222,7 +222,7 @@ const SignIn = () => {
         <p className="text-start mt-3 text-sm text-gray-500">
           Sign up as a farmer?{" "}
           <Link
-            to="#"
+            to="/fm_layout/addFarmer"
             className="text-green-800 hover:underline cursor-pointer"
           >
             Farmer Sign up
