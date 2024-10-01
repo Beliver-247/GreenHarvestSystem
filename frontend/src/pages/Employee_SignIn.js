@@ -116,7 +116,7 @@ const EmployeeSignin = () => {
         navigate("/wh-staff/inventory-dashboard");
       } else if (res.status === 905) {
         dispatch(signInSuccess(data));
-        // navigate("");
+        navigate("/order-admin");
       } else if (res.status === 906) {
         dispatch(signInSuccess(data));
         navigate("/farmerRequest");
