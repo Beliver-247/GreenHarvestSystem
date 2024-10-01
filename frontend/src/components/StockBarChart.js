@@ -19,9 +19,9 @@ const StockBarChart = ({ totalQuantities }) => {
   const datasets = ['A', 'B', 'C'].map((grade) => ({
     label: `Quality Grade ${grade}`,
     data: labels.map(vegType => totalQuantities[vegType][grade] || 0),
-    backgroundColor: grade === 'A' ? '#59E659' :
-                     grade === 'B' ? '#FFE140' :
-                     '#FF5700',
+    backgroundColor: grade === 'A' ? '#399918' :
+                     grade === 'B' ? '#FABC3F' :
+                     '#C7253E',
   }));
 
   const data = {

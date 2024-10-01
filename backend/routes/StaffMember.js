@@ -1,4 +1,4 @@
-const router = require("express").Router();
+/*const router = require("express").Router();
 let StaffMember = require("../models/StaffMember.js")
 
 //add staff
@@ -95,4 +95,4 @@ router.route("/get-staff/:id").get(async (req,res) => {
     })
 })
 
-module.exports = router;
+module.exports = router; */

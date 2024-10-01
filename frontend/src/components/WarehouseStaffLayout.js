@@ -5,7 +5,7 @@ const WarehouseStaffLayout = () => {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div className="w-64 h-screen bg-green-900 text-white fixed top-0 left-0">
+      <div className="w-64 h-screen bg-green-900 text-white fixed top-0 left-0 mt-10">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6">Inventory Control</h2>
           <ul className="space-y-4">
