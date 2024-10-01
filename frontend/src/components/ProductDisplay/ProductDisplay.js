@@ -52,9 +52,9 @@ const ProductDisplay = () => {
                         className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                         <option value="all">All Categories</option>
-                        <option value="fruits">Fruits</option>
-                        <option value="vegetables">Vegetables</option>
-                        <option value="dairy">Dairy</option>
+                        <option value="Carrots">Carrots</option>
+                        <option value="Leeks">Leeks</option>
+                        <option value="Potatoes">Potatoes</option>
                         {/* Add more categories as needed */}
                     </select>
                     <select
