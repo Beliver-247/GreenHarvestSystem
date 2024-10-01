@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Source+Sans+3&display=swap');
+
 
 .App{
   width:100vw;
@@ -8,19 +8,12 @@
 body{
   margin:0;
   padding:0;
-  font-family: 'Source Sans 3', sans-serif;
 }
 
 .SideNav{
   height:100%;
   width:300px;
   background-color:blue;
-}
-
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
 }
 
 
