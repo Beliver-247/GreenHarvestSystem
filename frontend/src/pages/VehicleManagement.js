@@ -278,7 +278,7 @@ const VehicleManagement = () => {
           </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Mileage:</span>
+              <span className="text-gray-700">Mileage(Km):</span>
               <input
                 type="number"
                 name="mileage"
@@ -337,7 +337,7 @@ const VehicleManagement = () => {
             <tr className="border-b border-gray-300">
               <th className="px-4 py-2 border">Registration No</th>
               <th className="px-4 py-2 border">Manufacturing Year</th>
-              <th className="px-4 py-2 border">Mileage</th>
+              <th className="px-4 py-2 border">Mileage(Km)</th>
               <th className="px-4 py-2 border">Length(Feet)</th>
               <th className="px-4 py-2 border">Width(Feet)</th>
               <th className="px-4 py-2 border">Actions</th>
