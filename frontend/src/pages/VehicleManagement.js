@@ -291,7 +291,7 @@ const VehicleManagement = () => {
             </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Length:</span>
+              <span className="text-gray-700">Length(Feet):</span>
               <input
                 type="number"
                 name="length"
@@ -304,7 +304,7 @@ const VehicleManagement = () => {
             </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Width:</span>
+              <span className="text-gray-700">Width(Feet):</span>
               <input
                 type="number"
                 name="width"
@@ -338,8 +338,8 @@ const VehicleManagement = () => {
               <th className="px-4 py-2 border">Registration No</th>
               <th className="px-4 py-2 border">Manufacturing Year</th>
               <th className="px-4 py-2 border">Mileage</th>
-              <th className="px-4 py-2 border">Length</th>
-              <th className="px-4 py-2 border">Width</th>
+              <th className="px-4 py-2 border">Length(Feet)</th>
+              <th className="px-4 py-2 border">Width(Feet)</th>
               <th className="px-4 py-2 border">Actions</th>
             </tr>
           </thead>
