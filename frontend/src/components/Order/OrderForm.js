@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
-import validateForm from '../../Validation/orderForm_validate'; // Adjust the path as necessary
+import validateForm from '../../Validation/orderForm_validate';// Adjust the path as necessary
 
 const OrderForm = () => {
   const { id } = useParams();
@@ -49,7 +49,6 @@ const OrderForm = () => {
         [name]: value
       }));
     }
-
     // Run validation on the current field
     const updatedFormData = {
       ...formData,
@@ -221,7 +220,6 @@ const OrderForm = () => {
                       onChange={handleChange}
                       value={formData.billingAddress.country}
                       className={`w-full p-2 border rounded-md ${errors.billingAddressCountry ? 'border-red-500' : 'border-gray-300'}`}
-                      required
                     />
                     {errors.billingAddressCountry && <p className="text-red-500">{errors.billingAddressCountry}</p>}
 
@@ -256,28 +254,39 @@ const OrderForm = () => {
             </button>
           </div>
 
-          {/* Right Side: Product Summary */}
-          <div className="border p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Product Summary</h2>
-            <div className="flex">
-              <img src={product.image} alt={product.name} className="w-24 h-24 object-cover mr-4" />
-              <div>
-                <h3 className="font-semibold">{product.name}</h3>
-                <p className="text-gray-600">Quantity: {cartItems[id]}</p>
-                <p className="font-semibold">Rs. {product.price}</p>
+          {/* Right Side: Order Summary */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                {/* Display product image */}
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-16 h-16 bg-gray-200 rounded"
+                />
+                <div className="flex-1">
+                  {/* Display product name */}
+                  <p className="font-semibold">{product.name}</p>
+                  <p className="text-sm text-gray-600">{cartItems[id]} Kg</p>
+                </div>
+                {/* Display product price */}
+                <p className="font-semibold">Rs {product.price}.00</p>
               </div>
             </div>
-            <div className="flex justify-between items-center">
-              <p>Subtotal:</p>
-              <p>Rs. {product.price * cartItems[id]}</p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p>Delivery:</p>
-              <p>Rs. 250</p>
-            </div>
-            <div className="flex justify-between items-center font-semibold">
-              <p>Total:</p>
-              <p>Rs. {product.price * cartItems[id] + 250}</p>
+
+            <div className="border-t pt-4 space-y-2">
+              <div className="flex justify-between">
+                <span>Sub total</span>
+                <span>Rs {product.price * cartItems[id]}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery Fee</span>
+                <span>Rs 250.00</span>
+              </div>
+              <div className="flex justify-between font-semibold">
+                <span>Total</span>
+                <span>Rs {product.price * cartItems[id] + 250}.00</span>
+              </div>
             </div>
           </div>
         </div>
