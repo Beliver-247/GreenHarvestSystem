@@ -36,9 +36,9 @@ const checkLicenseExpirations = async () => {
 
  
 
-//cron.schedule('*/10 * * * * *', checkLicenseExpirations, {
+// cron.schedule('*/10 * * * * *', checkLicenseExpirations, {
 //    timezone: "Asia/Colombo",
-//});
+// });
 
 
 /*cron.schedule('0 0 * * * ', checkLicenseExpirations, {

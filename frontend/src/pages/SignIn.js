@@ -229,6 +229,15 @@ const SignIn = () => {
           </Link>
         </p>
         <p className="text-start mt-3 text-sm text-gray-500">
+          Login as a driver?{" "}
+          <Link
+            to="/driver-signin"
+            className="text-blue-600 hover:underline cursor-pointer"
+          >
+            Driver Login
+          </Link>
+        </p>
+        <p className="text-start mt-3 text-sm text-gray-500">
           Login as a manager?{" "}
           <Link
             to="/employee-signin"

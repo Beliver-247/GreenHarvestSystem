@@ -1,6 +1,8 @@
 const router = require('express').Router();
 let Driver = require('../models/Driver');
 
+
+
 router.route('/add').post((req, res) =>{
     const name = req.body.name;
     const nic = req.body.nic;

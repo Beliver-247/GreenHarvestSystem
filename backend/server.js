@@ -8,6 +8,7 @@ const http = require("http");
 const path = require('path');
 const { Server } = require("socket.io");
 
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -132,6 +133,7 @@ app.use((err, req, res, next) => {
     message,
   });
 });
+
 
 // Start the server
 server.listen(PORT, () => {
