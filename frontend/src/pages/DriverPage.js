@@ -12,6 +12,7 @@ const DriverPage = () => {
 
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [currentMileage, setCurrentMileage] = useState(null);
   const [errors, setErrors] = useState({
     driverNicError: '',
     registerNoError: '',
@@ -44,7 +45,12 @@ const DriverPage = () => {
   };
 
   const validateVehicleRegistration = (registrationNo) => {
-    return vehicles.some(vehicle => vehicle.registrationNo === registrationNo);
+    const selectedVehicle = vehicles.find(vehicle => vehicle.registrationNo === registrationNo);
+    if (selectedVehicle) {
+      setCurrentMileage(selectedVehicle.mileage); // Set the current mileage of the selected vehicle
+      return true;
+    }
+    return false;
   };
 
   const handleChange = (e) => {
@@ -64,16 +70,32 @@ const DriverPage = () => {
     }
 
     if (name === 'registerNo') {
+      const isValidRegistration = validateVehicleRegistration(value);
       setErrors(prev => ({
         ...prev,
-        registerNoError: validateVehicleRegistration(value) ? '' : 'Vehicle registration number not found'
+        registerNoError: isValidRegistration ? '' : 'Vehicle registration number not found'
       }));
+    }
+
+    if (name === 'mileage') {
+      const inputMileage = Number(value);
+      if (currentMileage !== null && inputMileage <= currentMileage) {
+        setErrors(prev => ({
+          ...prev,
+          mileageError: `Mileage must be greater than the current mileage (${currentMileage} km)`
+        }));
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          mileageError: ''
+        }));
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!errors.driverNicError && !errors.registerNoError) {
+    if (!errors.driverNicError && !errors.registerNoError && !errors.mileageError) {
       try {
         const response = await axios.post('http://localhost:3001/fuelpurchase/add', formData);
         setMessage(response.data);
@@ -84,6 +106,7 @@ const DriverPage = () => {
           liters: '',
           cost: ''
         });
+        setCurrentMileage(null); // Reset current mileage
       } catch (err) {
         console.error(err);
         setMessage('Error adding fuel purchase record.');
@@ -121,19 +144,26 @@ const DriverPage = () => {
           <div>
             <label className="flex flex-col">
               Vehicle Registration Number:
-              <input
-                type="text"
+              <select
                 name="registerNo"
                 value={formData.registerNo}
                 onChange={handleChange}
                 className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="" disabled>Select a vehicle</option>
+                {vehicles.map((vehicle) => (
+                  <option key={vehicle.registrationNo} value={vehicle.registrationNo}>
+                    {vehicle.registrationNo}
+                  </option>
+                ))}
+              </select>
               {errors.registerNoError && <p className="error text-red-500">{errors.registerNoError}</p>}
             </label>
           </div>
+
           <div>
             <label className="flex flex-col">
-              Mileage:
+              Mileage (Km):
               <input
                 type="number"
                 name="mileage"
@@ -141,8 +171,10 @@ const DriverPage = () => {
                 onChange={handleChange}
                 className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.mileageError && <p className="error text-red-500">{errors.mileageError}</p>}
             </label>
           </div>
+
           <div>
             <label className="flex flex-col">
               Liters:
@@ -157,7 +189,7 @@ const DriverPage = () => {
           </div>
           <div>
             <label className="flex flex-col">
-              Cost:
+              Cost (LKR):
               <input
                 type="number"
                 name="cost"
