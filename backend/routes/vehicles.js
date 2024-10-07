@@ -1,6 +1,7 @@
 const router = require('express').Router();
 let Vehicle = require('../models/Vehicle');
 
+
 router.route('/add').post((req, res) =>{
     const registrationNo = req.body.registrationNo;
     const manufacYear = req.body.manufacYear;

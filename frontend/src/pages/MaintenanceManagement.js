@@ -15,6 +15,7 @@ const MaintenanceManagement = () => {
   const [editingRecordId, setEditingRecordId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [formError, setFormError] = useState(''); // For real-time validation errors
+  const [vehicleMileage, setVehicleMileage] = useState(null); // Track selected vehicle's mileage
 
   useEffect(() => {
     axios.get('http://localhost:3001/maintain/')
@@ -39,10 +40,27 @@ const MaintenanceManagement = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Real-time validation for Next Service Mileage
+    if (name === 'registerNo') {
+      // Fetch selected vehicle's mileage when registration number is selected
+      const selectedVehicle = vehicles.find(vehicle => vehicle.registrationNo === value);
+      if (selectedVehicle) {
+        setVehicleMileage(selectedVehicle.mileage); // Set the mileage from the selected vehicle
+      }
+    }
+
+    if (name === 'currentMileage') {
+      // Ensure current mileage is less than or equal to vehicle mileage
+      if (parseInt(value) > vehicleMileage) {
+        setFormError('Current Mileage must be less than or equal to Vehicle Mileage');
+      } else {
+        setFormError('');
+      }
+    }
+
     if (name === 'nextServiceMileage') {
-      if (parseInt(value) <= parseInt(formData.currentMileage)) {
-        setFormError('Next Service Mileage must be greater than Current Mileage');
+      // Ensure next service mileage is greater than vehicle mileage
+      if (parseInt(value) <= vehicleMileage) {
+        setFormError('Next Service Mileage must be greater than Vehicle Mileage');
       } else {
         setFormError('');
       }
@@ -126,9 +144,10 @@ const MaintenanceManagement = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredRecords = maintenanceRecords.filter(record =>
-    record.registerNo.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredRecords = maintenanceRecords.filter(record => 
+    (record?.registerNo || '').toLowerCase().includes((searchQuery || '').toLowerCase())
   );
+  
 
   return (
     <div className="w-full mx-auto p-4 sm:p-6 lg:p-8 bg-white shadow-md rounded-lg overflow-auto">
@@ -177,6 +196,7 @@ const MaintenanceManagement = () => {
               required
               className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             />
+            {formError && <p className="text-red-500">{formError}</p>} {/* Display error message */}
           </label>
           <label className="block">
             Next Service Mileage:
@@ -203,7 +223,7 @@ const MaintenanceManagement = () => {
             />
           </label>
           <label className="block">
-            Total Cost:
+            Total Cost (LKR):
             <input
               type="number"
               name="totalCost"
@@ -216,27 +236,27 @@ const MaintenanceManagement = () => {
           <button
             type="submit"
             className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition duration-200"
-            disabled={!!formError} // Disable button if there's an error
+            disabled={!!formError} // Disable button if there's a validation error
           >
-            {editingRecordId ? 'Update Record' : 'Add Record'}
+            {editingRecordId ? 'Update' : 'Submit'}
           </button>
         </form>
       )}
 
-      <table className="w-full table-auto border-collapse mb-6">
-        <thead className="bg-gray-200">
-          <tr className="border-b border-gray-300">
-            <th className="px-4 py-2 border">Registration No</th>
-            <th className="px-4 py-2 border">Current Mileage</th>
-            <th className="px-4 py-2 border">Next Service Mileage</th>
-            <th className="px-4 py-2 border">Service Date</th>
-            <th className="px-4 py-2 border">Total Cost</th>
-            <th className="px-4 py-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRecords.length > 0 ? (
-            filteredRecords.map(record => (
+      {!showForm && filteredRecords.length > 0 && (
+        <table className="w-full table-auto bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="px-4 py-2 border">Reg. No</th>
+              <th className="px-4 py-2 border">Current Mileage</th>
+              <th className="px-4 py-2 border">Next Service Mileage</th>
+              <th className="px-4 py-2 border">Service Date</th>
+              <th className="px-4 py-2 border">Total Cost(LKR)</th>
+              <th className="px-4 py-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRecords.map(record => (
               <tr key={record._id}>
                 <td className="px-4 py-2 border">{record.registerNo}</td>
                 <td className="px-4 py-2 border">{record.currentMileage}</td>
@@ -246,26 +266,26 @@ const MaintenanceManagement = () => {
                 <td className="px-4 py-2 border">
                   <button
                     onClick={() => handleEdit(record)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded"
+                    className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition duration-200 mr-2"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded ml-2"
+                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
                   >
                     Delete
                   </button>
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center p-4">No maintenance records found</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {filteredRecords.length === 0 && !showForm && (
+        <p className="text-gray-600 text-center">No records found.</p>
+      )}
     </div>
   );
 };
