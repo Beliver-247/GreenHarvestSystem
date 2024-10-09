@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Navigate } from 'react-router-dom';
+import 'leaflet/dist/leaflet.css';
+
 
 // Local Repo Components
 import LayoutQAManager from "./components/LayoutQAManager";
