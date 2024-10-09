@@ -1,6 +1,25 @@
 const router = require('express').Router();
 let Driver = require('../models/Driver');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+const authenticateToken = (req, res, next) => {
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1]; // Get token from the Authorization header
+  
+    if (!token) {
+      return res.sendStatus(401); // Unauthorized
+    }
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403); // Forbidden
+      }
+      req.user = user; // Save the user information in request object
+      next(); // Proceed to the next middleware/route handler
+    });
+  };
+  
+  module.exports = authenticateToken;
 
 
 router.route('/add').post((req, res) =>{
@@ -79,4 +98,38 @@ router.route("/delete/:driverid").delete(async (req, res) => {
     })
 })
 
+router.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    
+    try {
+        const driver = await Driver.findOne({ email });
+        if (!driver) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Compare plain text password directly
+        if (password !== driver.password) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign({ id: driver._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ token, driver });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+  router.get('/profile', authenticateToken, async (req, res) => {
+    try {
+      const driver = await Driver.findById(req.user.id); // req.user is set by authenticateToken middleware
+      if (!driver) return res.status(404).json({ message: 'Driver not found' });
+  
+      res.json(driver); // Return driver's details
+    } catch (err) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+
 module.exports = router;
+
+
