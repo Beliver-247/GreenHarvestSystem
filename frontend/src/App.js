@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { Navigate } from 'react-router-dom';
 
 // Local Repo Components
 import LayoutQAManager from "./components/LayoutQAManager";
@@ -25,6 +26,7 @@ import FuelManagement from "./pages/FuelManagement";
 import MaintenanceManagement from "./pages/MaintenanceManagement";
 import ExpensesCalculator from "./pages/ExpensesCalculator";
 import DriverPage from "./pages/DriverPage";
+import DriverProfile from "./pages/DriverProfile.js";
    
 
 import Signup from "./pages/Signup.js";
@@ -102,12 +104,26 @@ import AdminDashboardFarmer from "./components/AdminDashboardFarmer";
 import FarmerDashboard from "./components/FarmerDashBoard";
 import MyProfile from "./components/MyProfile";
 
+import DriverLogin from "./pages/DriverLogin";
+import DriverDashboard from "./components/DriverDashboard.js";
+const isAuthenticated = false; // Replace this with your actual authentication logic
+
+// ProtectedRoute definition
+const ProtectedRoute = ({ element }) => {
+  return isAuthenticated ? element : <Navigate to="/driver-signin" />;
+};
+
 // Socket.io connection
 const socket = io("http://localhost:3001");
 
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [batchDetails, setBatchDetails] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
   useEffect(() => {
     // Listen for the new batch event from the backend
@@ -171,11 +187,20 @@ function App() {
                   element={<ExpensesCalculator />}
                 />
               </Route>
+              
+              <Route path="/driver-signin" element={<DriverLogin />} />
 
-              {/* Driver Routes */}
               <Route path="/driver" element={<LayoutDriver />}>
-                <Route path="driver-page" element={<DriverPage />} />
+                <Route index element={<DriverDashboard />} />
+                <Route path="driver-page" element={<DriverPage />}/>
+                <Route path="profile" element={<DriverProfile />}/>
               </Route>
+
+   
+
+              
+
+
 
               {/* Authentication and Recovery Routes */}
               <Route path="/" element={<UserHome />} />
