@@ -63,6 +63,10 @@ const VehicleManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === 'registrationNo' && value.length > 8) {
+      return; // Prevent further input if length exceeds 4
+    }
+    
     setFormData(prevData => ({
       ...prevData,
       [name]: type === 'checkbox' ? checked : value
@@ -85,8 +89,12 @@ const VehicleManagement = () => {
     } else if (name === 'mileage' || name === 'length' || name === 'width') {
       if (isNaN(value) || value < 0) {
         error = 'This field must be a positive number.';
+      }  
+    }else if (name === 'length' || name === 'width') {
+      if (isNaN(value) || value <= 0 || value > 50) {
+        error = 'Length and Width must be between 1 and 50 feet.';
       }
-    }
+    } 
 
     setErrors(prevErrors => ({
       ...prevErrors,
@@ -209,6 +217,7 @@ const VehicleManagement = () => {
       {showForm && (
         <div className="relative">
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md mb-6">
+            {/* Registration No Input */}
             <label className="block mb-4">
               <span className="text-gray-700">Registration No:</span>
               <input
@@ -221,43 +230,53 @@ const VehicleManagement = () => {
               />
               {errors.registrationNo && <span className="text-red-500 text-sm">{errors.registrationNo}</span>}
               {verificationError && <span className="text-red-500 text-sm">{verificationError}</span>}
-
-              <br></br><p
-              type="button"
-              onClick={handleVerify} className="text-blue-500 cursor-pointer hover:underline">
-              Verify From Government
-            </p>
-            {showIframe && (
-        <div className="mt-4">
-          <iframe
-            src={iframeUrl}
-            width="100%"
-            height="500"
-            title="Government Verification"
-            className="border rounded-md"
-          />
-          <button
-            onClick={handleDone}
-            disabled={!formData.verified}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Done
-          </button>
-          <label className="block mb-4 flex items-center" >
-              <input
-                type="checkbox"
-                name="verified"
-                checked={formData.verified}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              <span className="text-gray-700">Verified?</span>
+              
+              <br />
+              {formData.verified ? (
+                <span className="text-green-500">Verified ✔️</span>
+              ) : (
+                <span className="text-yellow-500">Manual verification is Pending</span>
+              )}
+              <p
+                type="button"
+                onClick={handleVerify} 
+                className="text-blue-500 cursor-pointer hover:underline">
+                Verify From Government
+              </p>
+              {/* Display "Pending" or "Verified" text */}
+              
+              {showIframe && (
+                <div className="mt-4">
+                  <iframe
+                    src={iframeUrl}
+                    width="100%"
+                    height="500"
+                    title="Government Verification"
+                    className="border rounded-md"
+                  />
+                  <button
+                    onClick={handleDone}
+                    disabled={!formData.verified}
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Done
+                  </button>
+                  <label className="block mb-4 flex items-center">
+                    <input
+                      type="checkbox"
+                      name="verified"
+                      checked={formData.verified}
+                      onChange={handleInputChange}
+                      className="mr-2"
+                    />
+                    <span className="text-gray-700">Verified?</span>
+                  </label>
+                </div>
+              )}
             </label>
-        </div>
-      )}
             
             
-            </label>
+          
             
 
             <label className="block mb-4">
