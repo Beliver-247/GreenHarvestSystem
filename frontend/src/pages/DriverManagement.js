@@ -69,7 +69,7 @@ const DriverManagement = () => {
     if (name === 'name') {
       const lettersAndSpacesPattern = /^[A-Za-z]+( [A-Za-z]+)*$/;
       if (!lettersAndSpacesPattern.test(value)) {
-        error = 'Invalid input. Only letters and single spaces between words are allowed.';
+        error = 'Invalid input. single spaces between words are allowed.';
       }
     } else if (name === 'nic') {
       const oldNICRegex = /^[0-9]{9}[Vv]$/;
@@ -229,7 +229,12 @@ const DriverManagement = () => {
                 type="text"
                 name="name"
                 value={formData.name}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  // Check if the input value contains any numbers
+                  if (!/\d/.test(e.target.value)) {
+                    handleInputChange(e);
+                  }
+                }}
                 className="p-2 border rounded w-full"
               />
               {errors.name && <span className="text-red-500">{errors.name}</span>}
