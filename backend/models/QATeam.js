@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -21,7 +20,6 @@ const qaTeamSchema = new Schema({
         type: String,
         required: true
     },
-    
     
     role: {
         type: String,
@@ -75,25 +73,21 @@ const qaTeamSchema = new Schema({
                 if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                     age--;
                 }
-                return age >= 20;
+                return age >= 18;
             },
-            message: 'Must be at least 20 years old.'
+            message: 'Must be at least 18 years old.'
         }
     },
     password: {
         type: String,
         required: true,
     },
-    
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-    performanceRating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        default: 3
+
+    // Add Gender field
+    gender: {
+        type: String,
+        enum: ['Male', 'Female'],
+        required: true
     }
 });
 

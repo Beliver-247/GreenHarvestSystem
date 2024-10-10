@@ -22,6 +22,15 @@ const qaRecordSchema = new Schema({
         required: true,
         min: [0, 'Weight must be a positive number']
     },
+    totalWeight: {
+        type: Number,
+        required: true,
+        min: [0, 'Total weight must be a positive number']
+    },
+    wastedWeight: {
+        type: Number,
+        min: [0, 'Wasted weight must be a positive number']
+    },
     batchId: {
         type: Schema.Types.ObjectId,
         ref: 'IncomingBatch',
@@ -45,11 +54,14 @@ const counterSchema = new Schema({
 
 const Counter = mongoose.model("Counter", counterSchema);
 
-// Pre-save hook to generate the custom ID
+// Pre-save hook to generate the custom ID and calculate wasted weight
 qaRecordSchema.pre("save", async function(next) {
     const doc = this;
 
     try {
+        // Calculate wasted weight before saving
+        doc.wastedWeight = doc.totalWeight - (doc.gradeAWeight + doc.gradeBWeight + doc.gradeCWeight);
+
         // Find the counter for the specific vegetable type
         const counter = await Counter.findOneAndUpdate(
             { vegetableType: doc.vegetableType },

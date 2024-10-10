@@ -29,20 +29,20 @@ const LayoutQAManager = () => {
           </li>
           <li>
             <Link
-              to="/qa-manager/add-qarecord"
-              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
-            >
-              <FaPlus className="mr-3" />
-              <span className="font-medium">Add QA Record</span>
-            </Link>
-          </li>
-          <li>
-            <Link
               to="/qa-manager/qa-records"
               className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
             >
               <FaClipboardList className="mr-3" />
               <span className="font-medium">QA Records</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/qa-manager/qa-standards"
+              className="flex items-center px-4 py-3 hover:bg-[#157e47] transition duration-300 rounded-lg"
+            >
+              <FaClipboardList className="mr-3" />
+              <span className="font-medium">Quality Standards</span>
             </Link>
           </li>
           <li>

@@ -12,9 +12,13 @@ import AddQArecord from "./components/AddQArecord";
 import AddQAmember from "./components/AddQAmember";
 import QARecords from "./components/qaRecords";
 import QATeam from "./components/QATeam";
+import QAteamDashboard from "./components/QATeamDash.js";
 import IncomingBatches from "./components/IncomingBatches";
 import QADashboard from "./components/QADash";
 import QAStandards from "./components/QAStandardComponent";
+import UpdateStandards from './components/updateStandards';
+import QAteamLogin from './components/QAteamLogin';
+import QAteamProfile from './components/QAteamProfile';
 import NotificationModal from "./components/modals/NotificationModal"; // Local notification modal
 
 // Remote Repo Components
@@ -149,24 +153,28 @@ function App() {
         <div className="app-container">
           <div className="content">
             <Routes>
-              {/* QA Manager Routes */}
-              <Route path="/qa-manager" element={<LayoutQAManager />}>
-                <Route index element={<QADashboard />} />
-                <Route path="incoming-batches" element={<IncomingBatches />} />
-                <Route path="add-qarecord" element={<AddQArecord />} />
-                <Route path="qa-records" element={<QARecords />} />
-                <Route path="qa-team" element={<QATeam />} />
-                <Route path="add-qaMember" element={<AddQAmember />} />
-                <Route path="qa-standards" element={<QAStandards />} />
-              </Route>
+            {/* QA Manager Routes */}
+            <Route path="/qa-manager/*" element={<LayoutQAManager />}>
+              <Route index element={<QADashboard />} />
+              <Route path="incoming-batches" element={<IncomingBatches userRole="QA Manager" />} /> 
+              <Route path="add-qarecord" element={<AddQArecord />} />
+              <Route path="qa-records" element={<QARecords />} />
+              <Route path="qa-team" element={<QATeam />} />
+              <Route path="add-qaMember" element={<AddQAmember />} />
+              <Route path="qa-standards" element={<QAStandards />} />
+              <Route path="qa-standards/update" element={<UpdateStandards />} />
+            </Route>
 
-              {/* QA Team Routes */}
-              <Route path="/qa-team" element={<LayoutQATeam />}>
-                <Route index element={<QADashboard />} />
-                <Route path="add-qarecord" element={<AddQArecord />} />
-                <Route path="qa-records" element={<QARecords />} />
-                <Route path="incoming-batches" element={<IncomingBatches />} />
-              </Route>
+            {/* QA Team Routes */}
+            <Route path="/qa-team/*" element={<LayoutQATeam />}>
+              <Route index element={<QAteamDashboard />} />
+              <Route path="add-qarecord" element={<AddQArecord />} />
+              <Route path="qa-records" element={<QARecords />} />
+              <Route path="incoming-batches" element={<IncomingBatches userRole="QA Team" />} />
+              <Route path="qa-standards" element={<QAStandards />} />
+              <Route path="qa-myprofile" element={<QAteamProfile />}/>
+            </Route>
+            <Route path="qa-team-login" element={<QAteamLogin />}/>
 
               {/* Vehicle Fleet Management Routes */}
               <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
