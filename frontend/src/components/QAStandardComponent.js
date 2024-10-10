@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const QAStandards = () => {
   const [standards, setStandards] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchStandards = async () => {
@@ -20,6 +23,10 @@ const QAStandards = () => {
 
     fetchStandards();
   }, []);
+
+  const handleUpdateClick = (vegetableType) => {
+    navigate(`/qa-manager/qa-standards/update`, { state: { vegetableType } });
+  };
 
   return (
     <div className="max-w-6xl mx-auto my-10 p-8 bg-gray-100 rounded-lg shadow-lg transition-transform duration-300">
@@ -61,6 +68,18 @@ const QAStandards = () => {
               </ul>
             </div>
           </div>
+
+          {/* Conditionally render the update button based on the current path */}
+          {location.pathname.includes("/qa-manager/qa-standards") && (
+            <div className="text-right mt-5">
+              <button
+                className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors"
+                onClick={() => handleUpdateClick(standard.vegetableType)}
+              >
+                Update
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>

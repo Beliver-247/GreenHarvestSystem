@@ -4,10 +4,11 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const cron = require('node-cron');
+const twilio = require('twilio');
 const http = require("http");
 const path = require('path');
 const { Server } = require("socket.io");
-
 
 // Load environment variables from .env file
 dotenv.config();
@@ -40,14 +41,61 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Importing routes from both server.js files
+// Twilio setup for WhatsApp
+const accountSid = process.env.QATWILIO_ACCOUNT_SID;
+const authToken = process.env.QATWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
+const fromWhatsAppNumber = 'whatsapp:+14155238886'; // Twilio WhatsApp number
+const toWhatsAppNumber = 'whatsapp:+94714211115';  // Replace with recipient number
+
+// Function to send WhatsApp message
+const sendWhatsAppMessage = (message) => {
+  client.messages
+    .create({
+      body: message,
+      from: fromWhatsAppNumber,
+      to: toWhatsAppNumber
+    })
+    .then((msg) => console.log(`WhatsApp message sent: ${msg.sid}`))
+    .catch((err) => console.error('Failed to send WhatsApp message: ', err));
+};
+
+// Cron job to check for expiring batches (runs daily at midnight)
+cron.schedule('0 0 * * *', async () => {
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+  try {
+    const expiringBatches = await IncomingBatch.find({
+      arrivalDate: { $lt: twoDaysAgo }
+    });
+
+    expiringBatches.forEach(batch => {
+      const message = `Batch about to expire!!\nVegetable: ${batch.vegetableType}\nWeight: ${batch.totalWeight} kg\nArrival Date: ${batch.arrivalDate}`;
+      sendWhatsAppMessage(message);
+    });
+
+    if (expiringBatches.length === 0) {
+      console.log('No batches are expiring today.');
+    }
+  } catch (error) {
+    console.error('Error checking for expiring batches:', error);
+  }
+});
+
+// Importing routes (local and remote)
+const qaStandardsRouter = require("./routes/qaStandards");
+const QARecordRouter = require("./routes/QArecord")(io);
+const QAteamRouter = require("./routes/QATeam");
+const newBatchRouter = require("./routes/IncomingBatches")(io);
+
 // Farmer Routes
 const farmerRouter = require("./routes/farmer_routes.js");
 app.use("/farmer", farmerRouter);
 
 // Crop Readiness Routes
-const cropReadinessRoutes = require('./routes/cropReadinessRoutes');  
-app.use('/cropReadiness', cropReadinessRoutes);  
+const cropReadinessRoutes = require('./routes/cropReadinessRoutes');
+app.use('/cropReadiness', cropReadinessRoutes);
 
 // Pickup request Routes
 const pickupRequestRoutes = require('./routes/pickupRequestRoutes');
@@ -55,15 +103,15 @@ app.use('/pickup-request', pickupRequestRoutes);
 
 // Land Routes
 const landRoutes = require("./routes/land_routes");
-app.use("/land", landRoutes); 
+app.use("/land", landRoutes);
 
-// User-related Routes (from group project)
+// User-related Routes
 const userRoutes = require("./routes/UserRoute.js");
 const AuthRoute = require("./routes/AuthRoute.js");
 app.use("/api/user", userRoutes);
 app.use("/api/auth", AuthRoute);
 
-// Other Routes (from group project)
+// Other Routes (remote)
 const stockRouter = require("./routes/stocks.js");
 const staffRouter = require("./routes/staffMembers.js");
 const driverRouter = require("./routes/drivers.js");
@@ -78,12 +126,7 @@ const farmerRequestRoutes = require("./routes/farmerRequestRoutes.js");
 const customerRequestRoutes = require("./routes/customerRequestRoutes.js");
 const productRoutes = require('./routes/productRoutes');
 
-// Routes for QA and Incoming Batches (with socket.io integration)
-const qaStandardsRouter = require("./routes/qaStandards");
-const QARecordRouter = require("./routes/QArecord")(io);
-const QAteamRouter = require("./routes/QATeam");
-const newBatchRouter = require("./routes/IncomingBatches")(io); 
-
+// Use merged routes
 app.use("/stock", stockRouter);
 app.use("/staff", staffRouter);
 app.use("/vehicle", vehicleRouter);
@@ -102,7 +145,7 @@ app.use("/QATeam", QAteamRouter);
 app.use("/incomingBatches", newBatchRouter);
 app.use('/api/products', productRoutes);
 
-// Scheduler
+// Scheduler for license check (remote)
 require('./schedulers/licenseCheckScheduler.js');
 
 // Socket.io for handling real-time connections
@@ -119,7 +162,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
 
   app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
   });
 }
 
@@ -133,7 +176,6 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-
 
 // Start the server
 server.listen(PORT, () => {

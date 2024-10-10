@@ -1,118 +1,144 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-// Helper function for name validation (only letters and exactly two words)
-const validateName = (name) => {
-  const nameRegex = /^[A-Za-z]+\s[A-Za-z]+$/;
-  return nameRegex.test(name);
-};
-
-// Helper function for email validation (standard email format)
-const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// Helper function for NIC validation
-// - 12 digits: First 4 digits must equal birth year
-// - 9 digits + 'v' or 'V': First 2 digits must equal last 2 digits of birth year
-const validateNIC = (NIC, birthYear) => {
-  if (/^\d{12}$/.test(NIC)) {
-    const yearFromNIC = NIC.substring(0, 4);
-    return yearFromNIC === birthYear;
-  } else if (/^\d{9}[vV]$/.test(NIC)) {
-    const yearFromNIC = NIC.substring(0, 2);
-    return yearFromNIC === birthYear.substring(2, 4);
-  }
-  return false;
-};
-
-// Helper function for phone number validation (must be exactly 10 digits)
-const validatePhone = (phone) => {
-  return /^\d{10}$/.test(phone);
-};
-
-// Helper function for password validation (at least 8 characters, one uppercase, one number, one special character)
-const validatePassword = (password) => {
-  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-  return passwordRegex.test(password);
-};
 
 const AddQAmember = () => {
-  const [name, setName] = useState("");
-  const [NIC, setNIC] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [birthDay, setBirthDay] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [password, setPassword] = useState(""); 
-  const [performanceRating, setPerformanceRating] = useState(3);
-  const [isActive, setIsActive] = useState(true);
-  const [nameError, setNameError] = useState(""); 
-  const [NICError, setNICError] = useState(""); 
-  const [emailError, setEmailError] = useState("");
-  const [phoneError, setPhoneError] = useState(""); 
-  const [passwordError, setPasswordError] = useState(""); 
+  // Regular expressions for NIC formats
+  const oldNICFormat = /^[0-9]{9}[Vv]$/; // Old format: 9 digits followed by V
+  const newNICFormat = /^[0-9]{12}$/; // New format: 12 digits
 
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    NIC: "",
+    contactInfo: {
+      email: "",
+      phone: "",
+    },
+    birthDay: "",
+    address: {
+      street: "",
+      city: "",
+    },
+    role: "QA-Team", // default role
+    gender: "Male", // default gender
+  });
 
-  const onSubmit = async (e) => {
+  const [message, setMessage] = useState("");
+  const [isGenderLocked, setIsGenderLocked] = useState(false); // New state for locking gender
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validation for name field: No numbers or special characters allowed
+    if (name === "name" && /[^a-zA-Z\s]/.test(value)) {
+      setMessage("Name can only contain letters.");
+      return;
+    }
+
+    // Validation for phone field: Only allow digits and limit to 10 characters
+    if (
+      name === "contactInfo.phone" &&
+      (/[^0-9]/.test(value) || value.length > 10)
+    ) {
+      setMessage(
+        "Phone number must be a maximum of 10 digits and contain only numbers."
+      );
+      return;
+    }
+
+    if (name.includes("contactInfo") || name.includes("address")) {
+      const [section, field] = name.split(".");
+      setFormData((prevData) => ({
+        ...prevData,
+        [section]: {
+          ...prevData[section],
+          [field]: value,
+        },
+      }));
+    } else {
+      setFormData({ ...formData, [name]: value });
+
+      if (name === "NIC") {
+        handleNICChange(value);
+      }
+      if (name === "birthDay") {
+        validateAge(value); // Validate age when user manually enters birth date
+      }
+    }
+    setMessage(""); // Reset message on valid input
+  };
+
+  const handleNICChange = (nic) => {
+    if (newNICFormat.test(nic)) {
+      // New NIC format handling (this part remains the same)
+      const birthYear = parseInt(nic.substring(0, 4), 10);
+      let days = parseInt(nic.substring(4, 7), 10);
+
+      let gender = "Male";
+      if (days > 500) {
+        gender = "Female";
+        days -= 500;
+      }
+
+      const birthDate = calculateBirthDate(birthYear, days);
+
+      setFormData((prevData) => ({
+        ...prevData,
+        gender,
+        birthDay: birthDate,
+      }));
+      setIsGenderLocked(true); // Lock the gender field
+      validateAge(birthDate);
+    } else if (oldNICFormat.test(nic)) {
+      // Old NIC format handling (e.g., 720721074V)
+      const birthYearLastTwo = parseInt(nic.substring(0, 2), 10); // First 2 digits
+      const birthYear = 1900 + birthYearLastTwo; // Assume 1900s for old NIC
+
+      // Only set the birth year in the birthDay field, not the full date or gender
+      setFormData((prevData) => ({
+        ...prevData,
+        birthDay: `${birthYear}-01-01`, // Only fill the year, set day to default
+      }));
+
+      setIsGenderLocked(false); // Unlock gender so the user can manually set it
+    } else {
+      setMessage("Invalid NIC format.");
+      setIsGenderLocked(false); // Unlock gender in case of invalid NIC
+    }
+  };
+
+  const calculateBirthDate = (year, days) => {
+    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+
+    // Create a new date starting from January 1st of the birth year
+    const date = new Date(year, 0, 1); // January 1st of the given year
+    date.setDate(date.getDate() + days); // Subtract 1 since day starts at 1, not 0
+
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
+
+  const validateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    const dayDiff = today.getDate() - birth.getDate();
+
+    if (
+      age < 18 ||
+      (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))
+    ) {
+      setMessage("User must be at least 18 years old.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
-    const birthYear = birthDay ? birthDay.substring(0, 4) : "";
-
-    if (!validateName(name)) {
-      setNameError("Name must contain only letters and at least two words");
+    if (!validateAge(formData.birthDay)) {
       return;
-    } else {
-      setNameError("");
     }
-
-    if (!validateNIC(NIC, birthYear)) {
-      setNICError("NIC must be either 12 digits (starting with birth year) or 9 digits followed by 'v' or 'V' (starting with last two digits of birth year).");
-      return;
-    } else {
-      setNICError("");
-    }
-
-    if (!validateEmail(email)) {
-      setEmailError("Invalid email format.");
-      return;
-    } else {
-      setEmailError("");
-    }
-
-    if (!validatePhone(phone)) {
-      setPhoneError("Phone number must contain exactly 10 digits.");
-      return;
-    } else {
-      setPhoneError("");
-    }
-
-    if (!validatePassword(password)) {
-      setPasswordError("Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.");
-      return;
-    } else {
-      setPasswordError("");
-    }
-
-    const newMember = {
-      name,
-      NIC,
-      contactInfo: {
-        email,
-        phone,
-      },
-      birthDay,
-      address: {
-        street,
-        city,
-      },
-      password, 
-      performanceRating,
-      isActive,
-    };
 
     try {
       const response = await fetch("http://localhost:3001/QATeam/add", {
@@ -120,155 +146,196 @@ const AddQAmember = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newMember),
+        body: JSON.stringify(formData),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        const message = await response.json();
-        alert(message.message || "QA Member added successfully!");
-        setName("");
-        setNIC("");
-        setEmail("");
-        setPhone("");
-        setBirthDay("");
-        setStreet("");
-        setCity("");
-        setPassword(""); 
-        setPerformanceRating(3);
-        setIsActive(true);
-        setNameError(""); 
-        setNICError(""); 
-        setEmailError("");
-        setPhoneError(""); 
-        setPasswordError(""); 
-        navigate("/qa-manager/qa-team");
+        setMessage("QA Team Member added successfully!");
+        setFormData({
+          name: "",
+          NIC: "",
+          contactInfo: {
+            email: "",
+            phone: "",
+          },
+          birthDay: "",
+          address: {
+            street: "",
+            city: "",
+          },
+          role: "QA-Team",
+          gender: "Male",
+        });
+        setIsGenderLocked(false); // Unlock gender after successful submission
       } else {
-        const errorMessage = await response.text();
-        alert("Error: " + errorMessage);
+        setMessage(result.message || "Error adding QA Team Member.");
       }
-    } catch (err) {
-      console.error("Error: " + err);
-      alert("Error: " + err);
+    } catch (error) {
+      setMessage("Error: " + error.message);
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-12 p-8 bg-white rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg">
-      <h2 className="text-center text-2xl font-semibold mb-6 text-gray-800">Add QA Member</h2>
-      <form onSubmit={onSubmit} className="flex flex-col space-y-4">
-        {/* Name Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name:</label>
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        Add QA Team Member
+      </h2>
+      {message && <p className="text-center text-red-500 mb-4">{message}</p>}
+      <form onSubmit={handleSubmit}>
+        {/* Name Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Name:
+          </label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
         </div>
-        {/* NIC Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">NIC:</label>
+
+        {/* NIC Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            NIC:
+          </label>
           <input
             type="text"
-            value={NIC}
-            onChange={(e) => setNIC(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="NIC"
+            value={formData.NIC}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            maxLength={12} // Allow up to 12 characters (including "V" for 9-digit format)
+            pattern="\d{12}|\d{9}[vV]" // Regex pattern for validation
+            title="NIC should be either 12 digits or 9 digits followed by 'V'."
           />
-          {NICError && <p className="text-red-500 text-sm mt-1">{NICError}</p>}
         </div>
-        {/* Email Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email:</label>
+
+        {/* Email Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Email:
+          </label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="contactInfo.email"
+            value={formData.contactInfo.email}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
         </div>
-        {/* Phone Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Phone:</label>
+
+        {/* Phone Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Phone:
+          </label>
           <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            type="text"
+            name="contactInfo.phone"
+            value={formData.contactInfo.phone}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
         </div>
-        {/* Date of Birth Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Date of Birth:</label>
+
+        {/* Birthdate Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Birthdate:
+          </label>
           <input
             type="date"
-            value={birthDay}
-            onChange={(e) => setBirthDay(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="birthDay"
+            value={formData.birthDay}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        {/* Street Address Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Street Address:</label>
+
+        {/* Address Fields */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Street Address:
+          </label>
           <input
             type="text"
-            value={street}
-            onChange={(e) => setStreet(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="address.street"
+            value={formData.address.street}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        {/* City Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">City:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            City:
+          </label>
           <input
             type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            name="address.city"
+            value={formData.address.city}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        {/* Password Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+
+        {/* Gender Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Gender:
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleInputChange}
+            required
+            disabled={isGenderLocked}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
-        {/* Performance Rating Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Performance Rating:</label>
-          <input
-            type="number"
-            value={performanceRating}
-            onChange={(e) => setPerformanceRating(e.target.value)}
-            min="1"
-            max="5"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+
+        {/* Role Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Role:
+          </label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="QA-Team">QA Team</option>
+            <option value="QA-Manager">QA Manager</option>
+          </select>
         </div>
-        {/* Is Active Checkbox */}
-        <div className="flex items-center">
-          <label className="text-sm font-medium text-gray-700">Is Active:</label>
-          <input
-            className="ml-3 w-6 h-6 text-green-500 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
-            type="checkbox"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
-          />
+
+        {/* Submit Button */}
+        <div className="text-center">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-[#11532F] text-white font-medium rounded-md hover:bg-[#0e4b2b]"
+          >
+            Add Member
+          </button>
         </div>
-        <button
-          type="submit"
-          className="w-full bg-green-500 text-white font-semibold py-3 rounded-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 ease-in-out"
-        >
-          Add QA Member
-        </button>
       </form>
     </div>
   );

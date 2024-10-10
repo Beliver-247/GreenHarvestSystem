@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const IncomingBatches = () => {
+const IncomingBatches = ({ userRole }) => {
   const [batches, setBatches] = useState([]);
   const [error, setError] = useState('');
-  const [fadeIn, setFadeIn] = useState(false); // New state variable for fade-in effect
-  const navigate = useNavigate(); // useNavigate hook for navigation
+  const [fadeIn, setFadeIn] = useState(false); 
+  const navigate = useNavigate(); 
 
   // Fetch incoming batches when the component mounts
   useEffect(() => {
@@ -17,8 +17,10 @@ const IncomingBatches = () => {
         return response.json();
       })
       .then((data) => {
-        setBatches(data);
-        setFadeIn(true); // Set fade-in to true after data is fetched
+        // Sort batches by arrivalDate in ascending order (oldest first)
+        const sortedBatches = data.sort((a, b) => new Date(a.arrivalDate) - new Date(b.arrivalDate));
+        setBatches(sortedBatches);
+        setFadeIn(true); // Set fade-in to true after data is fetched and sorted
       })
       .catch((err) => {
         setError('Error fetching incoming batches: ' + err.message);
@@ -27,8 +29,8 @@ const IncomingBatches = () => {
 
   // Handle click event for each batch
   const handleRowClick = (batch) => {
-    // Redirect to AddQArecord with vegetableType and batchId as query params
-    navigate(`/qa-manager/add-qarecord?vegetableType=${batch.vegetableType}&batchId=${batch._id}`);
+    const basePath = userRole === 'QA Manager' ? '/qa-manager' : '/qa-team';
+    navigate(`${basePath}/add-qarecord?vegetableType=${batch.vegetableType}&batchId=${batch._id}`);
   };
 
   return (
