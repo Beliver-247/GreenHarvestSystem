@@ -3,7 +3,6 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -48,6 +47,15 @@ const DriverManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'mobileNo' && value.length > 11) {
+      return; // Prevent further input if length exceeds 4
+    }
+    if (name === 'licenseNo' && value.length > 8) {
+      return; // Prevent further input if length exceeds 4
+    }
+    if (name === 'nic' && value.length > 12) {
+      return; // Prevent further input if length exceeds 4
+    }
     setFormData(prevData => ({
       ...prevData,
       [name]: value
