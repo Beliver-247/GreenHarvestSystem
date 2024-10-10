@@ -63,9 +63,11 @@ const VehicleManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
     if (name === 'registrationNo' && value.length > 8) {
       return; // Prevent further input if length exceeds 4
     }
+  
     
     setFormData(prevData => ({
       ...prevData,
@@ -76,6 +78,7 @@ const VehicleManagement = () => {
 
   const validateInput = (name, value) => {
     let error = '';
+  
     if (name === 'registrationNo') {
       const regNoRegex = /^([A-Z]{2,3}|((?!0*-)[0-9]{2,3}))-[0-9]{4}(?<!0{4})$/;
       if (!regNoRegex.test(value)) {
@@ -86,21 +89,32 @@ const VehicleManagement = () => {
       if (value > currentYear) {
         error = 'Manufacturing Year cannot be in the future.';
       }
-    } else if (name === 'mileage' || name === 'length' || name === 'width') {
+    } else if (name === 'mileage') {
+      // Validate mileage
       if (isNaN(value) || value < 0) {
-        error = 'This field must be a positive number.';
-      }  
-    }else if (name === 'length' || name === 'width') {
-      if (isNaN(value) || value <= 0 || value > 50) {
-        error = 'Length and Width must be between 1 and 50 feet.';
+        error = 'Mileage must be a positive number.';
       }
-    } 
-
+    } else if (name === 'length' || name === 'width') {
+      // Validate length and width
+      if (isNaN(value) || value < 5) {
+        error = 'Width and Length must be at least 5.';
+      } 
+      
+      
+      if (formData.width > formData.length) {
+        error = 'Length must be greater than Width.';
+      }
+    }
+  
+    // Update the error state
     setErrors(prevErrors => ({
       ...prevErrors,
       [name]: error
     }));
   };
+  
+  
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();

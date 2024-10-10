@@ -55,6 +55,9 @@ const MaintenanceManagement = () => {
       } else {
         setFormError('');
       }
+      if(formData.currentMileage < 0){
+        setFormError('Mileage needs to be a positive number');
+      }
     }
 
     if (name === 'nextServiceMileage') {
@@ -65,6 +68,9 @@ const MaintenanceManagement = () => {
         setFormError('');
       }
     }
+
+    
+    
 
     setFormData(prevData => ({
       ...prevData,
