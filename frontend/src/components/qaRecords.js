@@ -21,6 +21,7 @@ const QARecords = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
+
   useEffect(() => {
     const fetchRecords = async () => {
       try {
@@ -75,6 +76,7 @@ const QARecords = () => {
       } else {
         console.error("Failed to fetch records:", response.statusText);
       }
+
     } catch (err) {
       console.error("Error fetching records:", err);
     }

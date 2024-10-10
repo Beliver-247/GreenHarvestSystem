@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FaImage, FaSpinner } from 'react-icons/fa';
-import { IoMdArrowDropdown } from 'react-icons/io'; 
 import { FaHome, FaPlus, FaCog, FaTachometerAlt, FaStar } from "react-icons/fa"; 
 import QRCode from 'qrcode';
 import { toast,ToastContainer } from 'react-toastify'; 
@@ -198,9 +197,6 @@ const AddProduct = () => {
                     <span className="text-xl">C Grades</span>
                 </Link>
             </div>
-            <button className="w-full bg-pink-500 text-white text-xl px-4 py-2 rounded-md hover:bg-pink-600">
-                Logout
-            </button>
         </div>
     );
 
@@ -242,7 +238,6 @@ const AddProduct = () => {
                                     <option value="Leeks">Leeks</option>
                                     <option value="Potatoes">Potatoes</option>
                                 </select>
-                                <IoMdArrowDropdown className="absolute right-4 top-3 text-xl text-green-700" />
                             </div>
                         </div>
 
