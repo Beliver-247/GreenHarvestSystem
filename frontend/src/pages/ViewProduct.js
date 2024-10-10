@@ -55,7 +55,7 @@ const ViewProduct = () => {
 
     return (
         <div className="flex">
-            <div className="ml-64 p-10 w-full">
+            <div className="ml-35 p-10 w-full">
                 <div className="flex flex-col md:flex-row justify-between mb-6">
                     {/* Category Filter */}
                     <select
