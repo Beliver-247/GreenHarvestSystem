@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
+import "jspdf-autotable"; // Import the autotable plugin
+
 
 export default function FarmerRequestDB() {
   const [farmerRequest, setFarmerRequest] = useState([]);
@@ -16,7 +18,7 @@ export default function FarmerRequestDB() {
   // Search filter
   const [selectedDateRange, setSelectedDateRange] = useState("");
 
-  const apiUrl = "http://localhost:3001/api";
+  const apiUrl = "http://localhost:8000/api";
 
   useEffect(() => {
     getFarmerRequest();
@@ -24,11 +26,16 @@ export default function FarmerRequestDB() {
 
   const getFarmerRequest = () => {
     fetch(apiUrl + "/farmerRequest")
-      .then((res) => res.json())
-      .then((res) => {
-        setFarmerRequest(res);
-      });
-  };
+        .then((res) => res.json())
+        .then((res) => {
+            const formattedRequests = res.map(item => ({
+                ...item,
+                date: new Date(item.date).toISOString().split('T')[0] // Format date
+            }));
+            setFarmerRequest(formattedRequests);
+        });
+};
+
 
   const handleEdit = (item) => {
     setEditId(item._id);
@@ -118,18 +125,82 @@ export default function FarmerRequestDB() {
     });
   };
 
+ 
   const exportPDF = () => {
+    // Initialize jsPDF
     const doc = new jsPDF();
-    doc.text("Farmer Requests", 10, 10);
-
-    farmerRequest.forEach((item, index) => {
-      doc.text(
-        `${index + 1}. Location: ${item.location}, Date: ${item.date}, Time: ${item.time}, Vehicle: ${item.selectedVehicle}`,
-        10,
-        20 + index * 10
-      );
+  
+    // Company Header
+    const companyName = 'GSP Traders Pvt Ltd';
+    const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+    const email = 'gsptraders29@gmail.com';
+    const phone = '+94 77 7144 133';
+  
+    // Set company details color and font
+    doc.setTextColor('#11532F'); // Company green color
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(companyName, 195, 20, { align: 'right' });
+  
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(address, 195, 28, { align: 'right' });
+    doc.text(`Email: ${email}`, 195, 34, { align: 'right' });
+    doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
+  
+    // Divider
+    doc.setDrawColor('#11532F');
+    doc.setLineWidth(1);
+    doc.line(10, 50, 200, 50);
+  
+    // Add a title for the report
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0); // Reset color to black
+    doc.setFont('helvetica', 'bold');
+    doc.text('Farmer Requests', 105, 60, { align: 'center' });
+  
+    // Sort farmerRequest by date and time (assuming ISO format for date)
+    const sortedFarmerRequest = farmerRequest.sort((a, b) => {
+      const dateA = new Date(a.date + 'T' + a.time);
+      const dateB = new Date(b.date + 'T' + b.time);
+      return dateA - dateB; // Ascending order
     });
-
+  
+    // Table Headers
+    const tableColumn = ["No", "Location", "Date", "Time", "Vehicle"];
+    const tableRows = sortedFarmerRequest.map((item, index) => [
+      index + 1,
+      item.location,
+      item.date.split('T')[0], // Format date as 'YYYY-MM-DD'
+      item.time,
+      item.selectedVehicle
+    ]);
+  
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 70,
+      theme: 'grid',
+      styles: {
+        cellPadding: 5,
+        fontSize: 12,
+        overflow: 'linebreak',
+        tableLineColor: '#11532F',
+        tableLineWidth: 0.75,
+      },
+      headStyles: {
+        fillColor: '#11532F',
+        textColor: '#FFFFFF',
+        fontSize: 14,
+        font: 'helvetica',
+        halign: 'center'
+      },
+      alternateRowStyles: {
+        fillColor: '#F2F2F2'
+      }
+    });
+  
+    // Save the PDF
     doc.save("farmer_requests.pdf");
   };
 
