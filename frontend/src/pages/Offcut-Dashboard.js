@@ -3,7 +3,7 @@ import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Link } from 'react-router-dom';
-import { FaHome, FaPlus, FaCog, FaTachometerAlt, FaStar } from 'react-icons/fa';
+import { FaHome, FaPlus, FaCog, FaTachometerAlt } from 'react-icons/fa';
 
 // Register Chart.js components
 ChartJS.register(
@@ -37,14 +37,7 @@ const Sidebar = () => {
                     <FaTachometerAlt className="text-3xl" />
                     <span className="text-xl">Dashboard</span>
                 </Link>
-                <Link to='/c-grades' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
-                    <FaStar className="text-3xl" />
-                    <span className="text-xl">C Grades</span>
-                </Link>
             </div>
-            <button className="w-full bg-pink-500 text-white text-xl px-4 py-2 rounded-md hover:bg-pink-600">
-                Logout
-            </button>
         </div>
     );
 };
@@ -77,8 +70,18 @@ const Dashboard = () => {
             .catch(err => console.log(err));
     }, []);
 
+    // Define colors for each category
+    const colorMap = {
+        carrots: 'rgba(255, 99, 32, 0.8)',     // Darker orange for carrots
+        leeks: 'rgba(54, 162, 135, 0.8)',      // Darker teal for leeks
+        cabbage: 'rgba(102, 51, 153, 0.8)',    // Darker purple for cabbage
+        potatoes: 'rgba(204, 153, 0, 0.8)' 
+    };
+
     // Prepare chart data for each category
     const charts = Object.keys(categoriesData).map(category => {
+        console.log("Category Name: ", category);
+
         const { names, quantities } = categoriesData[category];
 
         const barData = {
@@ -87,14 +90,14 @@ const Dashboard = () => {
                 {
                     label: 'Product Quantity',
                     data: quantities,
-                    backgroundColor: '#4CAF50', // Green
+                    backgroundColor: colorMap[category.toLowerCase()] || '#00A550',
                 },
             ],
         };
 
         return (
             <div key={category} className="my-6">
-                <div className="bg-white p-4 rounded-lg shadow-lg h-80 border border-blue-900">
+                <div className="bg-white p-4 rounded-lg shadow-lg h-64 border border-blue-900">
                     <h3 className="text-lg font-semibold mb-4 text-gray-600">{category} - Product Quantities</h3>
                     <Bar 
                         data={barData} 
@@ -115,10 +118,10 @@ const Dashboard = () => {
                                 }
                             },
                             layout: {
-                                padding: 20,
+                                padding: 10,
                             }
                         }} 
-                        height={300} 
+                        height={200} 
                     />
                 </div>
             </div>
@@ -137,3 +140,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

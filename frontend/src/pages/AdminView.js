@@ -225,7 +225,7 @@ const AdminView = () => {
                     ) : (
                         <div className="overflow-x-auto rounded-[15px]">
                             <table id="product-table" className="min-w-full text-left">
-                                <thead className="bg-green-500 text-gray-700 text-lg">
+                                <thead className="bg-green-500 text-gray-800 text-lg">
                                     <tr>
                                         <th className="py-3 px-6 border-b">Image</th>
                                         <th className="py-3 px-6 border-b">Name</th>
