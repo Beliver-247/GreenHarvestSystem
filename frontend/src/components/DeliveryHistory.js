@@ -10,6 +10,7 @@ export default function DeliveryHistory() {
   const [searchVegType, setSearchVegType] = useState(""); // State for vegetable type search
   const [searchYear, setSearchYear] = useState(""); // State for year search
   const [searchMonth, setSearchMonth] = useState(""); // State for month search
+  const [searchQualityGrade, setSearchQualityGrade] = useState(""); // State for quality grade search
 
   useEffect(() => {
     function getStocks() {
@@ -30,8 +31,9 @@ export default function DeliveryHistory() {
     const matchesVegType = !searchVegType || stock.vegType.toLowerCase() === searchVegType.toLowerCase();
     const matchesYear = !searchYear || stockDate.getFullYear().toString() === searchYear;
     const matchesMonth = !searchMonth || (stockDate.getMonth() + 1).toString() === searchMonth;
+    const matchesQualityGrade = !searchQualityGrade || stock.qualityGrade.toLowerCase() === searchQualityGrade.toLowerCase();
 
-    return matchesVegType && matchesYear && matchesMonth;
+    return matchesVegType && matchesYear && matchesMonth && matchesQualityGrade;
   });
 
   // Function to download the filtered records as a PDF
@@ -135,14 +137,17 @@ export default function DeliveryHistory() {
           <option value="Potato">Potato</option>
         </select>
 
-        {/* Search by Year */}
-        <input
-          type="text"
-          placeholder="Search by Year"
+        {/* Search by Quality Grade */}
+        <select
           className="p-2 border border-gray-300 rounded"
-          value={searchYear}
-          onChange={(e) => setSearchYear(e.target.value)}
-        />
+          value={searchQualityGrade}
+          onChange={(e) => setSearchQualityGrade(e.target.value)}
+        >
+          <option value="" disabled>Select Quality Grade</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
 
         {/* Search by Month */}
         <select
@@ -164,6 +169,15 @@ export default function DeliveryHistory() {
           <option value="11">November</option>
           <option value="12">December</option>
         </select>
+
+        {/* Search by Year */}
+        <input
+          type="text"
+          placeholder="Search by Year"
+          className="p-2 border border-gray-300 rounded"
+          value={searchYear}
+          onChange={(e) => setSearchYear(e.target.value)}
+        />
       </div>
 
       {/* Button to Download PDF */}
