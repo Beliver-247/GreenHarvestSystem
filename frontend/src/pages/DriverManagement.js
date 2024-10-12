@@ -3,7 +3,6 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -48,6 +47,15 @@ const DriverManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'mobileNo' && value.length > 11) {
+      return; // Prevent further input if length exceeds 4
+    }
+    if (name === 'licenseNo' && value.length > 8) {
+      return; // Prevent further input if length exceeds 4
+    }
+    if (name === 'nic' && value.length > 12) {
+      return; // Prevent further input if length exceeds 4
+    }
     setFormData(prevData => ({
       ...prevData,
       [name]: value
@@ -61,7 +69,7 @@ const DriverManagement = () => {
     if (name === 'name') {
       const lettersAndSpacesPattern = /^[A-Za-z]+( [A-Za-z]+)*$/;
       if (!lettersAndSpacesPattern.test(value)) {
-        error = 'Invalid input. Only letters and single spaces between words are allowed.';
+        error = 'Invalid input. single spaces between words are allowed.';
       }
     } else if (name === 'nic') {
       const oldNICRegex = /^[0-9]{9}[Vv]$/;
@@ -180,7 +188,7 @@ const DriverManagement = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
+    const date = new Date(dateString) ;
     return date.toLocaleDateString('en-GB');
   };
 
@@ -221,7 +229,12 @@ const DriverManagement = () => {
                 type="text"
                 name="name"
                 value={formData.name}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  // Check if the input value contains any numbers
+                  if (!/\d/.test(e.target.value)) {
+                    handleInputChange(e);
+                  }
+                }}
                 className="p-2 border rounded w-full"
               />
               {errors.name && <span className="text-red-500">{errors.name}</span>}

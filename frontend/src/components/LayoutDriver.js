@@ -15,6 +15,9 @@ const LayoutDriver = () => {
             <li>
               <Link to="/driver/driver-page" className="block px-4 py-2 rounded-lg hover:bg-green-500">Add fuel purchase reciept</Link>
             </li>
+            <li>
+              <Link to="/driver/profile" className="block px-4 py-2 rounded-lg hover:bg-green-500">View Profile</Link>
+            </li>
           </ul>
         </div>
       </nav>

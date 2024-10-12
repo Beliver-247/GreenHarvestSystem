@@ -8,6 +8,7 @@ import { FaEdit, FaTrash, FaHome, FaPlus, FaCog, FaTachometerAlt, FaStar } from 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
+import logo from '../components/LogoImage.png';
 
 const AdminView = () => {
     const [products, setProducts] = useState([]);
@@ -71,6 +72,11 @@ const AdminView = () => {
     };
 
     const generatePDF = () => {
+        if (!products || products.length === 0) {
+            alert('No product data available!');
+            return;
+        }
+    
         Swal.fire({
             title: 'Are you sure?',
             text: "Do you want to download the PDF?",
@@ -82,11 +88,47 @@ const AdminView = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const doc = new jsPDF();
-                doc.setTextColor(110, 110, 110);
-                doc.setFontSize(20); // Set font size for the header
-                doc.text("GSP Traders Offcut Inventory", doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+    
+                // Company Header
+                const companyName = 'GSP Traders Pvt Ltd';
+                const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+                const email = 'gsptraders29@gmail.com';
+                const phone = '+94 77 7144 133';
+    
+                // Set company details color and font
+                doc.setTextColor('#11532F'); // Company green color
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(companyName, 195, 20, { align: 'right' });
+    
+                const imgData = logo;  // Use the imported logo
+                doc.addImage(imgData, 'PNG', 15, 15, 25, 25);
+    
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(address, 195, 28, { align: 'right' });
+                doc.text(`Email: ${email}`, 195, 34, { align: 'right' });
+                doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
+    
+                // Divider
+                doc.setDrawColor('#11532F');
+                doc.setLineWidth(1);
+                doc.line(10, 50, 200, 50);
+    
+                // Add a title for the report
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0); // Reset color to black
+                doc.setFont('helvetica', 'bold');
+                doc.text('Offcut Product Inventory Report', 105, 60, { align: 'center' });
+    
+                // Section for product details
+                doc.setFontSize(14);
+                doc.setTextColor('#11532F');
+                doc.text('Product Information:', 20, 75);
+    
+                // Product table
                 doc.autoTable({
-                    startY: 30,
+                    startY: 85,
                     head: [['Product Name', 'Category', 'Quantity', 'Price', 'Discount Percentage', 'Expiry Date']],
                     body: products.map(product => [
                         product.name,
@@ -96,9 +138,25 @@ const AdminView = () => {
                         product.discount,
                         formatDate(product.expDate)
                     ]),
+                    theme: 'grid',
+                    headStyles: { fillColor: '#11532F' },
+                    margin: { left: 20, right: 20 },
                 });
-                doc.save('products-report.pdf');
-
+    
+                // Divider for separation
+                doc.setDrawColor('#11532F');
+                doc.setLineWidth(0.5);
+                doc.line(10, doc.lastAutoTable.finalY + 20, 200, doc.lastAutoTable.finalY + 20);
+    
+                // Footer
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Generated on: ' + new Date().toLocaleDateString(), 105, doc.lastAutoTable.finalY + 30, { align: 'center' });
+    
+                // Save the PDF
+                doc.save('Product_Inventory_Report.pdf');
+    
                 Swal.fire('Downloaded!', 'Your PDF has been generated and downloaded.', 'success');
             }
         });
@@ -123,18 +181,15 @@ const AdminView = () => {
                     <FaCog className="text-3xl" />
                     <span className="text-xl">Manage Product</span>
                 </Link>
-                <Link to='/dashboard' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
+                <Link to='/offcut-dashboard' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
                     <FaTachometerAlt className="text-3xl" />
                     <span className="text-xl">Dashboard</span>
                 </Link>
-                <Link to='/c-grades' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
+                <Link to='/qa-manager/qa-records' className="flex items-center space-x-3 hover:bg-green-700 p-2 rounded">
                     <FaStar className="text-3xl" />
                     <span className="text-xl">C Grades</span>
                 </Link>
             </div>
-            <button className="w-full bg-pink-500 text-white text-xl px-4 py-2 rounded-md hover:bg-pink-600">
-                Logout
-            </button>
         </div>
     );
 

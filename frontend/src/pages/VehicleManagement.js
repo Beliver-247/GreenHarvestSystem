@@ -63,6 +63,12 @@ const VehicleManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    if (name === 'registrationNo' && value.length > 8) {
+      return; // Prevent further input if length exceeds 4
+    }
+  
+    
     setFormData(prevData => ({
       ...prevData,
       [name]: type === 'checkbox' ? checked : value
@@ -72,6 +78,7 @@ const VehicleManagement = () => {
 
   const validateInput = (name, value) => {
     let error = '';
+  
     if (name === 'registrationNo') {
       const regNoRegex = /^([A-Z]{2,3}|((?!0*-)[0-9]{2,3}))-[0-9]{4}(?<!0{4})$/;
       if (!regNoRegex.test(value)) {
@@ -82,17 +89,32 @@ const VehicleManagement = () => {
       if (value > currentYear) {
         error = 'Manufacturing Year cannot be in the future.';
       }
-    } else if (name === 'mileage' || name === 'length' || name === 'width') {
+    } else if (name === 'mileage') {
+      // Validate mileage
       if (isNaN(value) || value < 0) {
-        error = 'This field must be a positive number.';
+        error = 'Mileage must be a positive number.';
+      }
+    } else if (name === 'length' || name === 'width') {
+      // Validate length and width
+      if (isNaN(value) || value < 5) {
+        error = 'Width and Length must be at least 5.';
+      } 
+      
+      
+      if (formData.width > formData.length) {
+        error = 'Length must be greater than Width.';
       }
     }
-
+  
+    // Update the error state
     setErrors(prevErrors => ({
       ...prevErrors,
       [name]: error
     }));
   };
+  
+  
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -182,10 +204,10 @@ const VehicleManagement = () => {
         <div className="flex space-x-4">
           <input
             type="text"
-            placeholder="Search by Registration No"
+            placeholder="Search by Registration No  "
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-40 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <select
             value={selectedYear}
@@ -209,6 +231,7 @@ const VehicleManagement = () => {
       {showForm && (
         <div className="relative">
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md mb-6">
+            {/* Registration No Input */}
             <label className="block mb-4">
               <span className="text-gray-700">Registration No:</span>
               <input
@@ -221,43 +244,53 @@ const VehicleManagement = () => {
               />
               {errors.registrationNo && <span className="text-red-500 text-sm">{errors.registrationNo}</span>}
               {verificationError && <span className="text-red-500 text-sm">{verificationError}</span>}
-
-              <br></br><p
-              type="button"
-              onClick={handleVerify} className="text-blue-500 cursor-pointer hover:underline">
-              Verify From Government
-            </p>
-            {showIframe && (
-        <div className="mt-4">
-          <iframe
-            src={iframeUrl}
-            width="100%"
-            height="500"
-            title="Government Verification"
-            className="border rounded-md"
-          />
-          <button
-            onClick={handleDone}
-            disabled={!formData.verified}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Done
-          </button>
-          <label className="block mb-4 flex items-center" >
-              <input
-                type="checkbox"
-                name="verified"
-                checked={formData.verified}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              <span className="text-gray-700">Verified?</span>
+              
+              <br />
+              {formData.verified ? (
+                <span className="text-green-500">Verified ✔️</span>
+              ) : (
+                <span className="text-yellow-500">Manual verification is Pending</span>
+              )}
+              <p
+                type="button"
+                onClick={handleVerify} 
+                className="text-blue-500 cursor-pointer hover:underline">
+                Verify From Government
+              </p>
+              {/* Display "Pending" or "Verified" text */}
+              
+              {showIframe && (
+                <div className="mt-4">
+                  <iframe
+                    src={iframeUrl}
+                    width="100%"
+                    height="500"
+                    title="Government Verification"
+                    className="border rounded-md"
+                  />
+                  <button
+                    onClick={handleDone}
+                    disabled={!formData.verified}
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Done
+                  </button>
+                  <label className="block mb-4 flex items-center">
+                    <input
+                      type="checkbox"
+                      name="verified"
+                      checked={formData.verified}
+                      onChange={handleInputChange}
+                      className="mr-2"
+                    />
+                    <span className="text-gray-700">Verified?</span>
+                  </label>
+                </div>
+              )}
             </label>
-        </div>
-      )}
             
             
-            </label>
+          
             
 
             <label className="block mb-4">
@@ -278,7 +311,7 @@ const VehicleManagement = () => {
           </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Mileage:</span>
+              <span className="text-gray-700">Mileage(Km):</span>
               <input
                 type="number"
                 name="mileage"
@@ -291,7 +324,7 @@ const VehicleManagement = () => {
             </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Length:</span>
+              <span className="text-gray-700">Length(Feet):</span>
               <input
                 type="number"
                 name="length"
@@ -304,7 +337,7 @@ const VehicleManagement = () => {
             </label>
 
             <label className="block mb-4">
-              <span className="text-gray-700">Width:</span>
+              <span className="text-gray-700">Width(Feet):</span>
               <input
                 type="number"
                 name="width"
@@ -337,9 +370,9 @@ const VehicleManagement = () => {
             <tr className="border-b border-gray-300">
               <th className="px-4 py-2 border">Registration No</th>
               <th className="px-4 py-2 border">Manufacturing Year</th>
-              <th className="px-4 py-2 border">Mileage</th>
-              <th className="px-4 py-2 border">Length</th>
-              <th className="px-4 py-2 border">Width</th>
+              <th className="px-4 py-2 border">Mileage(Km)</th>
+              <th className="px-4 py-2 border">Length(Feet)</th>
+              <th className="px-4 py-2 border">Width(Feet)</th>
               <th className="px-4 py-2 border">Actions</th>
             </tr>
           </thead>

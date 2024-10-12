@@ -89,7 +89,10 @@ const Cart = () => {
         <h1 className="text-4xl font-bold mb-10 text-gray-900 text-left">Your Cart</h1>
 
         {Object.keys(cartItems).length === 0 ? (
-          <p>Your cart is empty</p>
+            <div className="flex items-center justify-center h-screen">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600"></div>
+              <p className="ml-4 text-xl font-semibold text-green-600">Loading...</p>
+            </div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -181,12 +184,15 @@ const Cart = () => {
                   <span className="font-semibold text-xl text-gray-900">
                     Rs {calculateTotal().toFixed(2)} LKR
                   </span>
-                </div>
-                <Link to="/checkout">
-                  <button className="bg-green-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300 text-lg font-medium">
-                    Check out
-                  </button>
-                </Link>
+                </div> 
+                <Link to={{
+                    pathname: "/checkout",
+                    state: { cartItems }  // Send the cartItems as state
+                  }}>
+                    <button className="bg-green-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300 text-lg font-medium">
+                      Check out
+                    </button>
+                  </Link>
               </div>
             </div>
           </>

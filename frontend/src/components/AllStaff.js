@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export default function AllStaff() {
   const [staffMembers, setStaffMembers] = useState([]);
@@ -43,6 +45,54 @@ export default function AllStaff() {
     );
   });
 
+  // Function to download filtered staff records as PDF
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+
+    // Dynamically set the title based on filters
+    let title = "Staff Records";
+
+    if (genderFilter) {
+      title += `-${genderFilter}`;
+    }
+
+    if (searchQuery) {
+      title += ` (Search: ${searchQuery})`;
+    }
+
+    // Add the title to the PDF
+    doc.text(title, 14, 16);;
+
+    // Define table headers and data
+    const tableColumn = ["Full Name", "Gender", "NIC", "Email", "Address", "Number", "Role"];
+    const tableRows = [];
+
+    // Populate the tableRows array with filtered staff data
+    filteredStaffMembers.forEach((staff, index) => {
+      const staffData = [
+        `${staff.firstName} ${staff.lastName}`,
+        staff.gender,
+        staff.nic,
+        staff.email,
+        `${staff.address}, ${staff.district}`,
+        staff.contactNumber,
+        staff.role,
+      ];
+      tableRows.push(staffData);
+    });
+
+    // Add table to the PDF
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 22,
+      theme: 'grid'
+    });
+
+    // Save the PDF
+    doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
+  };
+
   return (
     <div className="p-6">
       <h1 className='text-4xl font-bold text-center mb-6'>Warehouse Staff</h1>
@@ -55,7 +105,7 @@ export default function AllStaff() {
           placeholder="Search by Full Name or NIC"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500'
+          className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500 w-60'
         />
         <select
           value={genderFilter}
@@ -68,6 +118,7 @@ export default function AllStaff() {
         </select>
       </div>
         {filteredStaffMembers.length > 0 ? (
+          <>
           <table className='min-w-full bg-white shadow-md rounded mb-8'>
             <thead className='bg-gray-800 text-white'>
               <tr>
@@ -112,10 +163,20 @@ export default function AllStaff() {
               ))}
             </tbody>
           </table>
-        ) : (
-          <p className="text-center text-gray-500 mt-6">No staff members found.</p>
-        )}
-      </div>
-    </div>
-  );
+          {/* Button to Download PDF */}
+          <div className="text-right mb-4">
+          <button
+            onClick={downloadPDF}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+          >
+            Download PDF
+          </button>
+        </div>
+      </>
+    ) : (
+      <p className="text-center text-gray-500 mt-6">No staff members found.</p>
+    )}
+  </div>
+</div>
+);
 }

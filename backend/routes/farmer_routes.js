@@ -132,7 +132,7 @@ router.post("/login_farmer", async (req, res) => {
       }
 
       // Generate JWT token
-      const token = jwt.sign({ farmerId: farmer._id, nic: farmer.NIC}, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ farmerId: farmer._id, nic: farmer.NIC}, process.env.FARMER_JWT_SECRET, { expiresIn: '1h' });
       res.json({ token });
       
   } catch (error) {

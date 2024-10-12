@@ -163,7 +163,7 @@ export default function AddStock() {
 
   return (
     <div className="max-w-xl m-3 bg-white p-6 rounded-lg shadow-md flex-auto">
-      <h2 className="text-3xl font-bold text-center mb-12">Add to Inventory</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">Add to Inventory</h2>
       <form onSubmit={sendData} className="space-y-6">
         <div>
           <label htmlFor="vegType" className="block text-m font-medium text-gray-700">
@@ -240,7 +240,7 @@ export default function AddStock() {
               value={quantity}
               onChange={handleChange}
             />
-            <span className="ml-0 flex items-center border-2 border-gray-300 border-l-0 text-gray-700 bg-gray-100 rounded-r-md p-1">Kg</span>
+            <span className="ml-0 flex items-center border-2 border-gray-300 border-l-0 text-gray-700 bg-gray-100 rounded-r-md p-1">kg</span>
           </div>
           {errors.quantity && <div className="text-red-500 text-sm mt-1">{errors.quantity}</div>}
         </div>

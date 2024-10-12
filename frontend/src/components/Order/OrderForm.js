@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { StoreContext } from '../../context/StoreContext';
+import validateForm from '../../Validation/orderForm_validate';// Adjust the path as necessary
 
 const OrderForm = () => {
   const { id } = useParams();
@@ -25,9 +25,11 @@ const OrderForm = () => {
       postalCode: '',
       phone: ''
     },
+    billingAddressOption: 'same'
   });
 
   const [isSameAsShipping, setIsSameAsShipping] = useState(true);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,6 +49,13 @@ const OrderForm = () => {
         [name]: value
       }));
     }
+    // Run validation on the current field
+    const updatedFormData = {
+      ...formData,
+      [field]: subfield ? { ...formData[field], [subfield]: value } : value,
+    };
+    const validationErrors = validateForm(updatedFormData);  // Validate the form with the updated data
+    setErrors(validationErrors);
   };
 
   const handleBillingAddressToggle = (e) => {
@@ -64,7 +73,13 @@ const OrderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    const validationErrors = validateForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
     const orderData = {
       userId: formData.userId,
       items: [
@@ -76,15 +91,14 @@ const OrderForm = () => {
           image: product.image
         }
       ],
-      amount: product.price,
+      amount: product.price * cartItems[id] + 250,
       address: formData.address,
       billingAddress: formData.billingAddress,
-      payment: true
+      payment: false
     };
 
     try {
-      await axios.post("http://localhost:3001/api/orders/add-order", orderData);
-      navigate('/payment');
+      navigate('/payment', { state: orderData });
     } catch (error) {
       console.error('Error placing order:', error);
     }
@@ -105,41 +119,50 @@ const OrderForm = () => {
                   placeholder="Street"
                   onChange={handleChange}
                   value={formData.address.street}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressStreet ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
+                {errors.addressStreet && <p className="text-red-500">{errors.addressStreet}</p>}
+
                 <input
                   name="address.city"
                   placeholder="City"
                   onChange={handleChange}
                   value={formData.address.city}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressCity ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
+                {errors.addressCity && <p className="text-red-500">{errors.addressCity}</p>}
+
                 <input
                   name="address.country"
                   placeholder="Country"
                   onChange={handleChange}
                   value={formData.address.country}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressCountry ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
+                {errors.addressCountry && <p className="text-red-500">{errors.addressCountry}</p>}
+
                 <input
                   name="address.postalCode"
                   placeholder="Postal Code"
                   onChange={handleChange}
                   value={formData.address.postalCode}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
+                {errors.addressPostalCode && <p className="text-red-500">{errors.addressPostalCode}</p>}
+
                 <input
                   name="address.phone"
                   placeholder="Phone"
                   onChange={handleChange}
                   value={formData.address.phone}
-                  className="w-full p-2 border rounded-md bg-gray-100"
+                  className={`w-full p-2 border rounded-md ${errors.addressPhone ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 />
+                {errors.addressPhone && <p className="text-red-500">{errors.addressPhone}</p>}
               </div>
             </section>
 
@@ -176,47 +199,57 @@ const OrderForm = () => {
                       placeholder="Street"
                       onChange={handleChange}
                       value={formData.billingAddress.street}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressStreet ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
+                    {errors.billingAddressStreet && <p className="text-red-500">{errors.billingAddressStreet}</p>}
+
                     <input
                       name="billingAddress.city"
                       placeholder="City"
                       onChange={handleChange}
                       value={formData.billingAddress.city}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressCity ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
+                    {errors.billingAddressCity && <p className="text-red-500">{errors.billingAddressCity}</p>}
+
                     <input
                       name="billingAddress.country"
                       placeholder="Country"
                       onChange={handleChange}
                       value={formData.billingAddress.country}
-                      className="w-full p-2 border rounded-md bg-gray-100"
-                      required
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressCountry ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.billingAddressCountry && <p className="text-red-500">{errors.billingAddressCountry}</p>}
+
                     <input
                       name="billingAddress.postalCode"
                       placeholder="Postal Code"
                       onChange={handleChange}
                       value={formData.billingAddress.postalCode}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
+                    {errors.billingAddressPostalCode && <p className="text-red-500">{errors.billingAddressPostalCode}</p>}
+
                     <input
                       name="billingAddress.phone"
                       placeholder="Phone"
                       onChange={handleChange}
                       value={formData.billingAddress.phone}
-                      className="w-full p-2 border rounded-md bg-gray-100"
+                      className={`w-full p-2 border rounded-md ${errors.billingAddressPhone ? 'border-red-500' : 'border-gray-300'}`}
                       required
                     />
+                    {errors.billingAddressPhone && <p className="text-red-500">{errors.billingAddressPhone}</p>}
                   </>
                 )}
               </div>
             </section>
             <button
-              type="submit" className="w-full p-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+              type="submit"
+              className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
               Next
             </button>
           </div>
@@ -263,234 +296,3 @@ const OrderForm = () => {
 };
 
 export default OrderForm;
-
-
-// import React, { useState } from "react";
-// import axios from "axios";
-
-// const OrderForm = () => {
-//   const [orderData, setOrderData] = useState({
-//     userId: "",
-//     items: [
-//       {
-//         id: "",
-//         name: "",
-//         qty: 0,
-//         price: 0,
-//         image: ""
-//       }
-//     ],
-//     amount: 0,
-//     address: {
-//       country: "",
-//       street: "",
-//       city: "",
-//       postalCode: "",
-//       phone: ""
-//     },
-//     payment: false
-//   });
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setOrderData((prevState) => ({
-//       ...prevState,
-//       [name]: value
-//     }));
-//   };
-
-//   const handleAddressChange = (e) => {
-//     const { name, value } = e.target;
-//     setOrderData((prevState) => ({
-//       ...prevState,
-//       address: {
-//         ...prevState.address,
-//         [name]: value
-//       }
-//     }));
-//   };
-
-//   const handleItemChange = (e, index) => {
-//     const { name, value } = e.target;
-//     const items = [...orderData.items];
-//     items[index] = {
-//       ...items[index],
-//       [name]: value
-//     };
-//     setOrderData((prevState) => ({ ...prevState, items }));
-//   };
-
-//   const addItem = () => {
-//     setOrderData((prevState) => ({
-//       ...prevState,
-//       items: [...prevState.items, { id: "", name: "", qty: 0, price: 0, image: "" }]
-//     }));
-//   };
-
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const response = await axios.post("http://localhost:9000/api/orders/add-orders", orderData);
-//       console.log("Order submitted successfully", response.data);
-//       alert("Order created successfully!");
-//     } catch (error) {
-//       console.error("There was an error creating the order!", error);
-//       alert("Failed to create order.");
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <h1>Create an Order</h1>
-
-//       <div>
-//         <label>User ID:</label>
-//         <input
-//           type="text"
-//           name="userId"
-//           value={orderData.userId}
-//           onChange={handleChange}
-//           required
-//         />
-//       </div>
-
-//       {orderData.items.map((item, index) => (
-//         <div key={index}>
-//           <h3>Item {index + 1}</h3>
-//           <div>
-//             <label>Item ID:</label>
-//             <input
-//               type="text"
-//               name="id"
-//               value={item.id}
-//               onChange={(e) => handleItemChange(e, index)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>Name:</label>
-//             <input
-//               type="text"
-//               name="name"
-//               value={item.name}
-//               onChange={(e) => handleItemChange(e, index)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>Quantity:</label>
-//             <input
-//               type="number"
-//               name="qty"
-//               value={item.qty}
-//               onChange={(e) => handleItemChange(e, index)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>Price:</label>
-//             <input
-//               type="number"
-//               name="price"
-//               value={item.price}
-//               onChange={(e) => handleItemChange(e, index)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>Image URL:</label>
-//             <input
-//               type="text"
-//               name="image"
-//               value={item.image}
-//               onChange={(e) => handleItemChange(e, index)}
-//               required
-//             />
-//           </div>
-//         </div>
-//       ))}
-
-//       <button type="button" onClick={addItem}>
-//         Add Another Item
-//       </button>
-
-//       <div>
-//         <label>Total Amount:</label>
-//         <input
-//           type="number"
-//           name="amount"
-//           value={orderData.amount}
-//           onChange={handleChange}
-//           required
-//         />
-//       </div>
-
-//       <h2>Shipping Address</h2>
-//       <div>
-//         <label>Country:</label>
-//         <input
-//           type="text"
-//           name="country"
-//           value={orderData.address.country}
-//           onChange={handleAddressChange}
-//           required
-//         />
-//       </div>
-//       <div>
-//         <label>Street:</label>
-//         <input
-//           type="text"
-//           name="street"
-//           value={orderData.address.street}
-//           onChange={handleAddressChange}
-//           required
-//         />
-//       </div>
-//       <div>
-//         <label>City:</label>
-//         <input
-//           type="text"
-//           name="city"
-//           value={orderData.address.city}
-//           onChange={handleAddressChange}
-//           required
-//         />
-//       </div>
-//       <div>
-//         <label>Postal Code:</label>
-//         <input
-//           type="text"
-//           name="postalCode"
-//           value={orderData.address.postalCode}
-//           onChange={handleAddressChange}
-//           required
-//         />
-//       </div>
-//       <div>
-//         <label>Phone Number:</label>
-//         <input
-//           type="text"
-//           name="phone"
-//           value={orderData.address.phone}
-//           onChange={handleAddressChange}
-//           required
-//         />
-//       </div>
-
-//       <div>
-//         <label>Payment Completed:</label>
-//         <input
-//           type="checkbox"
-//           name="payment"
-//           checked={orderData.payment}
-//           onChange={(e) => setOrderData({ ...orderData, payment: e.target.checked })}
-//         />
-//       </div>
-
-//       <button type="submit">Submit Order</button>
-//     </form>
-//   );
-// };
-
-// export default OrderForm;

@@ -76,6 +76,33 @@ export default function Header() {
                 About
               </Link>
             </li>
+            <li>
+              <Link
+                className="hover:text-emerald-200 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300 rounded-sm px-2 py-1"
+                to="/view-product"
+                aria-label="About"
+              >
+                Offcut
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-emerald-200 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300 rounded-sm px-2 py-1"
+                to="/my-orders"
+                aria-label="cart"
+              >
+                My orders
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-emerald-200 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300 rounded-sm px-2 py-1"
+                to="/cart"
+                aria-label="cart"
+              >
+                Cart
+              </Link>
+            </li>
           </ul>
         </nav>
 

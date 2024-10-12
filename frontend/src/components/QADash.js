@@ -56,44 +56,39 @@ const QADashboard = () => {
 
   return (
     <div className="p-5 text-center h-screen bg-[#58ab3114] rounded-lg">
-      <h1 className="text-7xl font-semibold tracking-wider text-[#11532F] leading-relaxed">Dashboard</h1>
-      <div className="grid grid-cols-2 gap-10 mt-10">
+      <h1 className="text-3xl sm:text-5xl md:text-7xl font-semibold tracking-wider text-[#11532F] leading-relaxed">Dashboard</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 mt-10">
         <Link 
           to="/qa-manager/incoming-batches" 
-          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+          className="dashboard-item bg-[#58ab31] text-white p-5 sm:p-10 rounded-lg h-56 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
         >
-          <h2 className="text-5xl text-white leading-relaxed">Incoming Batches</h2>
-          <p className="text-3xl text-black leading-relaxed">Total: {batchCount}</p>
+          <h2 className="text-3xl sm:text-5xl text-white leading-relaxed">Incoming Batches</h2>
+          <p className="text-xl sm:text-3xl text-black leading-relaxed">Total: {batchCount}</p>
         </Link>
         <Link 
           to="/qa-manager/qa-records" 
-          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+          className="dashboard-item bg-[#58ab31] text-white p-5 sm:p-10 rounded-lg h-56 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
         >
-          <h2 className="text-5xl text-white leading-relaxed">QA Records</h2>
-          <p className="text-3xl text-black leading-relaxed">Total: {qaRecordCount}</p>
+          <h2 className="text-3xl sm:text-5xl text-white leading-relaxed">QA Records</h2>
+          <p className="text-xl sm:text-3xl text-black leading-relaxed">Total: {qaRecordCount}</p>
         </Link>
         <Link 
           to="/qa-manager/qa-standards" 
-          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+          className="dashboard-item bg-[#58ab31] text-white p-5 sm:p-10 rounded-lg h-56 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
         >
-          <h2 className="text-5xl text-white leading-relaxed">QA Standards</h2>
-          <p className="text-3xl text-black leading-relaxed">Total: {qaStandardCount}</p>
+          <h2 className="text-3xl sm:text-5xl text-white leading-relaxed">QA Standards</h2>
+          <p className="text-xl sm:text-3xl text-black leading-relaxed">Total: {qaStandardCount}</p>
         </Link>
         <Link 
           to="/qa-manager/qa-team" 
-          className="dashboard-item bg-[#58ab31] text-white p-14 rounded-lg h-72 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
+          className="dashboard-item bg-[#58ab31] text-white p-5 sm:p-10 rounded-lg h-56 transition-transform transform hover:translate-y-[-5px] hover:shadow-lg animate-fadeIn"
         >
-          <h2 className="text-5xl text-white leading-relaxed">QA Team Members</h2>
-          <p className="text-3xl text-black leading-relaxed">Total: {qaTeamCount}</p>
+          <h2 className="text-3xl sm:text-5xl text-white leading-relaxed">QA Team Members</h2>
+          <p className="text-xl sm:text-3xl text-black leading-relaxed">Total: {qaTeamCount}</p>
         </Link>
       </div>
     </div>
-  );
-  
-  
-  
-  
-  
+  );  
 };
 
 export default QADashboard;

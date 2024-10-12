@@ -46,7 +46,7 @@ router.route("/all-staff").get((req,res) => {
 })
 
 //Update staff
-router.route("/update/:id").put(async (req,res) => {
+router.route("/update-staff/:id").put(async (req,res) => {
     let staffId = req.params.id;
     const {firstName, lastName, gender, nic, email, address, district, contactNumber, dob, role} = req.body;
 
@@ -84,7 +84,7 @@ router.route("/delete/:id").delete(async (req,res) => {
 })
 
 //Fetch a staff member
-router.route("/get/:id").get(async (req,res) => {
+router.route("/get-staff/:id").get(async (req,res) => {
     let staffId = req.params.id;
 
     const staff = await StaffMember.findById(staffId).then((staff) => {

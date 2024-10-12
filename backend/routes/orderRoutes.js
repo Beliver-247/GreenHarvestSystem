@@ -22,11 +22,12 @@ orderRouter.post("/verify", confirmPayment);
 orderRouter.post("/userorders", authMiddleware, userOrders);
 orderRouter.get("/list", listOrders);
 orderRouter.get("/user-list", authMiddleware, userOrders);
-orderRouter.post("/status", updateStatus);
+orderRouter.put("/status", updateStatus);
 orderRouter.get("/:id", getOrderById);
 orderRouter.delete("/:id", authMiddleware, deleteOrderById);
 orderRouter.post("/add-order", authMiddleware, addOrder);  // Add a new order
-orderRouter.get("/list-all-orders", fetchAllOrders);  // Fetch all orders
+orderRouter.get("/all-orders", fetchAllOrders);  // Fetch all orders
 orderRouter.put("/list-all-orders/:id", updateOrderById);  // Update order by ID
 
 module.exports = orderRouter;
+

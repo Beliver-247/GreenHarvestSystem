@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 
 export default function CustomerRequest() {
   const [pickupLocation, setPickupLocation] = useState("");
@@ -65,14 +65,14 @@ export default function CustomerRequest() {
       <div className="fixed top-0 left-0 h-full w-60 bg-green-800 text-white flex flex-col py-4 px-6 shadow-lg">
         <h2 className="text-xl mb-8">G S P Traders</h2>
         <nav className="space-y-4">
-          <a href="http://localhost:3000/FarmerRequest" className="flex items-center space-x-2 hover:underline">
+         <Link to="/farmerRequest" className="flex items-center space-x-2 hover:underline">
             <span>🚜</span>
             <span>Farmer requests</span>
-          </a>
-          <a href="http://localhost:3000/customerRequest" className="flex items-center space-x-2 hover:underline">
+         </Link>
+          <Link to="/customerRequest" className="flex items-center space-x-2 hover:underline">
             <span>🛒</span>
             <span>Customer requests</span>
-          </a>
+          </Link>
           
         </nav>
       </div>

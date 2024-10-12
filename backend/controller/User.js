@@ -491,7 +491,9 @@ const login_employee = async (req, res, next) => {
       "senath.inventory@gmail.com": 904,
       "dilakshanorder728@gmail.com": 905,
       "sujeevandelivery@gmail.com": 906,
-      "praveen.farmerMgt@gmail.com": 907,
+      "praveen.farmermgt@gmail.com": 907,
+      "senath.inventorymanager@gmail.com":908,
+      "praveengspadlayout@gmail.com":909,
     };
 
     // Check if user exists

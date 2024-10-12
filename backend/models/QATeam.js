@@ -18,48 +18,9 @@ const qaTeamSchema = new Schema({
     
     NIC: {
         type: String,
-        required: true,
-        validate: {
-            validator: function (v) {
-                const nicBirthYear = parseInt(v.slice(0, 4));
-                const birthDateYear = new Date(this.birthDay).getFullYear();
-                const currentYear = new Date().getFullYear();
-
-                if (!/^\d{12}$|^\d{10}V$/.test(v)) {
-                    return false;
-                }
-                if (birthDateYear !== nicBirthYear) {
-                    return false;
-                }
-                if (currentYear - nicBirthYear < 18) {
-                    return false;
-                }
-                if (nicBirthYear > currentYear || birthDateYear > currentYear) {
-                    return false;
-                }
-
-                return true;
-            },
-            message: function (props) {
-                const nicBirthYear = parseInt(props.value.slice(0, 4));
-                const birthDateYear = new Date(this.birthDay).getFullYear();
-                const currentYear = new Date().getFullYear();
-                const yearDifference = currentYear - nicBirthYear;
-
-                if (!/^\d{12}$|^\d{10}V$/.test(props.value)) {
-                    return 'Invalid NIC format.';
-                } else if (birthDateYear !== nicBirthYear) {
-                    return 'NIC birth year does not match.';
-                } else if (yearDifference < 18) {
-                    return 'Must be at least 18 years old.';
-                } else if (nicBirthYear > currentYear || birthDateYear > currentYear) {
-                    return 'Birth years must be in the past.';
-                }
-
-                return 'NIC validation failed.';
-            }
-        }
+        required: true
     },
+    
     role: {
         type: String,
         enum: ["QA-Team", "QA-Manager"]
@@ -112,25 +73,21 @@ const qaTeamSchema = new Schema({
                 if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                     age--;
                 }
-                return age >= 20;
+                return age >= 18;
             },
-            message: 'Must be at least 20 years old.'
+            message: 'Must be at least 18 years old.'
         }
     },
     password: {
         type: String,
         required: true,
     },
-    
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-    performanceRating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        default: 3
+
+    // Add Gender field
+    gender: {
+        type: String,
+        enum: ['Male', 'Female'],
+        required: true
     }
 });
 

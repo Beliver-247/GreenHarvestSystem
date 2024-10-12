@@ -44,7 +44,7 @@ export default function UpdateStocks() {
 
   return (
     <div className="max-w-lg m-3 bg-white p-6 rounded-lg shadow-md flex-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Remove Stock</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Remove Stock</h2>
         <form className="space-y-6" onSubmit={handleRemoveStock}>
           <div>
             <label className="block text-m font-medium text-gray-700 mt-1">Vegetable Type</label>
