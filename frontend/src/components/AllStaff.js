@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import logo from './LogoImage.png';
 
 export default function AllStaff() {
   const [staffMembers, setStaffMembers] = useState([]);
@@ -45,56 +46,97 @@ export default function AllStaff() {
     );
   });
 
-  // Function to download filtered staff records as PDF
-  const downloadPDF = () => {
-    const doc = new jsPDF();
+// Function to download filtered staff records as PDF
+const downloadPDF = () => {
+  const doc = new jsPDF();
 
-    // Dynamically set the title based on filters
-    let title = "Staff Records";
+  // Company Header
+  const companyName = 'GSP Traders Pvt Ltd';
+  const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+  const email = 'gsptraders29@gmail.com';
+  const phone = '+94 77 7144 133';
+  const imgData = logo;  // Assuming the logo is defined/imported correctly
 
-    if (genderFilter) {
-      title += `-${genderFilter}`;
-    }
+  // Set company details color and font
+  doc.setTextColor('#11532F'); // Company green color
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text(companyName, 195, 20, { align: 'right' }); // Right-align company name
 
-    if (searchQuery) {
-      title += ` (Search: ${searchQuery})`;
-    }
+  doc.addImage(imgData, 'PNG', 15, 15, 25, 25);  // Add company logo at top-left
 
-    // Add the title to the PDF
-    doc.text(title, 14, 16);;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(address, 195, 28, { align: 'right' }); // Right-align address
+  doc.text(`Email: ${email}`, 195, 34, { align: 'right' }); // Right-align email
+  doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' }); // Right-align phone
 
-    // Define table headers and data
-    const tableColumn = ["Full Name", "Gender", "NIC", "Email", "Address", "Number", "Role"];
-    const tableRows = [];
+  // Divider
+  doc.setDrawColor('#11532F');
+  doc.setLineWidth(1);
+  doc.line(10, 50, 200, 50);
 
-    // Populate the tableRows array with filtered staff data
-    filteredStaffMembers.forEach((staff, index) => {
-      const staffData = [
-        `${staff.firstName} ${staff.lastName}`,
-        staff.gender,
-        staff.nic,
-        staff.email,
-        `${staff.address}, ${staff.district}`,
-        staff.contactNumber,
-        staff.role,
-      ];
-      tableRows.push(staffData);
-    });
+  // Add a title for the report
+  let title = "Staff Records";
 
-    // Add table to the PDF
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 22,
-      theme: 'grid'
-    });
+  if (genderFilter) {
+    title += `-${genderFilter}`;
+  }
 
-    // Save the PDF
-    doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
-  };
+  if (searchQuery) {
+    title += ` (Search: ${searchQuery})`;
+  }
+
+  // Add the title to the PDF
+  doc.setFontSize(16);
+  doc.setTextColor(0, 0, 0); // Reset color to black
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, 105, 60, { align: 'center' }); // Center title
+
+  // Define table headers and data
+  const tableColumn = ["Full Name", "Gender", "NIC", "Email", "Address", "Number", "Role"];
+  const tableRows = [];
+
+  // Populate the tableRows array with filtered staff data
+  filteredStaffMembers.forEach((staff, index) => {
+    const staffData = [
+      `${staff.firstName} ${staff.lastName}`,
+      staff.gender,
+      staff.nic,
+      staff.email,
+      `${staff.address}, ${staff.district}`,
+      staff.contactNumber,
+      staff.role,
+    ];
+    tableRows.push(staffData);
+  });
+
+  // Add table to the PDF
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 70, // Adjusted to account for the new header and title
+    theme: 'grid',
+    headStyles: { fillColor: '#11532F' },
+  });
+
+  // Divider for separation
+  doc.setDrawColor('#11532F');
+  doc.setLineWidth(0.5);
+  doc.line(10, doc.lastAutoTable.finalY + 10, 200, doc.lastAutoTable.finalY + 10);
+
+  // Footer
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Generated on: ' + new Date().toLocaleDateString(), 105, doc.lastAutoTable.finalY + 20, { align: 'center' });
+
+  // Save the PDF
+  doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
+};
 
   return (
-    <div className="p-6">
+    <div className="max-w-6xl p-6">
       <h1 className='text-4xl font-bold text-center mb-6'>Warehouse Staff</h1>
       <div className='overflow-x-auto'>
         <hr className='my-4 border-t-2 border-gray-300' />
@@ -117,6 +159,17 @@ export default function AllStaff() {
           <option value="Female">Female</option>
         </select>
       </div>
+
+      {/* Button to Download PDF */}
+      <div className="text-right mb-4">
+          <button
+            onClick={downloadPDF}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+          >
+            Download PDF
+          </button>
+        </div>
+        
         {filteredStaffMembers.length > 0 ? (
           <>
           <table className='min-w-full bg-white shadow-md rounded mb-8'>
@@ -129,7 +182,7 @@ export default function AllStaff() {
                 <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Email</th>
                 <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Address</th>
                 <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Number</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>DOB</th>
+                {/*<th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>DOB</th>*/}
                 <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Role</th>
                 <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Actions</th>
               </tr>
@@ -144,7 +197,7 @@ export default function AllStaff() {
                   <td className='px-6 py-4 border-b'>{staff.email}</td>
                   <td className='px-6 py-4 border-b'>{staff.address}, {staff.district}</td>
                   <td className='px-6 py-4 border-b'>{staff.contactNumber}</td>
-                  <td className='px-6 py-4 border-b'>{new Date(staff.dob).toLocaleDateString()}</td>
+                  {/*<td className='px-6 py-4 border-b'>{new Date(staff.dob).toLocaleDateString()}</td>*/}
                   <td className='px-6 py-4 border-b'>{staff.role}</td>
                   <td className='px-6 py-4 border-b'>
                     <div className='flex space-x-2'>
@@ -163,15 +216,6 @@ export default function AllStaff() {
               ))}
             </tbody>
           </table>
-          {/* Button to Download PDF */}
-          <div className="text-right mb-4">
-          <button
-            onClick={downloadPDF}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Download PDF
-          </button>
-        </div>
       </>
     ) : (
       <p className="text-center text-gray-500 mt-6">No staff members found.</p>

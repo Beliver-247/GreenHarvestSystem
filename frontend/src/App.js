@@ -68,6 +68,7 @@ import ManagerDashboard from "./components/ManagerDashboard";
 import DeliveryHistory from "./components/DeliveryHistory";
 import UpdateStaff from "./components/UpdateStaff";
 import UpdateStocks from "./components/UpdateStocks";
+import UnitPrices from "./components/UnitPrices.js";
 
 // Dilakshan
 import StoreContextProvider from "./context/StoreContext.js";
@@ -257,7 +258,7 @@ function App() {
               <Route path="/order-admin" element={<OrderAdmin />} />
 
 
-              {/*Staff layout*/}
+              {/*Warehouse Staff layout*/}
               <Route path="/wh-staff" element={<WarehouseStaffLayout />}>
                 <Route
                   path="/wh-staff/inventory-dashboard"
@@ -271,7 +272,7 @@ function App() {
                 />
               </Route>
 
-              {/*Manager layout*/}
+              {/*Warehouse Manager layout*/}
               <Route path="/wh-manager" element={<WarehouseManagerLayout />}>
                 <Route
                   path="/wh-manager/manager-dashboard"
@@ -279,6 +280,7 @@ function App() {
                 />
                 <Route path="/wh-manager/add-staff" element={<AddStaff />} />
                 <Route path="/wh-manager/all-staff" element={<AllStaff />} />
+                <Route path="/wh-manager/unit-prices" element={<UnitPrices />} />
                 <Route path="/wh-manager/all-stocks" element={<AllStock />} />
                 <Route
                   path="/wh-manager/delivery-history"

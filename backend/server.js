@@ -111,6 +111,10 @@ const AuthRoute = require("./routes/AuthRoute.js");
 app.use("/api/user", userRoutes);
 app.use("/api/auth", AuthRoute);
 
+//unit pricing routes
+const unitPricesRoutes = require('./routes/unitPrices');
+app.use('/unitPrices', unitPricesRoutes);
+
 // Other Routes (remote)
 const stockRouter = require("./routes/stocks.js");
 const staffRouter = require("./routes/staffMembers.js");

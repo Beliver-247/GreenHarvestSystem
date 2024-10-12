@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; // Importing autoTable plugin
+import 'jspdf-autotable';
+import logo from './LogoImage.png';
 
 export default function DeliveryHistory() {
   const [stocks, setStocks] = useState([]);
@@ -37,8 +38,36 @@ export default function DeliveryHistory() {
   const downloadPDF = () => {
     const doc = new jsPDF();
 
-    // Add a title to the PDF
-    doc.text("Delivery History Report", 14, 16);
+    // Add company header
+    const companyName = 'GSP Traders Pvt Ltd';
+    const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+    const email = 'gsptraders29@gmail.com';
+    const phone = '+94 77 7144 133';
+
+    doc.setTextColor('#11532F'); // Company green color
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(companyName, 195, 20, { align: 'right' });
+
+    const imgData = logo; // Assuming logo is defined or imported
+    doc.addImage(imgData, 'PNG', 15, 15, 25, 25);  
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(address, 195, 28, { align: 'right' });
+    doc.text(`Email: ${email}`, 195, 34, { align: 'right' });
+    doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
+
+    // Divider
+    doc.setDrawColor('#11532F');
+    doc.setLineWidth(1);
+    doc.line(10, 50, 200, 50);
+
+    // Add title for the report
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Delivery History Report', 105, 60, { align: 'center' });
 
     // Define table headers and data
     const tableColumn = ["Index", "Date Added", "Vegetable Type", "Quality Grade", "Batch Number", "Quantity (kg)", "Expiration Date"];
@@ -62,9 +91,21 @@ export default function DeliveryHistory() {
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 22,
-      theme: 'grid'
+      startY: 70,  // Adjusted to fit under the title and header
+      theme: 'grid',
+      headStyles: { fillColor: '#11532F' }
     });
+
+    // Divider for separation
+    doc.setDrawColor('#11532F');
+    doc.setLineWidth(0.5);
+    doc.line(10, doc.lastAutoTable.finalY + 10, 200, doc.lastAutoTable.finalY + 10);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 105, doc.lastAutoTable.finalY + 20, { align: 'center' });
 
     // Save the PDF
     doc.save("Delivery_History_Report.pdf");
@@ -125,6 +166,16 @@ export default function DeliveryHistory() {
         </select>
       </div>
 
+      {/* Button to Download PDF */}
+      <div className="text-right mb-4">
+          <button
+            onClick={downloadPDF}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+          >
+            Download PDF
+          </button>
+        </div>
+
         {filteredStocks.length > 0 ? (
           <>
             {/* Table displaying filtered stock entries */}
@@ -158,16 +209,6 @@ export default function DeliveryHistory() {
         ) : (
           <p className="text-center text-gray-500 mt-6">No stocks match your search criteria.</p>
         )}
-
-        {/* Button to Download PDF */}
-        <div className="text-right mb-4">
-          <button
-            onClick={downloadPDF}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Download PDF
-          </button>
-        </div>
 
       </div>
     </div>

@@ -3,9 +3,9 @@ import { Outlet, Link } from 'react-router-dom';
 
 const WarehouseStaffLayout = () => {
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-64 h-screen bg-green-900 text-white fixed top-0 left-0 mt-10">
+      <div className="w-64 bg-green-900 text-white">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6">Inventory Control</h2>
           <ul className="space-y-4">
@@ -34,7 +34,7 @@ const WarehouseStaffLayout = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow ml-64 p-6 bg-gray-100 h-screen overflow-auto">
+      <div className="flex-grow p-6 bg-gray-100 h-screen overflow-auto">
         <Outlet />
       </div>
     </div>
