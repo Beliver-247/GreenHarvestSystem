@@ -311,7 +311,7 @@ export default function UpdateStaff() {
             </div>
             <button
               type="submit"
-              className="w-full h-12 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200 mt-6"
+              className="w-full h-12 bg-[#23b725] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200 mt-6"
             >
               Update Staff Member
             </button>

@@ -264,7 +264,7 @@ export default function AddStock() {
 
         <button
           type="submit"
-          className="w-full h-12 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200 mt-20"
+          className="w-full h-12 bg-[#24c527] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200 mt-20"
         >
           Add Stock
         </button>
