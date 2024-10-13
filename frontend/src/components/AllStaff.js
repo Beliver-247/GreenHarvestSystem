@@ -135,92 +135,90 @@ const downloadPDF = () => {
   doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
 };
 
-  return (
-    <div className="max-w-6xl p-6">
-      <h1 className='text-4xl font-bold text-center mb-6'>Warehouse Staff</h1>
-      <div className='overflow-x-auto'>
-        <hr className='my-4 border-t-2 border-gray-300' />
+return (
+  <div className="m-3 bg-white p-6 rounded-lg shadow-md flex-auto max-w-6xl">
+    <h1 className='text-4xl font-bold text-center mb-6'>Warehouse Staff</h1>
+    <div className='overflow-x-auto'>
+      <hr className='mb-5'/>
+      <div className='flex items-center justify-between mb-4'>
         {/* Search and Filter Inputs */}
-      <div className='flex mb-4'>
-        <input
-          type="text"
-          placeholder="Search by Full Name or NIC"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500 w-60'
-        />
-        <select
-          value={genderFilter}
-          onChange={(e) => setGenderFilter(e.target.value)}
-          className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500 ml-2'
-        >
-          <option value="">All Genders</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-      </div>
-
-      {/* Button to Download PDF */}
-      <div className="text-right mb-4">
-          <button
-            onClick={downloadPDF}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+        <div className='flex'>
+          <input
+            type="text"
+            placeholder="Search by Full Name or NIC"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500 w-60'
+          />
+          <select
+            value={genderFilter}
+            onChange={(e) => setGenderFilter(e.target.value)}
+            className='border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-green-500 ml-2'
           >
-            Download PDF
-          </button>
+            <option value="">All Genders</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
         </div>
-        
-        {filteredStaffMembers.length > 0 ? (
-          <>
-          <table className='min-w-full bg-white shadow-md rounded mb-8'>
-            <thead className='bg-gray-800 text-white'>
-              <tr>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Index</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Full Name</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Gender</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>NIC</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Email</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Address</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Number</th>
-                {/*<th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>DOB</th>*/}
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Role</th>
-                <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Actions</th>
+
+        {/* Button to Download PDF */}
+        <button
+          onClick={downloadPDF}
+          className="ml-auto px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+        >
+          Download PDF
+        </button>
+      </div>
+      
+      {filteredStaffMembers.length > 0 ? (
+        <>
+        <table className='min-w-full bg-white rounded mb-8'>
+          <thead className='bg-gray-800 text-white'>
+            <tr>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Index</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Full Name</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Gender</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>NIC</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Email</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Address</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Number</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Role</th>
+              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStaffMembers.map((staff, index) => (
+              <tr key={index} className='hover:bg-gray-100'>
+                <td className='px-6 py-4 border-b'>{index + 1}</td>
+                <td className='px-6 py-4 border-b'>{staff.firstName} {staff.lastName}</td>
+                <td className='px-6 py-4 border-b'>{staff.gender}</td>
+                <td className='px-6 py-4 border-b'>{staff.nic}</td>
+                <td className='px-6 py-4 border-b'>{staff.email}</td>
+                <td className='px-6 py-4 border-b'>{staff.address}, {staff.district}</td>
+                <td className='px-6 py-4 border-b'>{staff.contactNumber}</td>
+                <td className='px-6 py-4 border-b'>{staff.role}</td>
+                <td className='px-6 py-4 border-b'>
+                  <div className='flex space-x-2'>
+                    <Link to={`/wh-manager/update-staff/${staff._id}`}
+                      className='bg-yellow-500 text-white py-1 px-3 rounded-sm hover:bg-yellow-600 transition duration-200'>
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => deleteStaffMember(staff._id)}
+                      className='bg-red-500 text-white py-1 px-3 rounded-sm hover:bg-red-600 transition duration-200'>
+                      Delete
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredStaffMembers.map((staff, index) => (
-                <tr key={index} className='hover:bg-gray-100'>
-                  <td className='px-6 py-4 border-b'>{index + 1}</td>
-                  <td className='px-6 py-4 border-b'>{staff.firstName} {staff.lastName}</td>
-                  <td className='px-6 py-4 border-b'>{staff.gender}</td>
-                  <td className='px-6 py-4 border-b'>{staff.nic}</td>
-                  <td className='px-6 py-4 border-b'>{staff.email}</td>
-                  <td className='px-6 py-4 border-b'>{staff.address}, {staff.district}</td>
-                  <td className='px-6 py-4 border-b'>{staff.contactNumber}</td>
-                  {/*<td className='px-6 py-4 border-b'>{new Date(staff.dob).toLocaleDateString()}</td>*/}
-                  <td className='px-6 py-4 border-b'>{staff.role}</td>
-                  <td className='px-6 py-4 border-b'>
-                    <div className='flex space-x-2'>
-                      <Link to={`/wh-manager/update-staff/${staff._id}`}
-                        className='bg-yellow-500 text-white py-1 px-3 rounded-sm hover:bg-yellow-600 transition duration-200'>
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => deleteStaffMember(staff._id)}
-                        className='bg-red-500 text-white py-1 px-3 rounded-sm hover:bg-red-600 transition duration-200'>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-      </>
-    ) : (
-      <p className="text-center text-gray-500 mt-6">No staff members found.</p>
-    )}
-  </div>
+            ))}
+          </tbody>
+        </table>
+    </>
+  ) : (
+    <p className="text-center text-gray-500 mt-6">No staff members found.</p>
+  )}
+</div>
 </div>
 );
 }

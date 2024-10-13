@@ -19,10 +19,11 @@ export default function AllStock() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="m-3 bg-white p-6 rounded-lg shadow-md flex-auto max-w-6xl">
+    <div>
       <h1 className="text-4xl font-bold text-center mb-1">Inventory Stock Levels</h1>
       <div className="overflow-x-auto">
-        <hr className="my-4 border-t-2 border-gray-300" />
+        <hr className="my-4" />
         {stocks.length > 0 ? (
           <>
             {/* Bar Chart for stock levels */}
@@ -32,6 +33,7 @@ export default function AllStock() {
           <p className="text-center text-gray-500 mt-6">Inventory is empty.</p>
         )}
       </div>
+    </div>
     </div>
   );
 }
