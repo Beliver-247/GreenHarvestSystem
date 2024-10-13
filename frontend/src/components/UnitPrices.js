@@ -74,7 +74,7 @@
 
         return (
             <div className="m-3 bg-white p-6 rounded-lg shadow-md flex-auto max-w-6xl">
-            <h1 className="text-3xl font-bold mb-5 ml-4">Unit Prices Per Kilogram</h1>
+            <h1 className="text-4xl font-bold mb-5 ml-4 text-center">Unit Prices Per Kilogram</h1>
             <hr/>
             <div className="flex flex-wrap mt-5">
                 {Object.keys(unitPrices).map(vegType => (
