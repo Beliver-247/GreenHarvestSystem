@@ -8,7 +8,7 @@ const NotificationModal = ({ message, show, onClose }) => {
     if (show) {
       const timer = setTimeout(() => {
         onClose();
-      }, 4000); // Modal disappears after 4 seconds
+      }, 5000); // Modal disappears after 4 seconds
 
       return () => clearTimeout(timer); // Cleanup timer
     }

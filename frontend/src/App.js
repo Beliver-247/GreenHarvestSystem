@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { Navigate } from 'react-router-dom';
-import 'leaflet/dist/leaflet.css';
-
+import { Navigate } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
 
 // Local Repo Components
 import LayoutQAManager from "./components/LayoutQAManager";
@@ -16,9 +15,9 @@ import QAteamDashboard from "./components/QATeamDash.js";
 import IncomingBatches from "./components/IncomingBatches";
 import QADashboard from "./components/QADash";
 import QAStandards from "./components/QAStandardComponent";
-import UpdateStandards from './components/updateStandards';
-import QAteamLogin from './components/QAteamLogin';
-import QAteamProfile from './components/QAteamProfile';
+import UpdateStandards from "./components/updateStandards";
+import QAteamLogin from "./components/QAteamLogin";
+import QAteamProfile from "./components/QAteamProfile";
 import NotificationModal from "./components/modals/NotificationModal"; // Local notification modal
 
 // Remote Repo Components
@@ -33,7 +32,6 @@ import MaintenanceManagement from "./pages/MaintenanceManagement";
 import ExpensesCalculator from "./pages/ExpensesCalculator";
 import DriverPage from "./pages/DriverPage";
 import DriverProfile from "./pages/DriverProfile.js";
-   
 
 import Signup from "./pages/Signup.js";
 import OTP from "./pages/OTP.js";
@@ -126,6 +124,9 @@ const socket = io("http://localhost:3001");
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [batchDetails, setBatchDetails] = useState({});
+
+  const [showQAModal, setShowQAModal] = useState(false); // For QA record notification
+  const [qaRecordDetails, setQARecordDetails] = useState({}); // Store QA record details
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = () => {
@@ -133,15 +134,28 @@ function App() {
   };
 
   useEffect(() => {
-    // Listen for the new batch event from the backend
+    // Listen for new batch notifications
     socket.on("new-batch", (batch) => {
       setBatchDetails(batch);
-      setShowModal(true); // Open modal when a new batch notification is received
+      setShowModal(true); // Open modal when new batch notification is received
     });
 
-    // Clean up the socket listener when the component unmounts
-    return () => socket.off("new-batch");
-  }, []);
+    // Listen for new QA record notifications
+    socket.on("new-qa-record", (qaRecord) => {
+      setQARecordDetails(qaRecord);
+      setShowQAModal(true); // Open modal when new QA record is added
+    });
+
+    // Clean up the socket listeners when the component unmounts
+    return () => {
+      socket.off("new-batch");
+      socket.off("new-qa-record");
+    };
+  });
+
+  const closeQAModal = () => {
+    setShowQAModal(false);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -154,28 +168,37 @@ function App() {
         <div className="app-container">
           <div className="content">
             <Routes>
-            {/* QA Manager Routes */}
-            <Route path="/qa-manager/*" element={<LayoutQAManager />}>
-              <Route index element={<QADashboard />} />
-              <Route path="incoming-batches" element={<IncomingBatches userRole="QA Manager" />} /> 
-              <Route path="add-qarecord" element={<AddQArecord />} />
-              <Route path="qa-records" element={<QARecords />} />
-              <Route path="qa-team" element={<QATeam />} />
-              <Route path="add-qaMember" element={<AddQAmember />} />
-              <Route path="qa-standards" element={<QAStandards />} />
-              <Route path="qa-standards/update" element={<UpdateStandards />} />
-            </Route>
+              {/* QA Manager Routes */}
+              <Route path="/qa-manager/*" element={<LayoutQAManager />}>
+                <Route index element={<QADashboard />} />
+                <Route
+                  path="incoming-batches"
+                  element={<IncomingBatches userRole="QA Manager" />}
+                />
+                <Route path="add-qarecord" element={<AddQArecord />} />
+                <Route path="qa-records" element={<QARecords />} />
+                <Route path="qa-team" element={<QATeam />} />
+                <Route path="add-qaMember" element={<AddQAmember />} />
+                <Route path="qa-standards" element={<QAStandards />} />
+                <Route
+                  path="qa-standards/update"
+                  element={<UpdateStandards />}
+                />
+              </Route>
 
-            {/* QA Team Routes */}
-            <Route path="/qa-team/*" element={<LayoutQATeam />}>
-              <Route index element={<QAteamDashboard />} />
-              <Route path="add-qarecord" element={<AddQArecord />} />
-              <Route path="qa-records" element={<QARecords />} />
-              <Route path="incoming-batches" element={<IncomingBatches userRole="QA Team" />} />
-              <Route path="qa-standards" element={<QAStandards />} />
-              <Route path="qa-myprofile" element={<QAteamProfile />}/>
-            </Route>
-            <Route path="qa-team-login" element={<QAteamLogin />}/>
+              {/* QA Team Routes */}
+              <Route path="/qa-team/*" element={<LayoutQATeam />}>
+                <Route index element={<QAteamDashboard />} />
+                <Route path="add-qarecord" element={<AddQArecord />} />
+                <Route path="qa-records" element={<QARecords />} />
+                <Route
+                  path="incoming-batches"
+                  element={<IncomingBatches userRole="QA Team" />}
+                />
+                <Route path="qa-standards" element={<QAStandards />} />
+                <Route path="qa-myprofile" element={<QAteamProfile />} />
+              </Route>
+              <Route path="qa-team-login" element={<QAteamLogin />} />
 
               {/* Vehicle Fleet Management Routes */}
               <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
@@ -198,20 +221,14 @@ function App() {
                   element={<ExpensesCalculator />}
                 />
               </Route>
-              
+
               <Route path="/driver-signin" element={<DriverLogin />} />
 
               <Route path="/driver" element={<LayoutDriver />}>
                 <Route index element={<DriverDashboard />} />
-                <Route path="driver-page" element={<DriverPage />}/>
-                <Route path="profile" element={<DriverProfile />}/>
+                <Route path="driver-page" element={<DriverPage />} />
+                <Route path="profile" element={<DriverProfile />} />
               </Route>
-
-   
-
-              
-
-
 
               {/* Authentication and Recovery Routes */}
               <Route path="/" element={<UserHome />} />
@@ -250,13 +267,15 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/my-orders" element={<MyOrders />} />
-              <Route path="/order-details/:orderId" element={<OrderDetails />}/>
+              <Route
+                path="/order-details/:orderId"
+                element={<OrderDetails />}
+              />
               <Route path="/confirmation" element={<OrderConfirmation />} />
               <Route path="/order/:id" element={<OrderForm />} />
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/edit-order/:orderId" element={<EditOrder />} />
               <Route path="/order-admin" element={<OrderAdmin />} />
-
 
               {/*Warehouse Staff layout*/}
               <Route path="/wh-staff" element={<WarehouseStaffLayout />}>
@@ -280,7 +299,10 @@ function App() {
                 />
                 <Route path="/wh-manager/add-staff" element={<AddStaff />} />
                 <Route path="/wh-manager/all-staff" element={<AllStaff />} />
-                <Route path="/wh-manager/unit-prices" element={<UnitPrices />} />
+                <Route
+                  path="/wh-manager/unit-prices"
+                  element={<UnitPrices />}
+                />
                 <Route path="/wh-manager/all-stocks" element={<AllStock />} />
                 <Route
                   path="/wh-manager/delivery-history"
@@ -298,10 +320,7 @@ function App() {
 
                 <Route path="login_farmer" element={<FarmerLogin />} />
 
-                <Route
-                  path="farmer-dashboard"
-                  element={<FarmerDashboard />}
-                />
+                <Route path="farmer-dashboard" element={<FarmerDashboard />} />
                 <Route path="farmer-profile" element={<MyProfile />} />
 
                 <Route path="crop-readiness" element={<CropReadinessForm />} />
@@ -383,6 +402,14 @@ function App() {
             message={`Vegetable: ${batchDetails.vegetableType}\nWeight: ${batchDetails.totalWeight} kg\nArrival Date: ${batchDetails.arrivalDate}`}
             show={showModal}
             onClose={closeModal}
+          />
+
+          {/* Conditional notification modal for new QA record */}
+          <NotificationModal
+            title="New QA Record Added"
+            message={`Vegetable: ${qaRecordDetails.vegetableType}\nGrade A: ${qaRecordDetails.gradeAWeight} kg\nGrade B: ${qaRecordDetails.gradeBWeight} kg\nGrade C: ${qaRecordDetails.gradeCWeight} kg`}
+            show={showQAModal}
+            onClose={closeQAModal}
           />
         </div>
         <Footer />
