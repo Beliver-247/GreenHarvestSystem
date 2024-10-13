@@ -10,6 +10,7 @@ export default function DeliveryHistory() {
   const [searchVegType, setSearchVegType] = useState(""); // State for vegetable type search
   const [searchYear, setSearchYear] = useState(""); // State for year search
   const [searchMonth, setSearchMonth] = useState(""); // State for month search
+  const [searchQualityGrade, setSearchQualityGrade] = useState(""); // State for quality grade search
 
   useEffect(() => {
     function getStocks() {
@@ -30,8 +31,9 @@ export default function DeliveryHistory() {
     const matchesVegType = !searchVegType || stock.vegType.toLowerCase() === searchVegType.toLowerCase();
     const matchesYear = !searchYear || stockDate.getFullYear().toString() === searchYear;
     const matchesMonth = !searchMonth || (stockDate.getMonth() + 1).toString() === searchMonth;
+    const matchesQualityGrade = !searchQualityGrade || stock.qualityGrade.toLowerCase() === searchQualityGrade.toLowerCase();
 
-    return matchesVegType && matchesYear && matchesMonth;
+    return matchesVegType && matchesYear && matchesMonth && matchesQualityGrade;
   });
 
   // Function to download the filtered records as a PDF
@@ -112,62 +114,72 @@ export default function DeliveryHistory() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-4xl font-bold text-center mb-6">Delivery History</h1>
+    <div className="m-3 bg-white p-6 rounded-lg shadow-md flex-auto max-w-6xl">
+      <h1 className="text-4xl font-bold text-center mb-3">Delivery History</h1>
       
-      
-
       <div className="overflow-x-auto">
-        <hr className="my-4 border-t-2 border-gray-300" />
+        <hr className="mb-6"/>
 
-        {/* Search Fields */}
-      <div className="mb-6 flex justify-center space-x-4">
-        {/* Search by Vegetable Type - Changed to Select */}
-        <select
-          className="p-2 border border-gray-300 rounded"
-          value={searchVegType}
-          onChange={(e) => setSearchVegType(e.target.value)}
-        >
-          <option value="" disabled>Select Vegetable Type</option>
-          <option value="Carrot">Carrot</option>
-          <option value="Leeks">Leeks</option>
-          <option value="Cabbage">Cabbage</option>
-          <option value="Potato">Potato</option>
-        </select>
+        {/* Search Fields */}  
+        <div className="mb-6 flex justify-between">
+          <div className="flex space-x-4">
+            {/* Search by Vegetable Type - Changed to Select */}
+            <select
+              className="p-2 border border-gray-300 rounded"
+              value={searchVegType}
+              onChange={(e) => setSearchVegType(e.target.value)}
+            >
+              <option value="" disabled>Select Vegetable Type</option>
+              <option value="Carrot">Carrot</option>
+              <option value="Leeks">Leeks</option>
+              <option value="Cabbage">Cabbage</option>
+              <option value="Potato">Potato</option>
+            </select>
 
-        {/* Search by Year */}
-        <input
-          type="text"
-          placeholder="Search by Year"
-          className="p-2 border border-gray-300 rounded"
-          value={searchYear}
-          onChange={(e) => setSearchYear(e.target.value)}
-        />
+            {/* Search by Quality Grade */}
+            <select
+              className="p-2 border border-gray-300 rounded"
+              value={searchQualityGrade}
+              onChange={(e) => setSearchQualityGrade(e.target.value)}
+            >
+              <option value="" disabled>Select Quality Grade</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+            </select>
 
-        {/* Search by Month */}
-        <select
-          className="p-2 border border-gray-300 rounded"
-          value={searchMonth}
-          onChange={(e) => setSearchMonth(e.target.value)}
-        >
-          <option value="" disabled>Select Month</option>
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-      </div>
+            {/* Search by Month */}
+            <select
+              className="p-2 border border-gray-300 rounded"
+              value={searchMonth}
+              onChange={(e) => setSearchMonth(e.target.value)}
+            >
+              <option value="" disabled>Select Month</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
 
-      {/* Button to Download PDF */}
-      <div className="text-right mb-4">
+            {/* Search by Year */}
+            <input
+              type="text"
+              placeholder="Search by Year"
+              className="p-2 border border-gray-300 rounded"
+              value={searchYear}
+              onChange={(e) => setSearchYear(e.target.value)}
+            />
+          </div>
+
+          {/* Button to Download PDF */}
           <button
             onClick={downloadPDF}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
@@ -179,7 +191,7 @@ export default function DeliveryHistory() {
         {filteredStocks.length > 0 ? (
           <>
             {/* Table displaying filtered stock entries */}
-            <table className="min-w-full bg-white shadow-md rounded mb-8">
+            <table className="min-w-full bg-white rounded mb-8">
               <thead className="bg-gray-800 text-white">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Index</th>
@@ -209,7 +221,6 @@ export default function DeliveryHistory() {
         ) : (
           <p className="text-center text-gray-500 mt-6">No stocks match your search criteria.</p>
         )}
-
       </div>
     </div>
   );
