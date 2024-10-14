@@ -29,7 +29,7 @@ orderSchema.pre("save", async function (next) {
       .countDocuments({ userId: order.userId });
 
     // Generate the order number based on the count (e.g., "01", "02", etc.)
-    order.orderNumber = (orderCount + 1).toString().padStart(2, "0");
+    order.orderNumber = (orderCount + 30).toString().padStart(2, "0");
 
     next();
   } catch (error) {
