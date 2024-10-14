@@ -60,7 +60,7 @@ function UpdateFarmer() {
           error = "Contact number must be exactly 10 digits.";
         }
         break;
-      case "email":
+     case "email":
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
           error = "Invalid email format.";
         }
@@ -77,24 +77,56 @@ function UpdateFarmer() {
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: error,
-    }));
+    })); 
   };
 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
+  
+    // Validation for firstName and lastName (only alphabets and spaces allowed)
     if (name === "firstName" || name === "lastName") {
       const regex = /^[A-Za-z\s]*$/; // Allows alphabets and spaces (no numbers or special characters)
       if (!regex.test(value)) return; // Reject if not valid
     }
-
+  
+    // Validation for NIC field
+    if (name === "NIC") {
+      // Restrict input to only digits and "V" or "X" for 10-character NICs
+      const isValidNIC = /^[0-9]*[vVxX]?$/.test(value);
+  
+      // Limit length to 12 characters for the new format or 10 characters for the old format
+      if (!isValidNIC || value.length > 12) {
+        return; // Stop further input if invalid
+      }
+    }
+  
+    // Validation for contact field (only digits allowed, and restrict to 10 digits)
+    if (name === "contact") {
+      const digitsOnly = value.replace(/\D/g, ''); // Remove any non-digit characters
+      if (digitsOnly.length > 10) return; // Prevent more than 10 digits
+      setFarmerData((prevState) => ({
+        ...prevState,
+        [name]: digitsOnly,
+      }));
+      return; // No need to run further validation for contact here
+    }
+  
+    // Update the state for other fields
     setFarmerData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  
+    // Validate the input field (for other fields)
     validateField(name, value);
+  
+    // Trigger validation after full value is entered for NIC
+    if (name === "NIC" && (value.length === 12 || value.length === 10)) {
+      validateField(name, value);
+    }
   };
+  
 
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
@@ -118,68 +150,95 @@ function UpdateFarmer() {
     return true;
   };
 
+  const handleNICBlur = () => {
+    validateNIC();  // Call the NIC validation only when the user leaves the field
+};
+
   const validateNIC = () => {
     const dobYear = new Date(farmerData.DOB).getFullYear();
     const dobYearLast2 = dobYear.toString().slice(-2); // Last 2 digits of DOB year
 
+    console.log("DOB Year:", dobYear, "NIC:", farmerData.NIC); // Debugging output
+
+    // New NIC format (12 digits)
     if (farmerData.NIC.length === 12) {
-      const nicYear = farmerData.NIC.slice(0, 4); // First 4 digits for NIC year
-      const nicDays = parseInt(farmerData.NIC.slice(4, 7)); // 5th to 7th digit for days of the year
-      if (nicYear !== dobYear.toString()) {
+        const nicYear = farmerData.NIC.slice(0, 4); // First 4 digits for NIC year
+        const nicDays = parseInt(farmerData.NIC.slice(4, 7), 10); // Days of the year
+
+        console.log("NIC Year (12 digits):", nicYear, "NIC Days:", nicDays, "Gender:", farmerData.gender); // Debugging output
+
+        // Ensure that the NIC year is exactly matching the DOB year (both as strings)
+        if (nicYear !== dobYear.toString()) {
+            console.log("Error: NIC year does not match DOB year.");
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "NIC year does not match Date of Birth year.",
+            }));
+            return false;
+        }
+
+        if (farmerData.gender === "Male" && nicDays >= 500) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "For males, NIC day values should be below 500.",
+            }));
+            return false;
+        } else if (farmerData.gender === "Female" && nicDays < 500) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "For females, NIC day values should be 500 or above.",
+            }));
+            return false;
+        }
+    } 
+    // Old NIC format (9 digits + V/v)
+    else if (farmerData.NIC.length === 10 && /^[0-9]{9}[Vv]$/.test(farmerData.NIC)) {
+        const nicYear = farmerData.NIC.slice(0, 2); // First 2 digits for NIC year
+        const nicDays = parseInt(farmerData.NIC.slice(2, 5), 10); // Days of the year
+
+        console.log("NIC Year (10 digits):", nicYear, "NIC Days:", nicDays, "Gender:", farmerData.gender); // Debugging output
+
+        if (nicYear !== dobYearLast2) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "NIC year does not match Date of Birth year.",
+            }));
+            return false;
+        }
+
+        if (farmerData.gender === "Male" && nicDays >= 500) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "For males, NIC day values should be below 500.",
+            }));
+            return false;
+        } else if (farmerData.gender === "Female" && nicDays < 500) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                NIC: "For females, NIC day values should be 500 or above.",
+            }));
+            return false;
+        }
+    } 
+    // Invalid NIC format
+    else {
         setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "NIC year does not match Date of Birth year.",
+            ...prevErrors,
+            NIC: "Invalid NIC format. It should be either 12 digits or 9 digits followed by 'V'.",
         }));
         return false;
-      }
-      if (farmerData.gender === "Male" && nicDays >= 500) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "For males, NIC day values should be below 500.",
-        }));
-        return false;
-      } else if (farmerData.gender === "Female" && nicDays < 500) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "For females, NIC day values should be 500 or above.",
-        }));
-        return false;
-      }
-    } else if (
-      farmerData.NIC.length === 10 &&
-      /^[0-9]{9}[Vv]$/.test(farmerData.NIC)
-    ) {
-      const nicYear = farmerData.NIC.slice(0, 2); // First 2 digits for NIC year
-      const nicDays = parseInt(farmerData.NIC.slice(2, 5)); // 3rd to 5th digit for days of the year
-      if (nicYear !== dobYearLast2) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "NIC year does not match Date of Birth year.",
-        }));
-        return false;
-      }
-      if (farmerData.gender === "Male" && nicDays >= 500) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "For males, NIC day values should be below 500.",
-        }));
-        return false;
-      } else if (farmerData.gender === "Female" && nicDays < 500) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          NIC: "For females, NIC day values should be 500 or above.",
-        }));
-        return false;
-      }
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        NIC: "Invalid NIC format. It should be either 12 digits or 9 digits followed by 'V'.",
-      }));
-      return false;
     }
+
+    // Clear errors if valid
+    setErrors((prevErrors) => ({
+        ...prevErrors,
+        NIC: null,
+    }));
     return true;
-  };
+};
+
+
+    
 
   const validateContact = () => {
     const contactPattern = /^[0-9]{10}$/; // Assuming a 10-digit contact number
@@ -194,16 +253,27 @@ function UpdateFarmer() {
   };
 
   const validateEmail = (email) => {
+    const trimmedEmail = email.trim(); // Trim whitespace from the input
+    console.log("Validating email:", trimmedEmail); // Debugging log
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailPattern.test(email)) {
+  
+    if (!emailPattern.test(trimmedEmail)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         email: "Invalid email format.",
       }));
       return false;
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: null,
+      }));
+      return true;
     }
-    return true;
   };
+  
+  
+  
 
   const validatePassword = () => {
     if (farmerData.password.length < 6) {
@@ -340,19 +410,24 @@ function UpdateFarmer() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700">Gender</label>
-              <input
-                type="text"
-                className="form-input border border-gray-300 rounded-md p-2 w-full"
-                name="gender"
-                value={farmerData.gender}
-                onChange={handleInputChange}
-                required
-              />
-              {errors.gender && (
-                <span className="text-red-500">{errors.gender}</span>
-              )}
-            </div>
+    <label className="block text-gray-700">Gender</label>
+    <select
+        className="form-input border border-gray-300 rounded-md p-2 w-full"
+        name="gender"
+        value={farmerData.gender}
+        onChange={handleInputChange}
+        required
+    >
+        <option value="" disabled>Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+    </select>
+    {errors.gender && (
+        <span className="text-red-500">{errors.gender}</span>
+    )}
+</div>
+
             <div>
               <label className="block text-gray-700">NIC</label>
               <input
@@ -360,7 +435,9 @@ function UpdateFarmer() {
                 className="form-input border border-gray-300 rounded-md p-2 w-full"
                 name="NIC"
                 value={farmerData.NIC}
+               
                 onChange={handleInputChange}
+                onBlur={handleNICBlur} 
                 required
               />
               {errors.NIC && <span className="text-red-500">{errors.NIC}</span>}
@@ -388,6 +465,7 @@ function UpdateFarmer() {
                 type="password"
                 className="form-input border border-gray-300 rounded-md p-2 w-full"
                 name="password"
+                disabled
                 value={farmerData.password}
                 onChange={handleInputChange}
                 required

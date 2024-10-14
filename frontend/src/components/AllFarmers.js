@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa'; // Import magnifying glass icon
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import logo from "./LogoImage.png"
 
 function AllFarmers() {
   const [farmers, setFarmers] = useState([]);
@@ -62,13 +63,41 @@ function AllFarmers() {
   const generateReport = () => {
     const pdf = new jsPDF();
     const date = new Date();
-
-    // Create report title and current date
-    pdf.text('Farmers Report', 14, 20);
-    pdf.text(`Generated on: ${date.toLocaleString()}`, 14, 30);
+  
+    // Company Header
+    const companyName = 'GSP Traders Pvt Ltd';
+    const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+    const email = 'gsptraders29@gmail.com';
+    const phone = '+94 77 7144 133';
+  
+    pdf.setTextColor('#11532F'); // Company green color
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(companyName, 195, 20, { align: 'right' });
+  
+    const imgData = logo;  // Assuming logo is defined elsewhere
+    pdf.addImage(imgData, 'PNG', 15, 15, 25, 25);
+  
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(address, 195, 28, { align: 'right' });
+    pdf.text(`Email: ${email}`, 195, 34, { align: 'right' });
+    pdf.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
+  
+    // Divider
+    pdf.setDrawColor('#11532F');
+    pdf.setLineWidth(1);
+    pdf.line(10, 50, 200, 50);
+  
+    // Report title
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 0, 0); // Reset to black for main content
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Farmers Report', 105, 60, { align: 'center' });
     
-    // Add a table of all farmers
-    const tableBody = farmers.map((farmer) => [
+  
+    // Table for Filtered Farmers
+    const tableBody = filteredFarmers.map((farmer) => [
       farmer.firstName,
       farmer.lastName,
       formatDate(farmer.DOB),
@@ -78,17 +107,64 @@ function AllFarmers() {
       farmer.NIC,
       farmer.address,
       farmer.contact,
-      maskPassword(farmer.password),
+      
     ]);
-
+  
     pdf.autoTable({
-      head: [['First Name', 'Last Name', 'Date of Birth', 'Email', 'Age', 'Gender', 'NIC', 'Address', 'Contact No.', 'Password']],
+      head: [['First Name', 'Last Name', 'Date of Birth', 'Email', 'Age', 'Gender', 'NIC', 'Address', 'Contact No.']],
       body: tableBody,
-      startY: 40,
+      startY: 80,
+      theme: 'grid',
+      headStyles: { fillColor: '#11532F' },
     });
-
-    pdf.save('farmers_report.pdf');
+  
+    // Status Summary Section (Optional)
+    const finalY = pdf.lastAutoTable.finalY || 90; // Get the Y-position after the last table
+    pdf.setFontSize(14);
+    pdf.setTextColor('#11532F');
+    pdf.text('Status Summary', 20, finalY + 20);
+  
+    // Gather status counts (if applicable)
+    const statusCounts = {
+      Male: filteredFarmers.filter(farmer => farmer.gender === 'Male').length,
+      Female: filteredFarmers.filter(farmer => farmer.gender === 'Female').length,
+    };
+  
+    pdf.autoTable({
+      startY: finalY + 30,
+      head: [['Gender', 'Count']],
+      body: [
+        ['Male', statusCounts.Male],
+        ['Female', statusCounts.Female],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: '#11532F' },
+    });
+  
+    // Final Y after status summary table
+    const lastY = pdf.lastAutoTable.finalY || finalY + 30;
+  
+    // Check if the footer can fit on the same page, otherwise add a new page
+    if (lastY + 40 > pdf.internal.pageSize.height) {
+      pdf.addPage();
+      lastY = 20;  // Reset Y-coordinate for new page
+    }
+  
+    // Divider for separation
+    pdf.setDrawColor('#11532F');
+    pdf.setLineWidth(0.5);
+    pdf.line(10, lastY + 10, 200, lastY + 10);
+  
+    // Footer
+    pdf.setFontSize(10);
+    pdf.setTextColor(100);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Generated on: ' + new Date().toLocaleString(), 105, lastY + 20, { align: 'center' });
+  
+    // Save the PDF
+    pdf.save(`Farmers_Report_${date.getFullYear()}_${date.getMonth() + 1}.pdf`);
   };
+  
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">

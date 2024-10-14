@@ -92,6 +92,7 @@ const newBatchRouter = require("./routes/IncomingBatches")(io);
 // Farmer Routes
 const farmerRouter = require("./routes/farmer_routes.js");
 app.use("/farmer", farmerRouter);
+app.use('/uploads', express.static('uploads'));
 
 // Crop Readiness Routes
 const cropReadinessRoutes = require('./routes/cropReadinessRoutes');
