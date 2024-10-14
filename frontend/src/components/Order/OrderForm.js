@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { StoreContext } from '../../context/StoreContext';
-import validateForm from '../../Validation/orderForm_validate';// Adjust the path as necessary
+import React, { useState, useContext, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
+import validateForm from "../../Validation/orderForm_validate"; // Adjust the path as necessary
 
 const OrderForm = () => {
   const { id } = useParams();
@@ -12,74 +12,117 @@ const OrderForm = () => {
   const [formData, setFormData] = useState({
     userId: "", // Assume a logged-in user
     address: {
-      country: '',
-      street: '',
-      city: '',
-      postalCode: '',
-      phone: ''
+      country: "",
+      street: "",
+      city: "",
+      postalCode: "",
+      phone: "",
     },
     billingAddress: {
-      country: '',
-      street: '',
-      city: '',
-      postalCode: '',
-      phone: ''
+      country: "",
+      street: "",
+      city: "",
+      postalCode: "",
+      phone: "",
     },
-    billingAddressOption: 'same'
+    billingAddressOption: "same",
   });
 
   const [isSameAsShipping, setIsSameAsShipping] = useState(true);
   const [errors, setErrors] = useState({});
 
+  // Handle input changes and validate specific field
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const [field, subfield] = name.split('.');
+    const [field, subfield] = name.split(".");
 
-    if (subfield) {
+    // Restrict phone numbers to numeric input and 10 digits
+    if (name === "address.phone" || name === "billingAddress.phone") {
+      const numericValue = value.replace(/\D/g, ""); // Only allow digits
+      if (numericValue.length > 10) {
+        return; // Stop further input if length exceeds 10 digits
+      }
+      // Update phone number
       setFormData((prev) => ({
         ...prev,
-        [field]: {
-          ...prev[field],
-          [subfield]: value
-        }
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value
+        [field]: { ...prev[field], [subfield]: numericValue },
       }));
     }
-    // Run validation on the current field
-    const updatedFormData = {
+
+    // Restrict postal codes to numeric input and 5 digits
+    else if (
+      name === "address.postalCode" ||
+      name === "billingAddress.postalCode"
+    ) {
+      const numericValue = value.replace(/\D/g, ""); // Only allow digits
+      if (numericValue.length > 5) {
+        return; // Stop further input if length exceeds 5 digits
+      }
+      // Update postal code
+      setFormData((prev) => ({
+        ...prev,
+        [field]: { ...prev[field], [subfield]: numericValue },
+      }));
+    }
+
+    // Update formData for other fields
+    else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: subfield ? { ...prev[field], [subfield]: value } : value,
+      }));
+    }
+
+    // Create a temporary object for validation of the current field
+    const tempFormData = {
       ...formData,
       [field]: subfield ? { ...formData[field], [subfield]: value } : value,
     };
-    const validationErrors = validateForm(updatedFormData);  // Validate the form with the updated data
-    setErrors(validationErrors);
+
+    // Validate and update errors for the current field
+    const validationErrors = validateForm(tempFormData);
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      const errorKey = subfield
+        ? `${field}${subfield.charAt(0).toUpperCase() + subfield.slice(1)}`
+        : name;
+
+      // Add or remove error message for the specific field
+      if (validationErrors[errorKey]) {
+        newErrors[errorKey] = validationErrors[errorKey];
+      } else {
+        delete newErrors[errorKey];
+      }
+
+      return newErrors;
+    });
   };
 
+  // Handle toggling between shipping and billing address
   const handleBillingAddressToggle = (e) => {
-    setIsSameAsShipping(e.target.value === 'same');
+    setIsSameAsShipping(e.target.value === "same");
   };
 
+  // Sync billing address with shipping address when "Same as Shipping" is selected
   useEffect(() => {
     if (isSameAsShipping) {
       setFormData((prev) => ({
         ...prev,
-        billingAddress: { ...prev.address } // Copy shipping address to billing address
+        billingAddress: { ...prev.address }, // Copy address
       }));
     }
   }, [isSameAsShipping, formData.address]);
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      return; // Prevent submission if there are errors
     }
-    
+
     const orderData = {
       userId: formData.userId,
       items: [
@@ -88,19 +131,19 @@ const OrderForm = () => {
           name: product.name,
           qty: cartItems[id],
           price: product.price,
-          image: product.image
-        }
+          image: product.image,
+        },
       ],
       amount: product.price * cartItems[id] + 250,
       address: formData.address,
       billingAddress: formData.billingAddress,
-      payment: false
+      payment: false,
     };
 
     try {
-      navigate('/payment', { state: orderData });
+      navigate("/payment", { state: orderData });
     } catch (error) {
-      console.error('Error placing order:', error);
+      console.error("Error placing order:", error);
     }
   };
 
@@ -110,65 +153,65 @@ const OrderForm = () => {
         <h2 className="text-xl font-semibold mb-4">Order Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           {/* Left Side: Shipping and Billing Address */}
-          <div className="space-y-6">
+          <div className="space-y-8">
+            {/* Shipping Address Section */}
             <section>
-              <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
-              <div className="space-y-4">
-                <input
-                  name="address.street"
-                  placeholder="Street"
-                  onChange={handleChange}
-                  value={formData.address.street}
-                  className={`w-full p-2 border rounded-md ${errors.addressStreet ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
-                {errors.addressStreet && <p className="text-red-500">{errors.addressStreet}</p>}
-
-                <input
-                  name="address.city"
-                  placeholder="City"
-                  onChange={handleChange}
-                  value={formData.address.city}
-                  className={`w-full p-2 border rounded-md ${errors.addressCity ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
-                {errors.addressCity && <p className="text-red-500">{errors.addressCity}</p>}
-
-                <input
-                  name="address.country"
-                  placeholder="Country"
-                  onChange={handleChange}
-                  value={formData.address.country}
-                  className={`w-full p-2 border rounded-md ${errors.addressCountry ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
-                {errors.addressCountry && <p className="text-red-500">{errors.addressCountry}</p>}
-
-                <input
-                  name="address.postalCode"
-                  placeholder="Postal Code"
-                  onChange={handleChange}
-                  value={formData.address.postalCode}
-                  className={`w-full p-2 border rounded-md ${errors.addressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
-                {errors.addressPostalCode && <p className="text-red-500">{errors.addressPostalCode}</p>}
-
-                <input
-                  name="address.phone"
-                  placeholder="Phone"
-                  onChange={handleChange}
-                  value={formData.address.phone}
-                  className={`w-full p-2 border rounded-md ${errors.addressPhone ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
-                {errors.addressPhone && <p className="text-red-500">{errors.addressPhone}</p>}
+              <h3 className="text-2xl font-semibold mb-6 text-gray-700">
+                Shipping Address
+              </h3>
+              <div className="space-y-6">
+                {["street", "city", "country", "postalCode", "phone"].map(
+                  (field) => (
+                    <div key={field} className="relative">
+                      <input
+                        name={`address.${field}`}
+                        placeholder=" "
+                        onChange={handleChange}
+                        value={formData.address[field]}
+                        className={`block w-full px-3 py-2 pt-5 border rounded-lg text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 peer transition-all duration-300 ${
+                          errors[
+                            `address${
+                              field.charAt(0).toUpperCase() + field.slice(1)
+                            }`
+                          ]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                        required
+                      />
+                      <label
+                        htmlFor={`address.${field}`}
+                        className="absolute left-3 top-3 text-gray-500 transition-all transform -translate-y-3 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
+                      >
+                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                      </label>
+                      {errors[
+                        `address${
+                          field.charAt(0).toUpperCase() + field.slice(1)
+                        }`
+                      ] && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {
+                            errors[
+                              `address${
+                                field.charAt(0).toUpperCase() + field.slice(1)
+                              }`
+                            ]
+                          }
+                        </p>
+                      )}
+                    </div>
+                  )
+                )}
               </div>
             </section>
 
+            {/* Billing Address Section */}
             <section>
-              <h2 className="text-xl font-semibold mb-4">Billing Address</h2>
-              <div className="space-y-4">
+              <h3 className="text-2xl font-semibold mb-6 text-gray-700">
+                Billing Address
+              </h3>
+              <div className="space-y-6">
                 <div className="flex items-center mb-4">
                   <input
                     type="radio"
@@ -176,9 +219,11 @@ const OrderForm = () => {
                     value="same"
                     checked={isSameAsShipping}
                     onChange={handleBillingAddressToggle}
-                    className="mr-2"
+                    className="mr-2 accent-green-500"
                   />
-                  <label>Same as shipping address</label>
+                  <label className="text-gray-600">
+                    Same as shipping address
+                  </label>
                 </div>
                 <div className="flex items-center mb-4">
                   <input
@@ -187,68 +232,63 @@ const OrderForm = () => {
                     value="different"
                     checked={!isSameAsShipping}
                     onChange={handleBillingAddressToggle}
-                    className="mr-2"
+                    className="mr-2 accent-green-500"
                   />
-                  <label>Use a different billing address</label>
+                  <label className="text-gray-600">
+                    Use a different billing address
+                  </label>
                 </div>
 
-                {!isSameAsShipping && (
-                  <>
-                    <input
-                      name="billingAddress.street"
-                      placeholder="Street"
-                      onChange={handleChange}
-                      value={formData.billingAddress.street}
-                      className={`w-full p-2 border rounded-md ${errors.billingAddressStreet ? 'border-red-500' : 'border-gray-300'}`}
-                      required
-                    />
-                    {errors.billingAddressStreet && <p className="text-red-500">{errors.billingAddressStreet}</p>}
-
-                    <input
-                      name="billingAddress.city"
-                      placeholder="City"
-                      onChange={handleChange}
-                      value={formData.billingAddress.city}
-                      className={`w-full p-2 border rounded-md ${errors.billingAddressCity ? 'border-red-500' : 'border-gray-300'}`}
-                      required
-                    />
-                    {errors.billingAddressCity && <p className="text-red-500">{errors.billingAddressCity}</p>}
-
-                    <input
-                      name="billingAddress.country"
-                      placeholder="Country"
-                      onChange={handleChange}
-                      value={formData.billingAddress.country}
-                      className={`w-full p-2 border rounded-md ${errors.billingAddressCountry ? 'border-red-500' : 'border-gray-300'}`}
-                    />
-                    {errors.billingAddressCountry && <p className="text-red-500">{errors.billingAddressCountry}</p>}
-
-                    <input
-                      name="billingAddress.postalCode"
-                      placeholder="Postal Code"
-                      onChange={handleChange}
-                      value={formData.billingAddress.postalCode}
-                      className={`w-full p-2 border rounded-md ${errors.billingAddressPostalCode ? 'border-red-500' : 'border-gray-300'}`}
-                      required
-                    />
-                    {errors.billingAddressPostalCode && <p className="text-red-500">{errors.billingAddressPostalCode}</p>}
-
-                    <input
-                      name="billingAddress.phone"
-                      placeholder="Phone"
-                      onChange={handleChange}
-                      value={formData.billingAddress.phone}
-                      className={`w-full p-2 border rounded-md ${errors.billingAddressPhone ? 'border-red-500' : 'border-gray-300'}`}
-                      required
-                    />
-                    {errors.billingAddressPhone && <p className="text-red-500">{errors.billingAddressPhone}</p>}
-                  </>
-                )}
+                {!isSameAsShipping &&
+                  ["street", "city", "country", "postalCode", "phone"].map(
+                    (field) => (
+                      <div key={field} className="relative">
+                        <input
+                          name={`billingAddress.${field}`}
+                          placeholder=" "
+                          onChange={handleChange}
+                          value={formData.billingAddress[field]}
+                          className={`block w-full px-3 py-2 pt-5 border rounded-lg text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 peer transition-all duration-300 ${
+                            errors[
+                              `billingAddress${
+                                field.charAt(0).toUpperCase() + field.slice(1)
+                              }`
+                            ]
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                          required
+                        />
+                        <label
+                          htmlFor={`billingAddress.${field}`}
+                          className="absolute left-3 top-3 text-gray-500 transition-all transform -translate-y-3 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
+                        >
+                          {field.charAt(0).toUpperCase() + field.slice(1)}
+                        </label>
+                        {errors[
+                          `billingAddress${
+                            field.charAt(0).toUpperCase() + field.slice(1)
+                          }`
+                        ] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {
+                              errors[
+                                `billingAddress${
+                                  field.charAt(0).toUpperCase() + field.slice(1)
+                                }`
+                              ]
+                            }
+                          </p>
+                        )}
+                      </div>
+                    )
+                  )}
               </div>
             </section>
+
             <button
               type="submit"
-              className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 hover:from-green-600 hover:to-green-700"
             >
               Next
             </button>
@@ -285,7 +325,7 @@ const OrderForm = () => {
               </div>
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span>Rs {product.price * cartItems[id] + 250}.00</span>
+                <span>Rs {product.price * cartItems[id] + 250}</span>
               </div>
             </div>
           </div>
