@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
-import logo from "../assets/add_icon_green.png";
+import logo from "../components/LogoImage.png";
 
 // Register Chart.js components
 Chart.register(
