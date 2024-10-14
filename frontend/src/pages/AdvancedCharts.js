@@ -13,6 +13,8 @@ import {
 } from "chart.js";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 // Register Chart.js components
 Chart.register(
@@ -177,15 +179,18 @@ const AdvancedCharts = ({ ordersData }) => {
   };
 
   return (
-    <div class="mt-10">
-      <h2 class="text-2xl font-bold mb-4">Detailed Sales Report</h2>
-      {/* Button to generate the PDF */}
-      <button
-        onClick={generatePDF}
-        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
-      >
-        Print Summary as PDF
-      </button>
+    <div class="">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Detailed Sales Report</h2>
+
+        <button
+          onClick={generatePDF}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          <FontAwesomeIcon icon={faFilePdf} className="mr-2" />
+          Print Summary as PDF
+        </button>
+      </div>
 
       {/* Charts content */}
       <div
