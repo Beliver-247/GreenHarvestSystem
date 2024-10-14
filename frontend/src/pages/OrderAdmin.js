@@ -2,16 +2,29 @@ import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx"; // Import xlsx for Excel export
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilePdf, faFileExcel } from "@fortawesome/free-solid-svg-icons";
+import { FaMicrophone } from "react-icons/fa";
+import "./AIAssistant.css";
+// import ScrollAnimation from "../components/InfiniteScroll/ScrollAnimation";
+import AdvancedCharts from "./AdvancedCharts";
 
 const OrderAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("All");
   const [sortBy, setSortBy] = useState("createdAt"); // Default sort by creation date
   const [currentPage, setCurrentPage] = useState(1); // Track current page
   const [data, setData] = useState([]); // Initialize as an empty array to avoid iterability issues
   const [isLoading, setIsLoading] = useState(true); // Loading state for API call
+  const [isListening, setIsListening] = useState(false); // State to track if the assistant is listening
 
-  const statuses = ["All", "Order Processing", "Shipped", "Delivered", "Cancelled"];
+  const WIT_AI_TOKEN = "JGRZHK2QCSQ5NHVR6O345MRTYNA27F4F"; // Replace with your Wit.ai token
+
+  const statuses = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
+  const paymentStatuses = ["All", "Paid", "Unpaid"];
+
+  // const vegetables = ["Big Onion", "Fresh Broccoli", "Carrot", "Cabbage", "Onion", "Garlic", "Ginger", "Beetroot", "Radish", "Cucumber"];
   const sortOptions = [
     { value: "createdAt", label: "Order Date" },
     { value: "amount", label: "Total Amount" },
@@ -26,7 +39,7 @@ const OrderAdmin = () => {
       try {
         const response = await fetch("http://localhost:3001/api/orders/list");
         const result = await response.json();
-  
+
         // Check if the response contains the 'data' key and if it's an array
         if (result.success && Array.isArray(result.data)) {
           setData(result.data); // Use result.data, which is the actual array
@@ -54,13 +67,18 @@ const OrderAdmin = () => {
     }
   });
 
-  // Filtered data based on search term and status
+  // Filtered data based on search term, status, and payment status
   const filteredData = sortedData.filter((order) => {
-    const matchesStatus = selectedStatus === "All" || order.status === selectedStatus;
+    const matchesStatus =
+      selectedStatus === "All" || order.status === selectedStatus;
+    const matchesPaymentStatus =
+      selectedPaymentStatus === "All" ||
+      (selectedPaymentStatus === "Paid" && order.payment) ||
+      (selectedPaymentStatus === "Unpaid" && !order.payment);
     const matchesSearchTerm = order.items.some((item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    return matchesStatus && matchesSearchTerm;
+    return matchesStatus && matchesPaymentStatus && matchesSearchTerm;
   });
 
   // Calculate total pages
@@ -114,178 +132,618 @@ const OrderAdmin = () => {
     }
   };
 
-  // Export table as PDF
-const exportPDF = () => {
+  // Export table as PDF with A4 size, styled header, footer, and custom table layout
+  const exportPDF = () => {
     const input = document.getElementById("table-to-pdf");
-    
+
     // Set table width for better capture
     html2canvas(input, {
-      scale: 2, // Increases resolution of canvas
+      scale: 2, // Increase resolution of canvas for better quality
       scrollX: 0,
       scrollY: -window.scrollY,
     }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
-        orientation: 'landscape', // Ensure landscape mode for wide tables
-        unit: 'px',
-        format: [canvas.width, canvas.height] // Set size to canvas
+        orientation: "portrait", // Use portrait for A4
+        unit: "mm",
+        format: "a4", // Standard A4 size
       });
-  
-      pdf.addImage(imgData, "PNG", 10, 10, canvas.width, canvas.height);
-      pdf.save("table.pdf");
+
+      // Header Styling
+      pdf.setFontSize(24);
+      pdf.setTextColor(40, 44, 52); // Dark color for header
+      pdf.setFont("helvetica", "bold"); // Bold font for title
+      pdf.text("GSP Traders", pdf.internal.pageSize.getWidth() / 2, 20, {
+        align: "center",
+      });
+
+      pdf.setFontSize(16);
+      pdf.setTextColor(60, 60, 60); // Gray color for subheading
+      pdf.setFont("helvetica", "italic"); // Italic font for subheading
+      pdf.text(
+        "Detailed Sales Report",
+        pdf.internal.pageSize.getWidth() / 2,
+        30,
+        { align: "center" }
+      );
+
+      // Line below header
+      pdf.setLineWidth(1);
+      pdf.setDrawColor(70, 130, 180); // Soft blue line for style
+      pdf.line(10, 35, 200, 35);
+
+      // Custom table layout with borders and padding
+      const imgWidth = 190; // Max width for A4 portrait
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Add table image with padding
+      pdf.addImage(imgData, "PNG", 10, 40, imgWidth, imgHeight);
+
+      // Add footer with page number, date, and custom branding
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      pdf.text("GSP Traders | www.gsptraders.com", 10, 290); // Branding in the footer
+      pdf.text(
+        `Generated on: ${new Date().toLocaleDateString()}`,
+        pdf.internal.pageSize.getWidth() / 2,
+        290,
+        {
+          align: "center",
+        }
+      ); // Date of generation
+      pdf.text("Page 1 of 1", 200, 290, { align: "right" }); // Page number
+
+      // Save PDF
+      pdf.save("GSP_Traders_Sales_Report.pdf");
     });
   };
-  
-// Export table as Excel
-const exportExcel = () => {
+
+  // Export table as Excel
+  const exportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "TableData");
     XLSX.writeFile(workbook, "table.xlsx");
   };
 
+  const speakMessage = (message) => {
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = "en-US"; // Set language to English (US)
+      utterance.pitch = 1; // Set pitch (range: 0-2)
+      utterance.rate = 1; // Set speaking rate (range: 0.1-10)
+      utterance.volume = 1; // Set volume (range: 0-1)
+
+      // Speak the message
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Your browser does not support Speech Synthesis.");
+    }
+  };
+
+  // Start listening using the Web Speech API
+  const startListening = () => {
+    const recognition = new (window.SpeechRecognition ||
+      window.webkitSpeechRecognition)();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    // speakMessage('Hello! I am your AI assistant. How can I help you today?');
+
+    setIsListening(true);
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      sendToWitAI(transcript); // Send the transcript to Wit.ai
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      speakMessage("Sorry, I couldn't understand that. Please try again.");
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
+
+  // Send voice input to Wit.ai for intent recognition
+  const sendToWitAI = async (command) => {
+    try {
+      const response = await fetch(
+        `https://api.wit.ai/message?v=20241004&q=${encodeURIComponent(
+          command
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${WIT_AI_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await response.json();
+      handleWitAIResponse(result);
+    } catch (error) {
+      console.error("Error communicating with Wit.ai:", error);
+    }
+  };
+
+  // Handle Wit.ai response
+  const handleWitAIResponse = (response) => {
+    console.log("Wit.ai response:", response);
+    const intent = response.intents?.[0]?.name;
+    const entities = response.entities;
+
+    switch (intent) {
+      case "search_order":
+        const productEntity = entities["product:product"]?.[0]?.value;
+        if (productEntity) {
+          speakMessage("Sure, let me search for the product you mentioned.");
+          setSearchTerm(productEntity);
+        } else {
+          alert("Sorry, I couldn't find the product you mentioned.");
+        }
+        break;
+
+      case "filter_status":
+        const statusEntity =
+          entities["status:status"]?.map((e) => e.value?.toLowerCase()) || [];
+        const product = entities["product:product"]?.[0]?.value?.toLowerCase(); // Check for product entity
+        let matchedStatus = null;
+        let isOrderStatus = false; // To track if it's an order status or payment status
+
+        // If a product entity exists, handle it and break
+        if (product) {
+          setSelectedStatus("All");
+          setSelectedPaymentStatus("All");
+          setSearchTerm(product);
+          speakMessage(
+            `I see you're looking for a product named "${productEntity}". Let me search for it.`
+          );
+          break;
+        }
+
+        if (statusEntity.length > 0) {
+          // Give priority to statuses other than "all"
+          const prioritizedStatuses = statusEntity.filter(
+            (status) => status !== "all".toLowerCase()
+          );
+          const statusToMatch =
+            prioritizedStatuses.length > 0
+              ? prioritizedStatuses[0]
+              : statusEntity[0];
+
+          // Check for matching order status first
+          matchedStatus = statuses.find(
+            (status) =>
+              status.toLowerCase().includes(statusToMatch) ||
+              statusToMatch.includes(status.toLowerCase())
+          );
+          isOrderStatus = !!matchedStatus; // If we found a match, set to true
+
+          if (!matchedStatus) {
+            // If no matching order status is found, check payment statuses
+            matchedStatus = paymentStatuses.find(
+              (paymentStatus) =>
+                paymentStatus.toLowerCase() === statusToMatch ||
+                statusToMatch === paymentStatus.toLowerCase()
+            );
+          }
+
+          if (matchedStatus) {
+            setSearchTerm("");
+            setSelectedStatus("All");
+            setSelectedPaymentStatus("All");
+            if (isOrderStatus) {
+              // It's an order status
+              setSelectedStatus(matchedStatus);
+              if (matchedStatus === "All") {
+                speakMessage("Sure, here is the all the orders.");
+              } else {
+                speakMessage(
+                  `Sure, here is the filtered result of all the ${matchedStatus} orders.`
+                );
+              }
+            } else {
+              // It's a payment status
+              setSelectedPaymentStatus(matchedStatus);
+              if (matchedStatus === "All") {
+                speakMessage("Sure, here is the all the orders.");
+              } else {
+                speakMessage(
+                  `Sure, here is the filtered result of all the ${matchedStatus} orders.`
+                );
+              }
+            }
+          } else {
+            speakMessage("Sorry, I couldn't find the status you mentioned.");
+          }
+        } else {
+          speakMessage("Sorry, I couldn't find the status you mentioned.");
+        }
+        break;
+
+      case "update_status": {
+        // Extract the status, order ID, or order number from the voice command
+        let statusEntities = entities["status:status"];
+        const orderIdEntity = entities["order_id:order_id"]?.[0]?.value;
+        let orderNumberEntity = entities["orderNumber:orderNumber"]?.[0]?.value;
+
+        // Check if multiple status entities are detected
+        let statusEntity;
+        if (statusEntities && statusEntities.length > 1) {
+          // Filter the status entity to pick the correct one based on valid statuses
+          statusEntity = statusEntities.find((status) =>
+            statuses.some(
+              (validStatus) =>
+                validStatus.toLowerCase() === status.value?.toLowerCase()
+            )
+          )?.value;
+        } else {
+          // Use the first status entity if only one exists
+          statusEntity = statusEntities?.[0]?.value?.toLowerCase();
+        }
+
+        // Pad orderNumberEntity to match the format in filteredData (e.g., "01", "02", etc.)
+        if (orderNumberEntity) {
+          orderNumberEntity = orderNumberEntity.padStart(2, "0"); // Pads with zero to ensure two digits
+        }
+
+        if (statusEntity && (orderIdEntity || orderNumberEntity)) {
+          // Convert status entity to match defined statuses
+          const matchedStatus = statuses.find(
+            (status) =>
+              status.toLowerCase().includes(statusEntity) ||
+              statusEntity.includes(status.toLowerCase())
+          );
+
+          if (matchedStatus) {
+            if (orderIdEntity) {
+              // Update order status using the order ID
+              updateOrderStatus(orderIdEntity, matchedStatus);
+              speakMessage(
+                `The status of order ${orderIdEntity} has been updated to ${matchedStatus}.`
+              );
+            } else if (orderNumberEntity) {
+              // Find the order by the order number and update status
+              const matchedOrder = filteredData.find(
+                (order) => order.orderNumber === orderNumberEntity
+              );
+              if (matchedOrder) {
+                updateOrderStatus(matchedOrder._id, matchedStatus);
+                speakMessage(
+                  `The status of order ${orderNumberEntity} has been updated to ${matchedStatus}.`
+                );
+              } else {
+                speakMessage(
+                  `Sorry, I couldn't find an order with number ${orderNumberEntity}.`
+                );
+              }
+            }
+          } else {
+            speakMessage("Sorry, I couldn't find the status you mentioned.");
+          }
+        } else {
+          speakMessage(
+            "Sorry, I couldn't find the order ID or status in your command."
+          );
+        }
+        break;
+      }
+
+      case "export_pdf":
+        exportPDF();
+        console.log("Exporting as PDF");
+        speakMessage("Sure, your PDF has been downloaded.");
+        break;
+
+      case "export_excel":
+        exportExcel();
+        console.log("Exporting as Excel");
+        speakMessage("Sure, your Excel sheet has been downloaded.");
+        break;
+
+      case "next_page":
+        goToNextPage();
+        speakMessage("Sure");
+        break;
+
+      case "previous_page":
+        goToPreviousPage();
+        speakMessage("Sure");
+        break;
+      case "say_hi":
+        const humanEntity = entities["human:human"]?.[0]?.value;
+        if (humanEntity) {
+          speakMessage(`Hi, ${humanEntity}! How can I assist you today?`);
+        } else {
+          speakMessage("Hi there! How can I assist you today?");
+        }
+        break;
+      default:
+        speakMessage("Sorry, I didn't understand what you are saying.");
+    }
+  };
+
   return (
-    <div className="container mx-auto p-4">
-  {/* Loading state */}
-  {isLoading ? (
-    <div>Loading orders...</div>
-  ) : (
-    <>
-      {/* Search and Filter Inputs */}
-      <div className="mb-4 flex flex-col md:flex-row gap-4">
+    <div className="container max-w-6xl mx-auto px-4 mt-10">
+      <div className="bg-gradient-to-r from-green-400 to-yellow-400 text-white py-10 px-12 rounded-lg flex flex-col mb-10 items-center justify-center space-y-6 transform transition-all duration-300">
+        <div className="text-center">
+          <h2 className="text-4xl font-extrabold mb-3 animate-pulse drop-shadow-lg">
+            Here we have an AI assistant to help you
+          </h2>
+          <p className="text-xl font-medium tracking-wide">
+            Ask any questions or let our assistant guide you!
+          </p>
+        </div>
+        {/* Enhanced Button */}
+        <button
+          onClick={startListening}
+          disabled={isListening}
+          className={`px-8 py-4 rounded-full font-semibold text-lg transition-transform transform hover:scale-110 hover:shadow-xl ${
+            isListening
+              ? "bg-gray-500 cursor-not-allowed opacity-70"
+              : "bg-white text-green-700 hover:bg-yellow-300"
+          }`}
+        >
+          {isListening ? (
+            <>
+              <span className="animate-spin">🎤</span> Listening...
+            </>
+          ) : (
+            "Start Voice Command"
+          )}
+        </button>
+      </div>
+
+      <div className="flex justify-between items-center mb-10">
+        <h2 className="text-2xl font-bold">Order Administration</h2>
+        <div className="flex justify-between  space-x-6">
+          <button
+            onClick={exportPDF}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            <FontAwesomeIcon icon={faFilePdf} className="mr-2" />
+            Export as PDF
+          </button>
+          <button
+            onClick={exportExcel}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
+            <FontAwesomeIcon icon={faFileExcel} className="mr-2" />
+            Export as Excel
+          </button>
+        </div>
+      </div>
+
+      {/* Filter and Sort */}
+      <div className="flex flex-wrap items-center space-y-4 md:space-y-0 justify-between mb-4">
         {/* Search Input */}
         <input
           type="text"
-          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/2"
-          placeholder="Search by item name..."
+          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search by product name"
+          className="border border-gray-300 rounded-md p-3 w-full md:w-1/3"
         />
 
         {/* Status Dropdown */}
         <select
-          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
+          value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
+          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
         >
-          {statuses.map((status, index) => (
-            <option key={index} value={status}>
+          {statuses.map((status) => (
+            <option key={status} value={status}>
               {status}
             </option>
           ))}
         </select>
 
-        {/* Sort By Dropdown */}
+        {/* Payment Status Dropdown */}
         <select
-          className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/4"
+          value={selectedPaymentStatus}
+          onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
+        >
+          {paymentStatuses.map((paymentStatus) => (
+            <option key={paymentStatus} value={paymentStatus}>
+              {paymentStatus}
+            </option>
+          ))}
+        </select>
+
+        {/* Sort Dropdown */}
+        <select
+          value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
+          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
         >
           {sortOptions.map((option) => (
             <option key={option.value} value={option.value}>
-              Sort by {option.label}
+              {option.label}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Table */}
-      <div id="table-to-pdf" className="overflow-x-auto">
-        <table className="table-auto w-full bg-white border-collapse border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">Order ID</th>
-              <th className="border border-gray-300 px-4 py-2">Items</th>
-              <th className="border border-gray-300 px-4 py-2">Amount</th>
-              <th className="border border-gray-300 px-4 py-2">Status</th>
-              <th className="border border-gray-300 px-4 py-2">Order Date</th>
-              <th className="border border-gray-300 px-4 py-2">Address</th>
-              <th className="border border-gray-300 px-4 py-2">Billing Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((order) => (
-              <tr key={order._id}>
-                <td className="border border-gray-300 px-4 py-2">{order._id}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {order.items.map((item) => (
-                    <div key={item.id}>{item.name} (x{item.qty} Kg)</div>
-                  ))}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">${order.amount}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {/* Status Selection */}
-                  <select
-                    className="border border-gray-300 rounded"
-                    value={order.status}
-                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                  >
-                    {statuses.slice(1).map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {order.address.street}, {order.address.city}, {order.address.country}, {order.address.postalCode}, {order.address.phone}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {order.billingAddress.street}, {order.billingAddress.city}, {order.billingAddress.country}, {order.billingAddress.postalCode}, {order.billingAddress.phone}
-                </td>
+      <div id="table-to-pdf">
+        {isLoading ? (
+          <p>Loading orders...</p>
+        ) : filteredData.length === 0 ? (
+          <p className="py-6 px-8 text-center flex justify-center items-center mt-20 mb-40">
+            No orders found.
+          </p>
+        ) : (
+          <table className="min-w-full bg-white border rounded-lg shadow-sm">
+            <thead>
+              <tr className="bg-gray-200 text-left text-gray-700">
+                <th className="py-3 px-6 font-semibold">Order No</th>
+                <th className="py-3 px-6 font-semibold">Amount</th>
+                <th className="py-3 px-6 font-semibold">Payment</th>
+                <th className="py-3 px-6 font-semibold">Phone</th>
+                <th className="py-3 px-6 font-semibold">Address</th>
+                <th className="py-3 px-6 font-semibold">Items</th>
+                {/* <th className="py-3 px-6 font-semibold">Total Amount</th> */}
+                <th className="py-3 px-6 font-semibold">Status</th>
+                <th className="py-3 px-6 font-semibold">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedData.map((order) => (
+                <tr key={order._id} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-6 font-medium text-gray-900">
+                    {order.orderNumber}
+                  </td>
+                  <td className="py-3 px-4 font-medium text-gray-900">
+                    <div className="flex flex-col text-lg">
+                      <span>${order.amount}</span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(order.createdAt).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </td>
+
+                  {/* Payment Column */}
+                  <td className="border px-4 py-2">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                        order.payment
+                          ? "bg-green-200 text-green-800"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {order.payment ? "Paid" : "Unpaid"}
+                    </span>
+                  </td>
+                  <td className="border px-4 py-2">{order.address.phone}</td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    <span className="text-gray-700">
+                      {order.billingAddress.country} -{" "}
+                      {order.billingAddress.postalCode}
+                    </span>
+                    <br />
+                    {order.billingAddress.street},{order.billingAddress.city}.{" "}
+                    <br />
+                  </td>
+                  <td className="border px-4 py-2">
+                    {order.items.map((item) => (
+                      <div key={item._id}>{item.name}</div>
+                    ))}
+                  </td>
+                  {/* <td className="border px-4 py-2">${order.amount.toFixed(2)}</td> */}
+
+                  {/* Status with Badge */}
+                  <td className="border px-4 py-2">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                        order.status === "Processing"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : order.status === "Shipped"
+                          ? "bg-blue-200 text-blue-800"
+                          : order.status === "Delivered"
+                          ? "bg-green-200 text-green-800"
+                          : order.status === "Cancelled"
+                          ? "bg-red-200 text-red-800"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+
+                  {/* Action: Dropdown to update status */}
+                  <td className="border px-4 py-2">
+                    <select
+                      value={order.status}
+                      onChange={(e) =>
+                        updateOrderStatus(order._id, e.target.value)
+                      }
+                      className="border border-gray-300 p-1 rounded"
+                    >
+                      {statuses.slice(1).map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Pagination Controls */}
-      <div className="mt-4 flex justify-between">
+      {/* Pagination */}
+      <div className="flex justify-between mt-6">
         <button
           onClick={goToPreviousPage}
-          className={`${
-            currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
-          } text-white px-4 py-2 rounded`}
           disabled={currentPage === 1}
+          className={`px-4 py-2 rounded ${
+            currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+          }`}
         >
           Previous
         </button>
-
-        <span className="text-gray-700">
+        <p className="text-sm text-gray-500">
           Page {currentPage} of {totalPages}
-        </span>
-
+        </p>
         <button
           onClick={goToNextPage}
-          className={`${
-            currentPage === totalPages
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500"
-          } text-white px-4 py-2 rounded`}
           disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded ${
+            currentPage === totalPages
+              ? "bg-gray-300"
+              : "bg-blue-500 text-white"
+          }`}
         >
           Next
         </button>
       </div>
 
+      <AdvancedCharts ordersData={data} />
+
       {/* Export Buttons */}
-      <div className="mt-4">
-        <button
-          onClick={exportPDF}
-          className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-        >
-          Export to PDF
-        </button>
-        <button
-          onClick={exportExcel}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Export to Excel
-        </button>
-      </div>
-    </>
-  )}
-</div>
+      {/* <div className="flex justify-between mt-4">
+          <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
+            Export as PDF
+          </button>
+          <button onClick={exportExcel} className="bg-green-500 text-white px-4 py-2 rounded">
+            Export as Excel
+          </button>
+        </div> */}
+
+      {/* Floating Voice Command Button */}
+      <button
+        onClick={startListening}
+        disabled={isListening}
+        className={`fixed bottom-10 right-10 bg-gradient-to-r from-blue-500 to-teal-500 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 ${
+          isListening ? "opacity-50 cursor-not-allowed" : "animate-glow"
+        } ${isListening ? "" : "animate-color-shift"}`}
+      >
+        <div className="flex items-center">
+          <FaMicrophone
+            size={24}
+            className={`mr-2 ${
+              isListening ? "animate-pulse" : "animate-pulse"
+            }`}
+          />
+          {isListening ? "Listening..." : "AI Assistant"}
+        </div>
+      </button>
+    </div>
   );
 };
 
