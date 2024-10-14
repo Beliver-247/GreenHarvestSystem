@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { StoreContext } from '../../context/StoreContext';
+import React, { useContext, useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
 import PriceChart from "./PriceChart";
 import QuantitySelector from "./QuantitySelector";
 
@@ -8,7 +8,6 @@ const ProductDetails = () => {
   const { id } = useParams(); // Get the product ID from the URL
   const { food_list, addToCart } = useContext(StoreContext);
   const navigate = useNavigate();
-  
 
   // State to handle quantity input
   // const [quantity, setQuantity] = useState(1); // Default quantity is 1
@@ -29,7 +28,7 @@ const ProductDetails = () => {
 
   const calculatePrice = (newQuantity) => {
     let newDiscount = 5; // Default discount
-  
+
     // Set discount based on the quantity ranges
     if (newQuantity >= 26 && newQuantity <= 50) {
       newDiscount = 7;
@@ -38,17 +37,17 @@ const ProductDetails = () => {
     } else if (newQuantity >= 101) {
       newDiscount = 14;
     }
-  
+
     // Calculate the discount percentage and discounted unit price
     const discountMultiplier = 1 - newDiscount / 100;
     const newUnitPrice = price * discountMultiplier;
-  
+
     // Calculate the final discounted price for the quantity
     const newDiscountedPrice = newUnitPrice * newQuantity;
-  
+
     // Calculate total savings
     const totalSavings = price * newQuantity - newDiscountedPrice;
-  
+
     // Set state values
     setUnitPrice(newUnitPrice);
     setDiscount(newDiscount);
@@ -56,12 +55,10 @@ const ProductDetails = () => {
     setSavePrice(totalSavings);
   };
 
-
   useEffect(() => {
     calculatePrice(quantity);
   }, [quantity]);
 
-  
   // Early return after hooks are defined
   if (!product) {
     return <p>Product not found</p>;
@@ -127,7 +124,7 @@ const ProductDetails = () => {
             <div className="text-gray-500">
               <span className="text-gray-500 pr-1 line-through">
                 {" "}
-                Rs {unitPrice * quantity.toFixed(0)}.00{" "}
+                Rs {(unitPrice * quantity).toFixed(0)}.00{" "}
               </span>
               <span className="text-red-600 pr-1 font-bold">
                 {" "}
@@ -140,7 +137,9 @@ const ProductDetails = () => {
                 {discountedPrice.toFixed(2)}
               </span>
               <span className="pl-1 font-bold"> LKR </span>
-              <p className="text-gray-500">Rs {unitPrice.toFixed(0)}.00 Per Kg</p>
+              <p className="text-gray-500">
+                Rs {unitPrice.toFixed(0)}.00 Per Kg
+              </p>
             </div>
             <div className="text-red-600 mt-1">
               <span className="pr-1">Save</span>
@@ -165,7 +164,7 @@ const ProductDetails = () => {
               minQuantity={minQuantity}
               maxQuantity={maxQuantity}
             />
-            
+
             {maxQuantityWarning && (
               <div className="mt-4 text-sm text-red-600">
                 Quantity cannot exceed {maxQuantity}.
@@ -180,10 +179,18 @@ const ProductDetails = () => {
 
           {/* Buttons */}
           <div className="mt-6 space-y-3">
-            <button onClick={handleAddToCart} className="w-full py-2 rounded-md font-semibold hover:bg-yellow-600" style={{ backgroundColor: '#FFCC00', color: '#000000' }}>
+            <button
+              onClick={handleAddToCart}
+              className="w-full py-2 rounded-md font-semibold hover:bg-yellow-600"
+              style={{ backgroundColor: "#FFCC00", color: "#000000" }}
+            >
               Add to Cart
             </button>
-            <button onClick={handleBuyNow} className="w-full py-2 rounded-md font-semibold hover:bg-green-600 text-white" style={{ backgroundColor: '#1DB233' }}>
+            <button
+              onClick={handleBuyNow}
+              className="w-full py-2 rounded-md font-semibold hover:bg-green-600 text-white"
+              style={{ backgroundColor: "#1DB233" }}
+            >
               Buy it now
             </button>
           </div>
