@@ -2,6 +2,7 @@ const router = require("express").Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 let Farmer = require("../models/farmers");
+const authenticateFarmer = require("../middleware/authenticateFarmer");
 
 // Add a new farmer
 router.route("/add").post(async (req, res) => {
@@ -37,6 +38,20 @@ router.route("/add").post(async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to add farmer", message: err.message });
+  }
+});
+
+router.get('/profile', authenticateFarmer, async (req, res) => {
+  try {
+      console.log("Authenticated farmer ID:", req.user.id);
+      const farmer = await Farmer.findById(req.user.id); // Assuming Mongoose is used
+      if (!farmer) {
+          return res.status(404).json({ message: 'Farmer not found' });
+      }
+      res.json(farmer);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
   }
 });
 

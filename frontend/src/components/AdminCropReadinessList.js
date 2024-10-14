@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import jsPDF from "jspdf";
 import "jspdf-autotable"; // Import the autotable plugin for jsPDF
+import logo from "./LogoImage.png"
 
 const AdminCropReadinessList = () => {
   const [notifications, setNotifications] = useState([]);
@@ -17,6 +18,7 @@ const AdminCropReadinessList = () => {
     InProgress: 0,
     Completed: 0,
   });
+  const [visibleAttachments, setVisibleAttachments] = useState({});
 
   const navigate = useNavigate();
 
@@ -130,41 +132,80 @@ const AdminCropReadinessList = () => {
   });
 
   const generatePDF = () => {
+    if (filteredNotifications.length === 0) {
+      alert("No notifications available for PDF export!");
+      return;
+    }
+
     const doc = new jsPDF();
-    doc.text("Crop Readiness Notifications", 14, 16);
 
-    const tableColumn = [
-      "NIC",
-      "Crop Variety",
-      "Quantity",
-      "Expected Quality",
-      "Preferred Pickup Date",
-      "Preferred Pickup Time",
-      "Status",
-    ];
-    const tableRows = [];
+    // Company Header
+    const companyName = 'GSP Traders Pvt Ltd';
+    const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
+    const email = 'gsptraders29@gmail.com';
+    const phone = '+94 77 7144 133';
 
-    filteredNotifications.forEach((notification) => {
-      const notificationData = [
-        notification.farmerNIC,
-        notification.cropVariety,
-        notification.quantity,
-        notification.expectedQuality,
-        new Date(notification.preferredPickupDate).toLocaleDateString(),
-        notification.preferredPickupTime,
-        notification.status,
-      ];
-      tableRows.push(notificationData);
-    });
+    doc.setTextColor('#11532F'); // Company green color
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(companyName, 195, 20, { align: 'right' });
+
+    const imgData = logo;  // Use imported logo
+    doc.addImage(imgData, 'PNG', 15, 15, 25, 25);  
+
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(address, 195, 28, { align: 'right' });
+    doc.text(`Email: ${email}`, 195, 34, { align: 'right' });
+    doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
+
+    // Divider
+    doc.setDrawColor('#11532F');
+    doc.setLineWidth(1);
+    doc.line(10, 50, 200, 50);
+
+    // Add a title for the report
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0); // Reset color to black
+    doc.setFont('helvetica', 'bold');
+    doc.text('Crop Readiness Notifications Report', 105, 60, { align: 'center' });
+
+    // Table for notifications
+    const tableRows = filteredNotifications.map((notification) => [
+      notification.farmerNIC,
+      notification.cropVariety,
+      notification.quantity,
+      notification.expectedQuality,
+      new Date(notification.preferredPickupDate).toLocaleDateString(),
+      notification.preferredPickupTime,
+      notification.status,
+    ]);
 
     doc.autoTable({
-      head: [tableColumn],
+      startY: 70,
+      head: [
+        ['NIC', 'Crop Variety', 'Quantity', 'Expected Quality', 'Pickup Date', 'Pickup Time', 'Status'],
+      ],
       body: tableRows,
-      startY: 20,
+      theme: 'grid',
+      headStyles: { fillColor: '#11532F' },
     });
 
-    doc.save("crop_readiness_notifications.pdf");
+    // Divider
+    doc.setDrawColor('#11532F');
+    doc.setLineWidth(0.5);
+    doc.line(10, doc.lastAutoTable.finalY + 10, 200, doc.lastAutoTable.finalY + 10);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Generated on: ' + new Date().toLocaleString(), 105, doc.lastAutoTable.finalY + 20, { align: 'center' });
+
+    // Save the PDF
+    doc.save('Crop_Readiness_Notifications_Report.pdf');
   };
+
 
   if (loading) {
     return <div className="text-center mt-5 text-lg">Loading...</div>;
@@ -191,7 +232,7 @@ const AdminCropReadinessList = () => {
             <input
               type="text"
               placeholder="Search by NIC, Crop Variety or Date"
-              className="border px-4 py-2 rounded-lg ml-2"
+               className="border px-4 py-2 rounded-lg ml-2 w-72"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -231,7 +272,9 @@ const AdminCropReadinessList = () => {
                 <th className="py-4 px-6 text-left font-semibold">
                   Preferred Pickup Time
                 </th>
+                <th className="py-4 px-6 text-left font-semibold">Attachments</th>
                 <th className="py-4 px-6 text-left font-semibold">Status</th>
+                
                 <th className="py-4 px-6 text-left font-semibold">Actions</th>
               </tr>
             </thead>
@@ -261,6 +304,40 @@ const AdminCropReadinessList = () => {
                   <td className="py-4 px-6 whitespace-nowrap">
                     {notification.preferredPickupTime}
                   </td>
+                  <td className="py-4 px-6 whitespace-nowrap">
+                    {/* Render Attachments Toggle */}
+                    <button
+                      onClick={() =>
+                        setVisibleAttachments((prev) => ({
+                          ...prev,
+                          [notification._id]: !prev[notification._id],
+                        }))
+                      }
+                      className="text-blue-500 hover:underline"
+                    >
+                      {visibleAttachments[notification._id]
+                        ? "Hide"
+                        : "Show"}
+                    </button>
+                    {visibleAttachments[notification._id] && (
+                      <ul className="list-disc list-inside mt-2">
+                        {notification.attachments && notification.attachments.length > 0 && (
+                          notification.attachments.map((attachment, index) => (
+                            <li key={index}>
+                              <a
+                                href={`http://localhost:3001/uploads/${attachment}`} // Adjust this URL based on where files are stored
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline"
+                              >
+                                {attachment}
+                              </a>
+                            </li>
+                          ))
+                        )}
+                      </ul>
+                    )}
+                  </td>
                   <td
                     className={`py-4 px-6 whitespace-nowrap font-bold ${getStatusColor(
                       notification.status
@@ -268,24 +345,26 @@ const AdminCropReadinessList = () => {
                   >
                     {notification.status}
                   </td>
-                  <td className="py-4 px-6 whitespace-nowrap space-x-2">
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-                      onClick={() =>
-                        handleStatusUpdate(notification._id, "In Progress")
-                      }
-                    >
-                      In Progress
-                    </button>
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                      onClick={() =>
-                        handleStatusUpdate(notification._id, "Completed")
-                      }
-                    >
-                      Completed
-                    </button>
-                  </td>
+                  
+                  <td className="py-4 px-6 whitespace-nowrap flex flex-col space-y-2">
+  <button
+    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+    onClick={() =>
+      handleStatusUpdate(notification._id, "In Progress")
+    }
+  >
+    In Progress
+  </button>
+  <button
+    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+    onClick={() =>
+      handleStatusUpdate(notification._id, "Completed")
+    }
+  >
+    Completed
+  </button>
+</td>
+
                 </tr>
               ))}
             </tbody>

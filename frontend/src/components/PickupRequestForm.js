@@ -326,6 +326,9 @@ const PickupRequestForm = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
               min={new Date().toISOString().split('T')[0]} // Disable past dates
+              max={new Date(new Date().setDate(new Date().getDate() + 10)) // Set max date 10 days from now
+                .toISOString()
+                .split('T')[0]}
               required
             />
             {errors.preferredDate && (

@@ -29,8 +29,48 @@ const AddLand = () => {
     }
   }, []);
 
+  const validateField = (name, value) => {
+    const newErrors = {};
+    switch (name) {
+      case 'landSize':
+        if (!value) {
+          newErrors.landSize = "Land size is required.";
+        } else if (!/^[0-9.,]+$/.test(value)) {
+          newErrors.landSize = "Land size must be a number, comma, or period.";
+        }
+        break;
+
+      case 'soilType':
+        if (!value) {
+          newErrors.soilType = "Soil type is required.";
+        }
+        break;
+
+      case 'address':
+        if (!value) {
+          newErrors.address = "Address is required.";
+        }
+        break;
+
+      case 'lat':
+      case 'lng':
+        if (!landData.location.lat || !landData.location.lng) {
+          newErrors.location = "Location coordinates are required.";
+        }
+        break;
+
+      default:
+        break;
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...newErrors
+    }));
+  };
+
   const validateFields = () => {
     const newErrors = {};
+
     // Validate landSize for correct format
     if (!landData.landSize) {
       newErrors.landSize = "Land size is required.";
@@ -67,7 +107,7 @@ const AddLand = () => {
 
     // Handle landSize input and restrict invalid characters
     if (name === 'landSize') {
-      const validValue = value.replace(/[^0-9.,]/g, '');
+      const validValue = value.replace(/[^1-9.,]/g, '');
       setLandData((prevState) => ({
         ...prevState,
         [name]: validValue,
@@ -86,9 +126,11 @@ const AddLand = () => {
         [name]: value,
       }));
     }
+  };
 
-    // Validate fields on change
-    validateFields();
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const geocodeAddress = async () => {
@@ -185,6 +227,7 @@ const AddLand = () => {
               name="landSize"
               value={landData.landSize}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
@@ -198,6 +241,7 @@ const AddLand = () => {
               name="soilType"
               value={landData.soilType}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
@@ -254,6 +298,7 @@ const AddLand = () => {
               name="address"
               value={landData.address}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
@@ -277,6 +322,7 @@ const AddLand = () => {
                 name="lat"
                 value={landData.location.lat}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />
@@ -288,6 +334,7 @@ const AddLand = () => {
                 name="lng"
                 value={landData.location.lng}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />

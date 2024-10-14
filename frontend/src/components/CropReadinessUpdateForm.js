@@ -28,7 +28,7 @@ const CropReadinessUpdateForm = ({ notificationId }) => {
     // Restrict quantity to numbers and period only
     const handleQuantityChange = (e) => {
         const { name, value } = e.target;
-        if (/^[0-9.]*$/.test(value)) {
+        if (/^[1-9.]*$/.test(value)) {
             setFormData((prevData) => ({ ...prevData, [name]: value }));
         }
     };
@@ -88,31 +88,53 @@ const CropReadinessUpdateForm = ({ notificationId }) => {
     };
 
     const validateField = (name, value) => {
-        let errorMsg = '';
+        let errorMsg = "";
+    
         switch (name) {
-            case 'farmerNIC':
-                if (!validateNIC(value)) {
-                    errorMsg = 'NIC should be either 9 numbers followed by V/X or 12 numbers.';
-                }
-                break;
-            case 'quantity':
-                if (value <= 0) {
-                    errorMsg = 'Quantity should be a positive number.';
-                }
-                break;
-            case 'preferredPickupDate':
-                const today = new Date().toISOString().split('T')[0];
-                if (value < today) {
-                    errorMsg = 'Pickup date cannot be in the past.';
-                }
-                break;
-            default:
-                if (!value) {
-                    errorMsg = 'This field is required.';
-                }
+          case "farmerNIC":
+            if (!/^\d{9}[Vv]$|^\d{12}$/.test(value)) {
+              errorMsg =
+                'NIC must be either 9 digits followed by "V" or 12 digits.';
+            }
+            break;
+          case "quantity":
+            if (!/^\d*\.?\d*$/.test(value)) {
+              errorMsg = "Only numbers and periods are allowed in the quantity.";
+            } else if (parseFloat(value) <= 0) {
+              errorMsg = "Quantity must be greater than 0.";
+            }
+            break;
+          case "preferredPickupDate":
+            const today = new Date();
+            const selectedDate = new Date(value);
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 10); // Add 10 days to today's date
+    
+            if (selectedDate < today.setHours(0, 0, 0, 0)) {
+              errorMsg = "You cannot select a past date.";
+            } else if (selectedDate > maxDate) {
+              errorMsg = "Pickup date must be within the next 10 days.";
+            }
+            break;
+          case "preferredPickupTime":
+            const pickupTime = new Date(`1970-01-01T${value}:00`); // Assume value is in "HH:MM" format
+            const minTime = new Date("1970-01-01T02:00:00"); // 2:00 AM
+            const maxTime = new Date("1970-01-01T12:00:00"); // 12:00 PM
+            
+            if (pickupTime < minTime || pickupTime > maxTime) {
+              errorMsg = "Pickup time must be between 2:00 AM and 12:00 PM.";
+            }
+            break;
+          default:
+            if (!value) {
+              errorMsg = `${name} cannot be empty.`;
+            }
+            break;
         }
+    
         setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -245,15 +267,19 @@ const CropReadinessUpdateForm = ({ notificationId }) => {
                     Preferred Pickup Date
                 </label>
                 <input
-                    type="date"
-                    name="preferredPickupDate"
-                    id="preferredPickupDate"
-                    value={formData.preferredPickupDate}
-                    onChange={handleChange}
-                    required
-                    className="border border-gray-300 rounded p-2 w-full"
-                    min={new Date().toISOString().split('T')[0]} // Disable past dates
-                />
+  type="date"
+  name="preferredPickupDate"
+  id="preferredPickupDate"
+  value={formData.preferredPickupDate}
+  onChange={handleChange}
+  required
+  className="border border-gray-300 rounded p-2 w-full"
+  min={new Date().toISOString().split('T')[0]} // Disable past dates
+  max={new Date(new Date().setDate(new Date().getDate() + 10))
+    .toISOString()
+    .split('T')[0]} // Restrict to next 10 days
+/>
+
                 {errors.preferredPickupDate && <p className="text-red-500 text-sm">{errors.preferredPickupDate}</p>}
             </div>
 
@@ -270,7 +296,9 @@ const CropReadinessUpdateForm = ({ notificationId }) => {
                     required
                     className="border border-gray-300 rounded p-2 w-full"
                 />
+                {errors.preferredPickupTime && <p className="text-red-500 text-sm">{errors.preferredPickupTime}</p>}
             </div>
+            
 
             <div className="mb-4">
                 <label htmlFor="attachments" className="block text-sm font-medium text-gray-700 mb-2">
