@@ -17,7 +17,7 @@ export default function FarmerRequest() {
   const mapInstance = useRef(null);
   const warehouseLocation = "Nuwara Eliya-Uda Pussellawa Rd, Nuwara Eliya, Sri Lanka";
   const navigate = useNavigate();
-  const apiUrl = "http://localhost:8000/api";
+  const apiUrl = "http://localhost:3001/api";
   const warehouseCoordinates = [6.9605, 80.7907];
 
   const locationIcon = L.icon({
