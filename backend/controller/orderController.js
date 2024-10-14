@@ -4,7 +4,7 @@ require("dotenv").config();
 
 // Twilio Credentials (use environment variables in production)
 const accountSid = "AC4f"; // Replace with your Twilio Account SID
-const authToken = "d0018"; // Replace with your Twilio Auth Token
+const authToken = "d0018j"; // Replace with your Twilio Auth Token
 const client = twilio(accountSid, authToken);
 
 // Function to send SMS
