@@ -128,6 +128,9 @@ function App() {
   const [batchDetails, setBatchDetails] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const [showQAModal, setShowQAModal] = useState(false); // For QA record notification
+  const [qaRecordDetails, setQARecordDetails] = useState({}); // Store QA record details
+
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
@@ -139,13 +142,23 @@ function App() {
       setShowModal(true); // Open modal when a new batch notification is received
     });
 
+        // Example: socket listener for new QA record notification
+        socket.on("new-qa-record", (qaRecord) => {
+          // Check if the user is on '/wh-staff/inventory-dashboard' path
+            setQARecordDetails(qaRecord);
+            setShowQAModal(true); // Show QA record modal when the user is on the dashboard
+          });
+
     // Clean up the socket listener when the component unmounts
-    return () => socket.off("new-batch");
+    return () => { socket.off("new-batch");
+      socket.off("new-qa-record");};
   }, []);
 
   const closeModal = () => {
     setShowModal(false);
   };
+
+  const closeQAModal = () => setShowQAModal(false);
 
   return (
     <StoreContextProvider>
@@ -384,6 +397,13 @@ function App() {
             show={showModal}
             onClose={closeModal}
           />
+
+<NotificationModal
+  title="New QA Record Added"
+  message={`New QA Record Added!!\n Vegetable: ${qaRecordDetails.vegetableType}\nGrade A: ${qaRecordDetails.gradeAWeight} kg\nGrade B: ${qaRecordDetails.gradeBWeight} kg\nGrade C: ${qaRecordDetails.gradeCWeight} kg`}
+  show={showQAModal}
+  onClose={closeQAModal}
+/>
         </div>
         <Footer />
       </Router>
