@@ -9,7 +9,7 @@ export default function FarmerRequest() {
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [vehicleOption, setVehicleOption] = useState("");
   const [customerRequest, setCustomerRequest] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
@@ -118,7 +118,7 @@ export default function FarmerRequest() {
       return "Please select a valid time.";
     }
 
-    if (!selectedVehicle) {
+    if (!vehicleOption) {
       return "Please select a vehicle type.";
     }
     
@@ -144,7 +144,7 @@ export default function FarmerRequest() {
         location,
         date,
         time,
-        selectedVehicle,
+        vehicleOption,
       }),
     })
       .then((res) => {
@@ -154,7 +154,7 @@ export default function FarmerRequest() {
         return res.json();
       })
       .then((data) => {
-        setCustomerRequest([...customerRequest, { location, date, time, selectedVehicle }]);
+        setCustomerRequest([...customerRequest, { location, date, time, vehicleOption }]);
         setSuccessMessage("Farmer request added successfully");
         setError("");
 
@@ -237,8 +237,8 @@ export default function FarmerRequest() {
                   <label className="block text-left">Vehicle</label>
                   <select
                     className="w-full p-3 border border-gray-300 rounded-lg transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 hover:scale-105"
-                    onChange={(e) => setSelectedVehicle(e.target.value)}
-                    value={selectedVehicle}
+                    onChange={(e) => setVehicleOption(e.target.value)}
+                    value={vehicleOption}
                   >
                     <option value="">Select Vehicle</option>
                     <option value="Farmer Vehicle">Farmer Vehicle</option>
