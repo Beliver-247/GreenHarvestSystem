@@ -110,7 +110,7 @@ import PickupReadinessChart from "./components/PickupRequestChart";
 import AdminDashboardFarmer from "./components/AdminDashboardFarmer";
 import FarmerDashboard from "./components/FarmerDashBoard";
 import MyProfile from "./components/MyProfile";
-
+import FarmerProfilePage from "./components/FarmerProfilePage.js";
 import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./components/DriverDashboard.js";
 const isAuthenticated = false; // Replace this with your actual authentication logic
@@ -316,7 +316,7 @@ function App() {
                   element={<FarmerDashboard />}
                 />
                 <Route path="farmer-profile" element={<MyProfile />} />
-
+                <Route path="farmer/profile" element={<FarmerProfilePage />} />
                 <Route path="crop-readiness" element={<CropReadinessForm />} />
 
                 <Route path="pickup-request" element={<PickupRequestForm />} />

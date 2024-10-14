@@ -8,13 +8,14 @@ const PickupRequestList = ({ setTotalRequests }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // New state for search and filter
+  // New state for search, filter, pagination
   const [searchDate, setSearchDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const requestsPerPage = 5;  // Number of requests to show per page
 
   const farmerToken = localStorage.getItem('farmerToken');
 
-  // Decode token to get farmer NIC
   let farmerNIC = null;
   if (farmerToken) {
     try {
@@ -26,18 +27,16 @@ const PickupRequestList = ({ setTotalRequests }) => {
     }
   }
 
-  // Fetch pickup requests of the logged-in farmer
   useEffect(() => {
     if (farmerNIC) {
       axios
         .get(`http://localhost:3001/pickup-request/pickupRequests`, {
           headers: {
-            Authorization: `Bearer ${farmerToken}`, // Include token for authentication
+            Authorization: `Bearer ${farmerToken}`,
           },
         })
         .then((response) => {
           setPickupRequests(response.data);
-          
           setLoading(false);
         })
         .catch((err) => {
@@ -60,6 +59,14 @@ const PickupRequestList = ({ setTotalRequests }) => {
     return isDateMatch && isStatusMatch;
   });
 
+  // Get current requests for the current page
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredPickupRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   if (loading) {
     return (
       <div className="text-center mt-5 text-lg">
@@ -72,27 +79,24 @@ const PickupRequestList = ({ setTotalRequests }) => {
     return <div className="text-center mt-5 text-red-600">{error}</div>;
   }
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this request?');
+    if (!confirmDelete) return;
 
-    // Handle deletion of pickup requests
-    const handleDelete = async (id) => {
-      const confirmDelete = window.confirm('Are you sure you want to delete this request?');
-      if (!confirmDelete) return;
-  
-      try {
-        await axios.delete(`http://localhost:3001/pickup-request/${id}`);
-        setPickupRequests(pickupRequests.filter((request) => request._id !== id));
-        alert('Pickup request deleted successfully.');
-      } catch (error) {
-        console.error('Error deleting pickup request:', error);
-        alert('Failed to delete pickup request.');
-      }
-    };
+    try {
+      await axios.delete(`http://localhost:3001/pickup-request/${id}`);
+      setPickupRequests(pickupRequests.filter((request) => request._id !== id));
+      alert('Pickup request deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting pickup request:', error);
+      alert('Failed to delete pickup request.');
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Your Pickup Requests</h1>
       
-      {/* Search and Filter UI */}
       <div className="mb-4 flex justify-between items-center">
         <div>
           <label className="text-gray-700 font-semibold">Search by Preferred Date: </label>
@@ -118,8 +122,7 @@ const PickupRequestList = ({ setTotalRequests }) => {
         </div>
       </div>
 
-      {/* Pickup Requests Table */}
-      {filteredPickupRequests.length === 0 ? (
+      {currentRequests.length === 0 ? (
         <p className="text-lg text-gray-600">No pickup requests found.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -136,13 +139,13 @@ const PickupRequestList = ({ setTotalRequests }) => {
               </tr>
             </thead>
             <tbody className="text-gray-700 text-sm">
-              {filteredPickupRequests.map((request) => (
+              {currentRequests.map((request) => (
                 <tr key={request._id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-200">
-                  <td className="py-4 px-6 whitespace-nowrap">
-                    {request.crops.map((crop) => crop.cropType).join(', ')}
+                  <td className="py-4 px-6 whitespace-nowrap" style={{ whiteSpace: 'pre-line' }}>
+                    {request.crops.map((crop) => crop.cropType).join('\n')}
                   </td>
-                  <td className="py-4 px-6 whitespace-nowrap">
-                    {request.crops.map((crop) => crop.quantity).join(', ')}
+                  <td className="py-4 px-6 whitespace-nowrap" style={{ whiteSpace: 'pre-line' }}>
+                    {request.crops.map((crop) => crop.quantity).join('\n')}
                   </td>
                   <td className="py-4 px-6 whitespace-nowrap">
                     {new Date(request.preferredDate).toLocaleDateString()}
@@ -169,6 +172,22 @@ const PickupRequestList = ({ setTotalRequests }) => {
           </table>
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-6">
+        <ul className="flex space-x-2">
+          {[...Array(Math.ceil(filteredPickupRequests.length / requestsPerPage)).keys()].map(number => (
+            <li key={number} className="cursor-pointer">
+              <button
+                onClick={() => paginate(number + 1)}
+                className={`px-4 py-2 border rounded-lg ${currentPage === number + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+              >
+                {number + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

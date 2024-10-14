@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const PickupRequest = require("../models/PickupRequest");
 const authenticateFarmer = require("../middleware/authenticateFarmer")
+const Farmer = require("../models/farmers");
+
+const nodemailer = require('nodemailer');
 
 // Create a new pickup request
 router.post("/add", async (req, res) => {
@@ -78,21 +81,66 @@ router.get('/all-pickup-requests', async (req, res) => {
 });
 
 // Update status of a pickup request
+// Update status of a pickup request and send email
 router.put('/update-status/:id', async (req, res) => {
+  const { id } = req.params;
   const { status } = req.body;
-  
+
   try {
-    const updatedRequest = await PickupRequest.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
+    const request = await PickupRequest.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!request) {
+      return res.status(404).json({ message: 'Pickup request not found' });
+    }
+
+    // Fetch farmer's email using NIC
+    const farmer = await Farmer.findOne({ NIC: request.NIC });
+    if (farmer) {
+      const mailOptions = {
+        from: 'gsptaders29@gmail.com',
+        to: farmer.email,
+        subject: 'Pickup Request Status Update',
+        html: `
+          <div style="background-color: #f0f0f0; padding: 10px; text-align: right;">
+            
+            <div style="color: #11532F; font-family: Helvetica, Arial, sans-serif;">
+              <h2 style="margin: 0;">GSP Traders Pvt Ltd</h2>
+              <p style="margin: 0;">A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka</p>
+              <p style="margin: 0;">Email: gsptraders29@gmail.com | Phone: +94 77 7144 133</p>
+            </div>
+          </div>
+          <hr style="border-color: #11532F; margin: 20px 0;" />
+          <p>Hello ${farmer.firstName},</p>
+          <p>Your pickup request has been updated to: ${status}.</p>
+          <ul>
+      ${request.crops.map(crop => `<li><strong>${crop.cropType}</strong>: ${crop.quantity} kg</li>`).join('')}
+    </ul>
     
-    res.json(updatedRequest);
+    <p><strong>Preferred Date:</strong> ${request.preferredDate}</p>
+    <p><strong>Preferred Time:</strong> ${request.preferredTime}</p>
+    <p>Thank you for choosing <strong>GSP Traders Pvt Ltd</strong>.</p>
+          <p>Thank you,<br>GSP Traders Pvt Ltd</p>
+        `,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Email sending failed:', error);
+          return res.status(500).json({ message: 'Failed to send email', error: error.message });
+        } else {
+          console.log('Email sent info:', info); // Log the response for details
+          return res.status(200).json({ message: 'Pickup request status updated and email sent', request });
+        }
+      });
+    }
+
+    res.status(200).json(request);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update status.' });
+    console.error('Error updating status:', error);
+    res.status(500).json({ message: 'Failed to update pickup request status' });
   }
 });
+
 
 // Get a single pickup request by ID
 router.get("/:id", async (req, res) => {
@@ -201,6 +249,16 @@ router.get('/api/pickup-requests/count', async (req, res) => {
     res.status(500).json({ error: 'Failed to get pickup request count' });
   }
 });
+
+// Nodemailer transporter configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'gsptaders29@gmail.com', // Replace with your Gmail address
+    pass: 'aotfbsakvqnnaowh',  // Replace with your Gmail App password
+  },
+});
+
 
 
 
