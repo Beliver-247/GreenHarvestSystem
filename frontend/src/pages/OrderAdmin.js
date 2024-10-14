@@ -8,6 +8,7 @@ import { FaMicrophone } from "react-icons/fa";
 import "./AIAssistant.css";
 // import ScrollAnimation from "../components/InfiniteScroll/ScrollAnimation";
 import AdvancedCharts from "./AdvancedCharts";
+import logo from "../assets/add_icon_green.png";
 
 const OrderAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -133,11 +134,10 @@ const OrderAdmin = () => {
     }
   };
 
-  // Export table as PDF with A4 size, styled header, footer, and custom table layout
   const exportPDF = () => {
     const input = document.getElementById("table-to-pdf");
 
-    // Set table width for better capture
+    // Capture table section as image for PDF
     html2canvas(input, {
       scale: 2, // Increase resolution of canvas for better quality
       scrollX: 0,
@@ -150,51 +150,94 @@ const OrderAdmin = () => {
         format: "a4", // Standard A4 size
       });
 
-      // Header Styling
-      pdf.setFontSize(24);
-      pdf.setTextColor(40, 44, 52); // Dark color for header
-      pdf.setFont("helvetica", "bold"); // Bold font for title
-      pdf.text("GSP Traders", pdf.internal.pageSize.getWidth() / 2, 20, {
-        align: "center",
-      });
+      const pageHeight = pdf.internal.pageSize.height;
 
-      pdf.setFontSize(16);
-      pdf.setTextColor(60, 60, 60); // Gray color for subheading
-      pdf.setFont("helvetica", "italic"); // Italic font for subheading
-      pdf.text(
-        "Detailed Sales Report",
-        pdf.internal.pageSize.getWidth() / 2,
-        30,
-        { align: "center" }
-      );
+      // Company Header (similar to `generatePDF`)
+      const companyName = "GSP Traders Pvt Ltd";
+      const address = "A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka";
+      const email = "gsptraders29@gmail.com";
+      const phone = "+94 77 7144 133";
+      const imgLogo = logo; // Use imported logo for the header
 
-      // Line below header
+      // Header - Company details and logo
+      pdf.setTextColor("#11532F"); // Company green color
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(companyName, 195, 20, { align: "right" });
+
+      // Add the company logo
+      pdf.addImage(imgLogo, "PNG", 15, 15, 25, 25);
+
+      // Add address and contact details
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(address, 195, 28, { align: "right" });
+      pdf.text(`Email: ${email}`, 195, 34, { align: "right" });
+      pdf.text(`Phone: ${phone}`, 195, 40, { align: "right" });
+
+      // Divider line below header
+      pdf.setDrawColor("#11532F");
       pdf.setLineWidth(1);
-      pdf.setDrawColor(70, 130, 180); // Soft blue line for style
-      pdf.line(10, 35, 200, 35);
+      pdf.line(10, 50, 200, 50);
 
-      // Custom table layout with borders and padding
+      // Subheader - Report title
+      pdf.setFontSize(16);
+      pdf.setTextColor(40, 44, 52); // Dark color for header
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Detailed Sales Report", 105, 60, { align: "center" });
+
+      // Capture and add table as image
       const imgWidth = 190; // Max width for A4 portrait
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Add table image with padding
-      pdf.addImage(imgData, "PNG", 10, 40, imgWidth, imgHeight);
+      // Add table image after header
+      pdf.addImage(imgData, "PNG", 10, 70, imgWidth, imgHeight);
 
-      // Add footer with page number, date, and custom branding
+      // Calculate Y position after table
+      const afterTableY = 70 + imgHeight + 10;
+
+      // Ensure space for footer, if not add a new page
+      if (afterTableY + 30 > pageHeight) {
+        pdf.addPage();
+      }
+
+      // Footer - positioned near the bottom of the page
+      const footerY = pageHeight - 20;
+
+      // Footer divider line
+      pdf.setDrawColor("#11532F");
+      pdf.setLineWidth(0.5);
+      pdf.line(10, footerY - 10, 200, footerY - 10);
+
+      // Footer with generated date
+      const currentDate = new Date().toLocaleDateString();
+      const currentTime = new Date().toLocaleTimeString();
+
       pdf.setFontSize(10);
       pdf.setTextColor(100);
-      pdf.text("GSP Traders | www.gsptraders.com", 10, 290); // Branding in the footer
+      pdf.setFont("helvetica", "normal");
       pdf.text(
-        `Generated on: ${new Date().toLocaleDateString()}`,
-        pdf.internal.pageSize.getWidth() / 2,
-        290,
-        {
-          align: "center",
-        }
-      ); // Date of generation
-      pdf.text("Page 1 of 1", 200, 290, { align: "right" }); // Page number
+        `Generated on: ${currentDate} at ${currentTime}`,
+        105,
+        footerY - 5,
+        { align: "center" }
+      );
 
-      // Save PDF
+      // Footer contact details
+      pdf.setFontSize(8);
+      pdf.text(
+        "Contact us at: info@gsptraders.com | +94 77 7144 133",
+        105,
+        footerY + 1,
+        { align: "center" }
+      );
+
+      // Page number
+      const pageCount = pdf.internal.getNumberOfPages();
+      pdf.setFontSize(8);
+      pdf.text(`Page ${pageCount}`, 105, pageHeight - 10, { align: "center" });
+
+      // Save PDF with meaningful filename
       pdf.save("GSP_Traders_Sales_Report.pdf");
     });
   };
