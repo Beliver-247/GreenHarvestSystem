@@ -8,7 +8,7 @@ import { FaMicrophone } from "react-icons/fa";
 import "./AIAssistant.css";
 // import ScrollAnimation from "../components/InfiniteScroll/ScrollAnimation";
 import AdvancedCharts from "./AdvancedCharts";
-import logo from "../assets/add_icon_green.png";
+import logo from "../components/LogoImage.png";
 
 const OrderAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
