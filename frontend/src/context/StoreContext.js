@@ -64,14 +64,14 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
-  const fetchFoodList = async () => {
-    try {
-      const response = await axios.get(`${url}/api/food/list`);
-      setFoodList(response.data.foods);
-    } catch (error) {
-      console.error("Error fetching food list:", error);
-    }
-  };
+  // const fetchFoodList = async () => {
+  //   try {
+  //     const response = await axios.get(`${url}/api/food/list`);
+  //     setFoodList(response.data.foods);
+  //   } catch (error) {
+  //     console.error("Error fetching food list:", error);
+  //   }
+  // };
 
   const loadCartData = async (token) => {
     try {
