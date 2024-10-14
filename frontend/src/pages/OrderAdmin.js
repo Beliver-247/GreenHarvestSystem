@@ -8,6 +8,7 @@ import { FaMicrophone } from "react-icons/fa";
 import "./AIAssistant.css";
 // import ScrollAnimation from "../components/InfiniteScroll/ScrollAnimation";
 import AdvancedCharts from "./AdvancedCharts";
+import logo from "../assets/add_icon_green.png";
 
 const OrderAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,6 +19,7 @@ const OrderAdmin = () => {
   const [data, setData] = useState([]); // Initialize as an empty array to avoid iterability issues
   const [isLoading, setIsLoading] = useState(true); // Loading state for API call
   const [isListening, setIsListening] = useState(false); // State to track if the assistant is listening
+  const [activeTab, setActiveTab] = useState("allOrders");
 
   const WIT_AI_TOKEN = "JGRZHK2QCSQ5NHVR6O345MRTYNA27F4F"; // Replace with your Wit.ai token
 
@@ -132,11 +134,10 @@ const OrderAdmin = () => {
     }
   };
 
-  // Export table as PDF with A4 size, styled header, footer, and custom table layout
   const exportPDF = () => {
     const input = document.getElementById("table-to-pdf");
 
-    // Set table width for better capture
+    // Capture table section as image for PDF
     html2canvas(input, {
       scale: 2, // Increase resolution of canvas for better quality
       scrollX: 0,
@@ -149,51 +150,94 @@ const OrderAdmin = () => {
         format: "a4", // Standard A4 size
       });
 
-      // Header Styling
-      pdf.setFontSize(24);
-      pdf.setTextColor(40, 44, 52); // Dark color for header
-      pdf.setFont("helvetica", "bold"); // Bold font for title
-      pdf.text("GSP Traders", pdf.internal.pageSize.getWidth() / 2, 20, {
-        align: "center",
-      });
+      const pageHeight = pdf.internal.pageSize.height;
 
-      pdf.setFontSize(16);
-      pdf.setTextColor(60, 60, 60); // Gray color for subheading
-      pdf.setFont("helvetica", "italic"); // Italic font for subheading
-      pdf.text(
-        "Detailed Sales Report",
-        pdf.internal.pageSize.getWidth() / 2,
-        30,
-        { align: "center" }
-      );
+      // Company Header (similar to `generatePDF`)
+      const companyName = "GSP Traders Pvt Ltd";
+      const address = "A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka";
+      const email = "gsptraders29@gmail.com";
+      const phone = "+94 77 7144 133";
+      const imgLogo = logo; // Use imported logo for the header
 
-      // Line below header
+      // Header - Company details and logo
+      pdf.setTextColor("#11532F"); // Company green color
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(companyName, 195, 20, { align: "right" });
+
+      // Add the company logo
+      pdf.addImage(imgLogo, "PNG", 15, 15, 25, 25);
+
+      // Add address and contact details
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(address, 195, 28, { align: "right" });
+      pdf.text(`Email: ${email}`, 195, 34, { align: "right" });
+      pdf.text(`Phone: ${phone}`, 195, 40, { align: "right" });
+
+      // Divider line below header
+      pdf.setDrawColor("#11532F");
       pdf.setLineWidth(1);
-      pdf.setDrawColor(70, 130, 180); // Soft blue line for style
-      pdf.line(10, 35, 200, 35);
+      pdf.line(10, 50, 200, 50);
 
-      // Custom table layout with borders and padding
+      // Subheader - Report title
+      pdf.setFontSize(16);
+      pdf.setTextColor(40, 44, 52); // Dark color for header
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Detailed Sales Report", 105, 60, { align: "center" });
+
+      // Capture and add table as image
       const imgWidth = 190; // Max width for A4 portrait
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Add table image with padding
-      pdf.addImage(imgData, "PNG", 10, 40, imgWidth, imgHeight);
+      // Add table image after header
+      pdf.addImage(imgData, "PNG", 10, 70, imgWidth, imgHeight);
 
-      // Add footer with page number, date, and custom branding
+      // Calculate Y position after table
+      const afterTableY = 70 + imgHeight + 10;
+
+      // Ensure space for footer, if not add a new page
+      if (afterTableY + 30 > pageHeight) {
+        pdf.addPage();
+      }
+
+      // Footer - positioned near the bottom of the page
+      const footerY = pageHeight - 20;
+
+      // Footer divider line
+      pdf.setDrawColor("#11532F");
+      pdf.setLineWidth(0.5);
+      pdf.line(10, footerY - 10, 200, footerY - 10);
+
+      // Footer with generated date
+      const currentDate = new Date().toLocaleDateString();
+      const currentTime = new Date().toLocaleTimeString();
+
       pdf.setFontSize(10);
       pdf.setTextColor(100);
-      pdf.text("GSP Traders | www.gsptraders.com", 10, 290); // Branding in the footer
+      pdf.setFont("helvetica", "normal");
       pdf.text(
-        `Generated on: ${new Date().toLocaleDateString()}`,
-        pdf.internal.pageSize.getWidth() / 2,
-        290,
-        {
-          align: "center",
-        }
-      ); // Date of generation
-      pdf.text("Page 1 of 1", 200, 290, { align: "right" }); // Page number
+        `Generated on: ${currentDate} at ${currentTime}`,
+        105,
+        footerY - 5,
+        { align: "center" }
+      );
 
-      // Save PDF
+      // Footer contact details
+      pdf.setFontSize(8);
+      pdf.text(
+        "Contact us at: info@gsptraders.com | +94 77 7144 133",
+        105,
+        footerY + 1,
+        { align: "center" }
+      );
+
+      // Page number
+      const pageCount = pdf.internal.getNumberOfPages();
+      pdf.setFontSize(8);
+      pdf.text(`Page ${pageCount}`, 105, pageHeight - 10, { align: "center" });
+
+      // Save PDF with meaningful filename
       pdf.save("GSP_Traders_Sales_Report.pdf");
     });
   };
@@ -502,218 +546,263 @@ const OrderAdmin = () => {
         </button>
       </div>
 
-      <div className="flex justify-between items-center mb-10">
-        <h2 className="text-2xl font-bold">Order Administration</h2>
-        <div className="flex justify-between  space-x-6">
+      <div className="max-w-6xl mx-auto mt-10">
+        {/* Tabs */}
+        <div className="flex justify-center border-b">
           <button
-            onClick={exportPDF}
-            className="bg-red-500 text-white px-4 py-2 rounded"
+            className={`py-2 px-6 text-lg font-semibold ${
+              activeTab === "allOrders"
+                ? "border-b-2 border-blue-500 text-blue-500"
+                : "text-gray-600"
+            }`}
+            onClick={() => setActiveTab("allOrders")}
           >
-            <FontAwesomeIcon icon={faFilePdf} className="mr-2" />
-            Export as PDF
+            All Orders
           </button>
           <button
-            onClick={exportExcel}
-            className="bg-green-500 text-white px-4 py-2 rounded"
+            className={`py-2 px-6 text-lg font-semibold ${
+              activeTab === "orderSummary"
+                ? "border-b-2 border-blue-500 text-blue-500"
+                : "text-gray-600"
+            }`}
+            onClick={() => setActiveTab("orderSummary")}
           >
-            <FontAwesomeIcon icon={faFileExcel} className="mr-2" />
-            Export as Excel
+            Order Summary
           </button>
         </div>
-      </div>
 
-      {/* Filter and Sort */}
-      <div className="flex flex-wrap items-center space-y-4 md:space-y-0 justify-between mb-4">
-        {/* Search Input */}
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by product name"
-          className="border border-gray-300 rounded-md p-3 w-full md:w-1/3"
-        />
+        {/* Tab Content */}
+        <div>
+          {activeTab === "allOrders" ? (
+            <div>
+              {/* <OrdersTab /> */}
 
-        {/* Status Dropdown */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
-        >
-          {statuses.map((status) => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
+              <div className="flex justify-between items-center mb-10">
+                <h2 className="text-2xl font-bold">Order Administration</h2>
+                <div className="flex justify-between  space-x-6">
+                  <button
+                    onClick={exportPDF}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    <FontAwesomeIcon icon={faFilePdf} className="mr-2" />
+                    Export as PDF
+                  </button>
+                  <button
+                    onClick={exportExcel}
+                    className="bg-green-500 text-white px-4 py-2 rounded"
+                  >
+                    <FontAwesomeIcon icon={faFileExcel} className="mr-2" />
+                    Export as Excel
+                  </button>
+                </div>
+              </div>
 
-        {/* Payment Status Dropdown */}
-        <select
-          value={selectedPaymentStatus}
-          onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
-        >
-          {paymentStatuses.map((paymentStatus) => (
-            <option key={paymentStatus} value={paymentStatus}>
-              {paymentStatus}
-            </option>
-          ))}
-        </select>
+              {/* Filter and Sort */}
+              <div className="flex flex-wrap items-center space-y-4 md:space-y-0 justify-between mb-4">
+                {/* Search Input */}
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by product name"
+                  className="border border-gray-300 rounded-md p-3 w-full md:w-1/3"
+                />
 
-        {/* Sort Dropdown */}
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
-        >
-          {sortOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
+                {/* Status Dropdown */}
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
+                >
+                  {statuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
 
-      <div id="table-to-pdf">
-        {isLoading ? (
-          <p>Loading orders...</p>
-        ) : filteredData.length === 0 ? (
-          <p className="py-6 px-8 text-center flex justify-center items-center mt-20 mb-40">
-            No orders found.
-          </p>
-        ) : (
-          <table className="min-w-full bg-white border rounded-lg shadow-sm">
-            <thead>
-              <tr className="bg-gray-200 text-left text-gray-700">
-                <th className="py-3 px-6 font-semibold">Order No</th>
-                <th className="py-3 px-6 font-semibold">Amount</th>
-                <th className="py-3 px-6 font-semibold">Payment</th>
-                <th className="py-3 px-6 font-semibold">Phone</th>
-                <th className="py-3 px-6 font-semibold">Address</th>
-                <th className="py-3 px-6 font-semibold">Items</th>
-                {/* <th className="py-3 px-6 font-semibold">Total Amount</th> */}
-                <th className="py-3 px-6 font-semibold">Status</th>
-                <th className="py-3 px-6 font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((order) => (
-                <tr key={order._id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-6 font-medium text-gray-900">
-                    {order.orderNumber}
-                  </td>
-                  <td className="py-3 px-4 font-medium text-gray-900">
-                    <div className="flex flex-col text-lg">
-                      <span>${order.amount}</span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(order.createdAt).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
-                  </td>
+                {/* Payment Status Dropdown */}
+                <select
+                  value={selectedPaymentStatus}
+                  onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+                  className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
+                >
+                  {paymentStatuses.map((paymentStatus) => (
+                    <option key={paymentStatus} value={paymentStatus}>
+                      {paymentStatus}
+                    </option>
+                  ))}
+                </select>
 
-                  {/* Payment Column */}
-                  <td className="border px-4 py-2">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        order.payment
-                          ? "bg-green-200 text-green-800"
-                          : "bg-red-200 text-red-800"
-                      }`}
-                    >
-                      {order.payment ? "Paid" : "Unpaid"}
-                    </span>
-                  </td>
-                  <td className="border px-4 py-2">{order.address.phone}</td>
-                  <td className="py-3 px-4 text-sm text-gray-500">
-                    <span className="text-gray-700">
-                      {order.billingAddress.country} -{" "}
-                      {order.billingAddress.postalCode}
-                    </span>
-                    <br />
-                    {order.billingAddress.street},{order.billingAddress.city}.{" "}
-                    <br />
-                  </td>
-                  <td className="border px-4 py-2">
-                    {order.items.map((item) => (
-                      <div key={item._id}>{item.name}</div>
-                    ))}
-                  </td>
-                  {/* <td className="border px-4 py-2">${order.amount.toFixed(2)}</td> */}
+                {/* Sort Dropdown */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="border border-gray-300 rounded-md p-3 w-full md:w-1/5"
+                >
+                  {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                  {/* Status with Badge */}
-                  <td className="border px-4 py-2">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        order.status === "Processing"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : order.status === "Shipped"
-                          ? "bg-blue-200 text-blue-800"
-                          : order.status === "Delivered"
-                          ? "bg-green-200 text-green-800"
-                          : order.status === "Cancelled"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-gray-200 text-gray-800"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
+              <div id="table-to-pdf">
+                {isLoading ? (
+                  <p>Loading orders...</p>
+                ) : filteredData.length === 0 ? (
+                  <p className="py-6 px-8 text-center flex justify-center items-center mt-20 mb-40">
+                    No orders found.
+                  </p>
+                ) : (
+                  <table className="min-w-full bg-white border rounded-lg shadow-sm">
+                    <thead>
+                      <tr className="bg-gray-200 text-left text-gray-700">
+                        <th className="py-3 px-6 font-semibold">Order No</th>
+                        <th className="py-3 px-6 font-semibold">Amount</th>
+                        <th className="py-3 px-6 font-semibold">Payment</th>
+                        <th className="py-3 px-6 font-semibold">Phone</th>
+                        <th className="py-3 px-6 font-semibold">Address</th>
+                        <th className="py-3 px-6 font-semibold">Items</th>
+                        {/* <th className="py-3 px-6 font-semibold">Total Amount</th> */}
+                        <th className="py-3 px-6 font-semibold">Status</th>
+                        <th className="py-3 px-6 font-semibold">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedData.map((order) => (
+                        <tr
+                          key={order._id}
+                          className="border-b hover:bg-gray-50"
+                        >
+                          <td className="py-3 px-6 font-medium text-gray-900">
+                            {order.orderNumber}
+                          </td>
+                          <td className="py-3 px-4 font-medium text-gray-900">
+                            <div className="flex flex-col text-lg">
+                              <span>${order.amount}</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(order.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  }
+                                )}
+                              </span>
+                            </div>
+                          </td>
 
-                  {/* Action: Dropdown to update status */}
-                  <td className="border px-4 py-2">
-                    <select
-                      value={order.status}
-                      onChange={(e) =>
-                        updateOrderStatus(order._id, e.target.value)
-                      }
-                      className="border border-gray-300 p-1 rounded"
-                    >
-                      {statuses.slice(1).map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
+                          {/* Payment Column */}
+                          <td className="border px-4 py-2">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                                order.payment
+                                  ? "bg-green-200 text-green-800"
+                                  : "bg-red-200 text-red-800"
+                              }`}
+                            >
+                              {order.payment ? "Paid" : "Unpaid"}
+                            </span>
+                          </td>
+                          <td className="border px-4 py-2">
+                            {order.address.phone}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-500">
+                            <span className="text-gray-700">
+                              {order.billingAddress.country} -{" "}
+                              {order.billingAddress.postalCode}
+                            </span>
+                            <br />
+                            {order.billingAddress.street},
+                            {order.billingAddress.city}. <br />
+                          </td>
+                          <td className="border px-4 py-2">
+                            {order.items.map((item) => (
+                              <div key={item._id}>{item.name}</div>
+                            ))}
+                          </td>
+                          {/* <td className="border px-4 py-2">${order.amount.toFixed(2)}</td> */}
+
+                          {/* Status with Badge */}
+                          <td className="border px-4 py-2">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                                order.status === "Processing"
+                                  ? "bg-yellow-100 text-yellow-600"
+                                  : order.status === "Shipped"
+                                  ? "bg-blue-200 text-blue-800"
+                                  : order.status === "Delivered"
+                                  ? "bg-green-200 text-green-800"
+                                  : order.status === "Cancelled"
+                                  ? "bg-red-200 text-red-800"
+                                  : "bg-gray-200 text-gray-800"
+                              }`}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+
+                          {/* Action: Dropdown to update status */}
+                          <td className="border px-4 py-2">
+                            <select
+                              value={order.status}
+                              onChange={(e) =>
+                                updateOrderStatus(order._id, e.target.value)
+                              }
+                              className="border border-gray-300 p-1 rounded"
+                            >
+                              {statuses.slice(1).map((status) => (
+                                <option key={status} value={status}>
+                                  {status}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        </tr>
                       ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+                    </tbody>
+                  </table>
+                )}
+              </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={goToPreviousPage}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded ${
-            currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
-          }`}
-        >
-          Previous
-        </button>
-        <p className="text-sm text-gray-500">
-          Page {currentPage} of {totalPages}
-        </p>
-        <button
-          onClick={goToNextPage}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded ${
-            currentPage === totalPages
-              ? "bg-gray-300"
-              : "bg-blue-500 text-white"
-          }`}
-        >
-          Next
-        </button>
+              {/* Pagination */}
+              <div className="flex justify-between mt-6">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded ${
+                    currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                  }`}
+                >
+                  Previous
+                </button>
+                <p className="text-sm text-gray-500">
+                  Page {currentPage} of {totalPages}
+                </p>
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded ${
+                    currentPage === totalPages
+                      ? "bg-gray-300"
+                      : "bg-blue-500 text-white"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <AdvancedCharts ordersData={data} />
+            </div>
+          )}
+        </div>
       </div>
-
-      <AdvancedCharts ordersData={data} />
 
       {/* Export Buttons */}
       {/* <div className="flex justify-between mt-4">
