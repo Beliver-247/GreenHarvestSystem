@@ -25,6 +25,11 @@ const WarehouseStaffLayout = () => {
               </Link>
             </li>
             <li>
+              <Link to="/wh-staff/add-incomingBatch" className="block py-2 px-4 hover:bg-green-600 focus:bg-green-600 rounded">
+                Incoming Batches
+              </Link>
+            </li>
+            <li>
               <Link to="/wh-staff/all-stocks" className="block py-2 px-4 hover:bg-green-600 focus:bg-green-600 rounded">
                 View Inventory
               </Link>
