@@ -191,8 +191,6 @@ function App() {
             </Route>
             <Route path="qa-team-login" element={<QAteamLogin />}/>
 
-            <Route path="add-incomingBatch" element={<AddIncomingBatch/>}/>
-
               {/* Vehicle Fleet Management Routes */}
               <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
                 <Route index element={<VFDashboard />} />
@@ -282,6 +280,7 @@ function App() {
                 />
                 <Route path="/wh-staff/add-stocks" element={<AddStock />} />
                 <Route path="/wh-staff/all-stocks" element={<AllStock />} />
+                <Route path="/wh-staff/add-incomingBatch" element={<AddIncomingBatch/>}/>
                 <Route
                   path="/wh-staff/update-stocks"
                   element={<UpdateStocks />}

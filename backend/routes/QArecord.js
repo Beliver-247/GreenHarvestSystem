@@ -2,6 +2,23 @@ const router = require("express").Router();
 let QARecord = require("../models/QArecord");
 let IncomingBatch = require("../models/IncomingBatches");
 
+//changes done by Senath (for twilio messages)
+const twilio = require('twilio');
+const accountSid = process.env.IM_TWILIO_ACCOUNT_SID;
+const authToken = process.env.IM_TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
+
+const sendWhatsAppMessage = (message) => {
+  client.messages
+    .create({
+      from: 'whatsapp:+14155238886', // Twilio WhatsApp number
+      to: 'whatsapp:+94711519126', // Warehouse manager whatsapp (Senath)
+      body: message,
+    })
+    .then(message => console.log("WhatsApp message sent:", message.sid))
+    .catch(err => console.error("Failed to send WhatsApp message:", err));
+};
+
 module.exports = (io) => {
   // Route to add a new QA record
   router.route("/add").post(async (req, res) => {
@@ -34,6 +51,18 @@ module.exports = (io) => {
           batchId
         });
       }
+
+      // Constructing the message to be sent - Senath
+      const message = `A new batch of vegetables has arrived at the warehouse!
+
+      - Vegetable Type: *${vegetableType}*
+      - Batch Number: *${newQARecord.ID}*
+      - Grade A: *${gradeAWeight} kg*
+      - Grade B: *${gradeBWeight} kg*
+      - Grade C: *${gradeCWeight} kg*`;
+
+      // Send WhatsApp message - Senath
+      sendWhatsAppMessage(message);
 
       res.json("QA Record added successfully and Incoming Batch deleted!");
     } catch (err) {

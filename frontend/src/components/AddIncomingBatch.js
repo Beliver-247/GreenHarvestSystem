@@ -58,9 +58,8 @@ const AddIncomingBatch = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Add Incoming Batch</h2>
+    <div className="max-w-xl m-3 bg-white p-6 rounded-lg shadow-md flex-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">Add Incoming Batch</h2>
 
         {message && (
           <div
@@ -81,12 +80,12 @@ const AddIncomingBatch = () => {
               name="vegetableType"
               value={formData.vegetableType}
               onChange={handleChange}
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0e4b2b]"
+              className="mt-1 block w-full h-12 border-2 border-gray-300 focus:border-green-500 rounded-md px-3"
               required
             >
               <option value="">Select Vegetable</option>
               <option value="Carrot">Carrot</option>
-              <option value="Leek">Leek</option>
+              <option value="Leeks">Leek</option>
               <option value="Cabbage">Cabbage</option>
               <option value="Potato">Potato</option>
             </select>
@@ -101,7 +100,7 @@ const AddIncomingBatch = () => {
               name="totalWeight"
               value={formData.totalWeight}
               onChange={handleChange}
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0e4b2b]"
+              className="mt-1 block w-full h-12 border-2 border-gray-300 focus:outline-none focus:border-green-500 rounded-md px-3"
               min="0"
               required
             />
@@ -116,7 +115,7 @@ const AddIncomingBatch = () => {
               name="arrivalDate"
               value={formData.arrivalDate}
               onChange={handleChange}
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0e4b2b]"
+              className="mt-1 block w-full h-12 border-2 border-gray-300 focus:outline-none focus:border-green-500 rounded-md px-3"
               min={minDateTime}
               required
             />
@@ -124,12 +123,11 @@ const AddIncomingBatch = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#11532F] text-white py-2 px-4 rounded-lg hover:bg-[#11532F] focus:outline-none focus:ring-2 focus:ring-[#0e4b2b]"
+            className="w-full h-12 bg-[#24c527] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200 mt-20"
           >
             Add Batch
           </button>
         </form>
-      </div>
     </div>
   );
 };
