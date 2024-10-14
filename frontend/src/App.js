@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 
 
-// Local Repo Components
+//Dumindu
 import LayoutQAManager from "./components/LayoutQAManager";
 import LayoutQATeam from "./components/LayoutQATeam";
 import AddQArecord from "./components/AddQArecord";
@@ -19,9 +19,10 @@ import QAStandards from "./components/QAStandardComponent";
 import UpdateStandards from './components/updateStandards';
 import QAteamLogin from './components/QAteamLogin';
 import QAteamProfile from './components/QAteamProfile';
-import NotificationModal from "./components/modals/NotificationModal"; // Local notification modal
+import NotificationModal from "./components/modals/NotificationModal"; 
+import AddIncomingBatch from "./components/AddIncomingBatch.js";
 
-// Remote Repo Components
+
 import Login from "./components/Login";
 import VFDashboard from "./components/VehicleFleetDashboard";
 import LayoutVFManager from "./components/LayoutVFManager";
@@ -189,6 +190,8 @@ function App() {
               <Route path="qa-myprofile" element={<QAteamProfile />}/>
             </Route>
             <Route path="qa-team-login" element={<QAteamLogin />}/>
+
+            <Route path="add-incomingBatch" element={<AddIncomingBatch/>}/>
 
               {/* Vehicle Fleet Management Routes */}
               <Route path="/vehicle-fleet" element={<LayoutVFManager />}>
