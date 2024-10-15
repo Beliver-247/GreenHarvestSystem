@@ -244,6 +244,17 @@ const PickupRequestForm = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Pickup request added successfully');
+       // Reset the form after successful submission
+    setPickupData({
+      crops: [{ cropType: '', quantity: '' }],
+      preferredDate: '',
+      preferredTime: '',
+      address: '',
+      location: { lat: 7.8731, lng: 80.7718 },
+      NIC: pickupData.NIC, // Keep NIC
+    });
+    setWeatherData(null); // Clear weather data
+    setErrors({}); // Clear any validation errors
     } catch (error) {
       console.error('Error adding pickup request:', error.response ? error.response.data : error.message);
       alert(`Error adding pickup request: ${error.response?.data?.message || error.message}`);

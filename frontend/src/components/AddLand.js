@@ -51,6 +51,11 @@ const AddLand = () => {
           newErrors.address = "Address is required.";
         }
         break;
+        case 'cropsGrown':
+      if (landData.cropsGrown.length === 0) {
+        newErrors.cropsGrown = "At least one crop must be selected.";
+      }
+      break;
 
       case 'lat':
       case 'lng':
@@ -67,6 +72,7 @@ const AddLand = () => {
       ...newErrors
     }));
   };
+  
 
   const validateFields = () => {
     const newErrors = {};
@@ -127,11 +133,17 @@ const AddLand = () => {
       }));
     }
   };
-
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    validateField(name, value);
+  
+    if (name === 'cropsGrown') {
+      validateField(name, landData.cropsGrown);
+    } else {
+      validateField(name, value); // Call the existing validation for other fields
+    }
   };
+  
+  
 
   const geocodeAddress = async () => {
     setLoading(true);
@@ -190,6 +202,16 @@ const AddLand = () => {
       });
       alert('Land added successfully');
       // Optionally reset the form or redirect
+      setLandData({
+        landSize: '',
+        soilType: '',
+        cropsGrown: [],
+        location: { lat: 7.8731, lng: 80.7718 },
+        address: '',
+        farmerId: landData.farmerId
+      });
+      setSelectedCrop('');
+      setErrors({});
     } catch (error) {
       console.error('Error adding land:', error.response ? error.response.data : error.message);
       alert('Error adding land: ' + (error.response ? error.response.data.error : 'Unknown error'));
@@ -206,6 +228,7 @@ const AddLand = () => {
       setErrors((prevErrors) => ({ ...prevErrors, cropsGrown: null })); // Clear crop error
     }
   };
+  
 
   const handleRemoveCrop = (crop) => {
     setLandData((prevState) => ({
@@ -254,6 +277,7 @@ const AddLand = () => {
               <select
                 value={selectedCrop}
                 onChange={(e) => setSelectedCrop(e.target.value)}
+                onBlur={(e) => validateField('cropsGrown', landData.cropsGrown)}
                 className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
                 <option value="">Select a crop</option>
@@ -265,6 +289,7 @@ const AddLand = () => {
               <button
                 type="button"
                 onClick={handleAddCrop}
+                onBlur={handleBlur}
                 className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
                 title="Add Crop"
               >
