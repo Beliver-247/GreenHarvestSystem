@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import ConfirmModal from "./modals/ConfirmModal";
 import SuccessModal from "./modals/SuccessModal";
-import logo from "./LogoImage.png"
+import logo from "./LogoImage.png";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -23,10 +23,8 @@ const QARecords = () => {
   const [recordToDelete, setRecordToDelete] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  const [dateFilter, setDateFilter] = useState(""); 
+  const [dateFilter, setDateFilter] = useState("");
   const location = useLocation();
-
-  
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -46,7 +44,6 @@ const QARecords = () => {
 
     fetchRecords();
   }, []);
-
 
   // Filtering logic
   useEffect(() => {
@@ -72,8 +69,18 @@ const QARecords = () => {
       });
     }
 
+    // Date filter
+    if (dateFilter) {
+      filtered = filtered.filter((record) => {
+        const recordDate = new Date(record.dateCreated)
+          .toISOString()
+          .split("T")[0];
+        return recordDate === dateFilter;
+      });
+    }
+
     setFilteredRecords(filtered);
-  }, [vegetableFilter, yearFilter, monthFilter, records]);
+  }, [vegetableFilter, yearFilter, monthFilter, dateFilter, records]);
 
   const handleEdit = (record) => {
     setEditingRecord(record);
@@ -82,7 +89,8 @@ const QARecords = () => {
       totalWeight:
         record.gradeAWeight + record.gradeBWeight + record.gradeCWeight,
       wastedWeight:
-        record.totalWeight - (record.gradeAWeight + record.gradeBWeight + record.gradeCWeight),
+        record.totalWeight -
+        (record.gradeAWeight + record.gradeBWeight + record.gradeCWeight),
     });
   };
 
@@ -195,54 +203,66 @@ const QARecords = () => {
 
   const generatePDF = () => {
     if (!records || records.length === 0) {
-      alert('No QA records available!');
+      alert("No QA records available!");
       return;
     }
-  
+
     const doc = new jsPDF();
-  
+
     // Company Header
-    const companyName = 'GSP Traders Pvt Ltd';
-    const address = 'A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka';
-    const email = 'gsptraders29@gmail.com';
-    const phone = '+94 77 7144 133';
-  
+    const companyName = "GSP Traders Pvt Ltd";
+    const address = "A12, Dedicated Economic Centre, Nuwara Eliya, Sri Lanka";
+    const email = "gsptraders29@gmail.com";
+    const phone = "+94 77 7144 133";
+
     // Set company details
-    doc.setTextColor('#11532F'); // Company green color
+    doc.setTextColor("#11532F"); // Company green color
     doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text(companyName, 195, 20, { align: 'right' });
-  
-    const imgData = logo;  // Use imported logo
-    doc.addImage(imgData, 'PNG', 15, 15, 25, 25);
-  
+    doc.setFont("helvetica", "bold");
+    doc.text(companyName, 195, 20, { align: "right" });
+
+    const imgData = logo; // Use imported logo
+    doc.addImage(imgData, "PNG", 15, 15, 25, 25);
+
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(address, 195, 28, { align: 'right' });
-    doc.text(`Email: ${email}`, 195, 34, { align: 'right' });
-    doc.text(`Phone: ${phone}`, 195, 40, { align: 'right' });
-  
+    doc.setFont("helvetica", "normal");
+    doc.text(address, 195, 28, { align: "right" });
+    doc.text(`Email: ${email}`, 195, 34, { align: "right" });
+    doc.text(`Phone: ${phone}`, 195, 40, { align: "right" });
+
     // Divider
-    doc.setDrawColor('#11532F');
+    doc.setDrawColor("#11532F");
     doc.setLineWidth(1);
     doc.line(10, 50, 200, 50);
-  
+
     // Add report title with month
     const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     const currentMonth = monthNames[new Date().getMonth()];
     doc.setFontSize(16);
     doc.setTextColor(0, 0, 0); // Reset color to black
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Monthly QA Weight Report - ${currentMonth}`, 105, 60, { align: 'center' });
-  
+    doc.setFont("helvetica", "bold");
+    doc.text(`Monthly QA Weight Report - ${currentMonth}`, 105, 60, {
+      align: "center",
+    });
+
     // Table for Vegetable Details
     doc.setFontSize(14);
-    doc.setTextColor('#11532F');
-    doc.text('Vegetable Weights:', 20, 75); // Section title
-  
+    doc.setTextColor("#11532F");
+    doc.text("Vegetable Weights:", 20, 75); // Section title
+
     const totalWeights = records.reduce((acc, record) => {
       const { vegetableType, totalWeight, wastedWeight } = record;
       if (!acc[vegetableType]) {
@@ -252,79 +272,106 @@ const QARecords = () => {
       acc[vegetableType].wastedWeight += wastedWeight;
       return acc;
     }, {});
-  
+
     // Generate table data for total weights
-    const tableData = Object.entries(totalWeights).map(([vegetableType, { totalWeight, wastedWeight }]) => [
-      vegetableType,
-      totalWeight.toFixed(2),
-      wastedWeight.toFixed(2)
-    ]);
-  
+    const tableData = Object.entries(totalWeights).map(
+      ([vegetableType, { totalWeight, wastedWeight }]) => [
+        vegetableType,
+        totalWeight.toFixed(2),
+        wastedWeight.toFixed(2),
+      ]
+    );
+
     doc.autoTable({
       startY: 85,
-      head: [['Vegetable Type', 'Total Weight (kg)', 'Wasted Weight (kg)']],
+      head: [["Vegetable Type", "Total Weight (kg)", "Wasted Weight (kg)"]],
       body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: '#11532F' },
+      theme: "grid",
+      headStyles: { fillColor: "#11532F" },
       margin: { left: 20, right: 20 },
     });
-  
+
     // Divider
-    doc.setDrawColor('#11532F');
+    doc.setDrawColor("#11532F");
     doc.setLineWidth(0.5);
-    doc.line(10, doc.lastAutoTable.finalY + 20, 200, doc.lastAutoTable.finalY + 20);
-  
+    doc.line(
+      10,
+      doc.lastAutoTable.finalY + 20,
+      200,
+      doc.lastAutoTable.finalY + 20
+    );
+
     // Current Records Table
     doc.setFontSize(14);
-    doc.setTextColor('#11532F');
-    doc.text('Current QA Records:', 20, doc.lastAutoTable.finalY + 30); // Section title
-  
-    const currentRecordsData = filteredRecords.map(record => [
+    doc.setTextColor("#11532F");
+    doc.text("Current QA Records:", 20, doc.lastAutoTable.finalY + 30); // Section title
+
+    const currentRecordsData = filteredRecords.map((record) => [
       record.vegetableType,
       record.gradeAWeight.toFixed(2),
       record.gradeBWeight.toFixed(2),
       record.gradeCWeight.toFixed(2),
       record.totalWeight.toFixed(2),
       record.wastedWeight.toFixed(2),
-      record.dateCreated // Adjust this if you want a specific format
+      record.dateCreated, // Adjust this if you want a specific format
     ]);
-  
+
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 40,
-      head: [['Vegetable Type', 'Grade A Weight (kg)', 'Grade B Weight (kg)', 'Grade C Weight (kg)', 'Total Weight (kg)', 'Wasted Weight (kg)', 'Date Created']],
+      head: [
+        [
+          "Vegetable Type",
+          "Grade A Weight (kg)",
+          "Grade B Weight (kg)",
+          "Grade C Weight (kg)",
+          "Total Weight (kg)",
+          "Wasted Weight (kg)",
+          "Date Created",
+        ],
+      ],
       body: currentRecordsData,
-      theme: 'grid',
-      headStyles: { fillColor: '#11532F' },
+      theme: "grid",
+      headStyles: { fillColor: "#11532F" },
       margin: { left: 20, right: 20 },
     });
-  
+
     // Divider
-    doc.setDrawColor('#11532F');
+    doc.setDrawColor("#11532F");
     doc.setLineWidth(0.5);
-    doc.line(10, doc.lastAutoTable.finalY + 20, 200, doc.lastAutoTable.finalY + 20);
-  
+    doc.line(
+      10,
+      doc.lastAutoTable.finalY + 20,
+      200,
+      doc.lastAutoTable.finalY + 20
+    );
+
     // Footer
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Generated on: ' + new Date().toLocaleDateString(), 105, doc.lastAutoTable.finalY + 30, { align: 'center' });
-  
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      "Generated on: " + new Date().toLocaleDateString(),
+      105,
+      doc.lastAutoTable.finalY + 30,
+      { align: "center" }
+    );
+
     // Get current month for the file name
     const fileName = `QA_Record_for_Month - ${currentMonth}.pdf`;
-  
+
     // Preview the PDF in a new window
-    const pdfBlob = doc.output('blob');
+    const pdfBlob = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfBlob);
     const pdfWindow = window.open(pdfUrl);
-  
+
     // Optionally add a download button in the window (use this method if needed):
     if (pdfWindow) {
       pdfWindow.onload = () => {
-        const downloadButton = pdfWindow.document.createElement('button');
-        downloadButton.innerText = 'Download PDF';
-        downloadButton.style.position = 'fixed';
-        downloadButton.style.top = '10px';
-        downloadButton.style.right = '10px';
+        const downloadButton = pdfWindow.document.createElement("button");
+        downloadButton.innerText = "Download PDF";
+        downloadButton.style.position = "fixed";
+        downloadButton.style.top = "10px";
+        downloadButton.style.right = "10px";
         downloadButton.onclick = () => {
           doc.save(fileName); // Download the file
         };
@@ -332,9 +379,15 @@ const QARecords = () => {
       };
     }
   };
-  
-  const vegetableTypes = [...new Set(records.map((record) => record.vegetableType))];
-  const years = [...new Set(records.map((record) => new Date(record.dateCreated).getFullYear()))];
+
+  const vegetableTypes = [
+    ...new Set(records.map((record) => record.vegetableType)),
+  ];
+  const years = [
+    ...new Set(
+      records.map((record) => new Date(record.dateCreated).getFullYear())
+    ),
+  ];
 
   const months = [
     { value: "1", label: "January" },
@@ -391,6 +444,18 @@ const QARecords = () => {
           ))}
         </select>
 
+        {/* Date filter */}
+        <label htmlFor="dateFilter" className="text-lg">
+          Filter by Date:
+        </label>
+        <input
+          type="date"
+          id="dateFilter"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          className="p-2 text-lg border border-gray-300 rounded-md"
+        />
+
         <label htmlFor="monthFilter" className="text-lg">
           Filter by Month:
         </label>
@@ -407,17 +472,16 @@ const QARecords = () => {
             </option>
           ))}
         </select>
-
       </div>
 
-       {location.pathname !== '/qa-team/qa-records' && (    
-      <button
-        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95 mx-auto block"
-        onClick={generatePDF}
-      >
-        Download Report
-      </button>
-       )}
+      {location.pathname !== "/qa-team/qa-records" && (
+        <button
+          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95 mx-auto block"
+          onClick={generatePDF}
+        >
+          Download Report
+        </button>
+      )}
 
       <table className="w-full max-w-5xl mx-auto mt-5 border-collapse border border-gray-300">
         <thead>
